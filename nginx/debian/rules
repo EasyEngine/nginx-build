@@ -88,6 +88,7 @@ config.status.full: config.env.full config.sub config.guess
 	    --add-module=$(MODULESDIR)/nginx-echo \
 	    --add-module=$(MODULESDIR)/nginx-upstream-fair \
 	    --add-module=$(MODULESDIR)/nginx-dav-ext-module \
+	    --add-module=$(MODULESDIR)/nginx-http-subs \
             $(CONFIGURE_OPTS) >$@
 	touch $@
 

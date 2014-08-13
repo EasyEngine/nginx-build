@@ -24,8 +24,10 @@ dh_make --single --native --copyright gpl --email $EMAIL_ADDRESS
 rm debian/*.ex debian/*.EX
 
 # Lets copy files
-cp -av conf debian/
-mkdir debian/conf/sites-available
+git clone https://github.com/MiteshShah/launchpad.git /tmp/launchpad
+cp -av /tmp/launchpad/nginx/debian/* ~/PPA/nginx/nginx-${NGINX_VERSION}/debian/
+cp -v debian/changelog debian/NEWS.Debian
+
 
 
 # NGINX modules
@@ -59,6 +61,7 @@ git clone https://github.com/masterzen/nginx-upload-progress-module.git nginx-up
 git clone https://github.com/gnosek/nginx-upstream-fair.git
 
 git clone git://github.com/yaoweibin/ngx_http_substitutions_filter_module.git
+mv ngx_http_substitutions_filter_module nginx-http-subs
 
 cp -av ~/PPA/nginx/modules ~/PPA/nginx/nginx-${NGINX_VERSION}/debian/
 
