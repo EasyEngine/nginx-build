@@ -36,7 +36,7 @@ rm debian/*.ex debian/*.EX \
 || ppa_error "Unable to remove unwanted files, exit status = " $?
 
 # Lets copy files
-git clone https://github.com/MiteshShah/launchpad.git /tmp/launchpad \
+rm -rf /tmp/launchpad && git clone https://github.com/MiteshShah/launchpad.git /tmp/launchpad \
 || ppa_error "Unable to clone launchpad repo, exit status = " $?
 cp -av /tmp/launchpad/nginx/debian/* ~/PPA/nginx/nginx-${NGINX_VERSION}/debian/ && \
 cp -v debian/changelog debian/NEWS.Debian \
