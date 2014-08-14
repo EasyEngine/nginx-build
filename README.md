@@ -13,7 +13,7 @@ Check your INBOX and click on link to verify.
 
 ### Generate GPG/PGP Keys:
 ```bash
-^_^[Mitesh@Shah:~]# gpg --gen-key
+^_^[Mitesh@Shah:~]$ gpg --gen-key
 
 Please select what kind of key you want:
    (1) RSA and RSA (default)
@@ -57,7 +57,7 @@ dd bs=1M count=1024 if=/dev/zero of=test conv=fdatasync
 ### List Keys:
 
 ```bash
-^_^[Mitesh@Shah:~]# gpg --list-keys
+^_^[Mitesh@Shah:~]$ gpg --list-keys
 /home/mitesh/.gnupg/pubring.gpg
 ------------------------
 pub   4096R/387AFF02 2014-04-21
@@ -68,7 +68,7 @@ sub   4096R/0B9C8B2D 2014-04-21
 ### Making An ASCII Armored Version Your Public Key:
 
 ```bash
-^_^[Mitesh@Shah:~]# gpg --output MiteshShah.asc --export -a $GPGKEY 
+^_^[Mitesh@Shah:~]$ gpg --output MiteshShah.asc --export -a $GPGKEY 
 ```
 
 NOTE: In This Example $GPGKEY = 387AFF02
@@ -77,13 +77,13 @@ NOTE: In This Example $GPGKEY = 387AFF02
 ### Upload Keys To Ubuntu Key Server:
 
 ```bash
-^_^[Mitesh@Shah:~]# gpg --send-keys --keyserver keyserver.ubuntu.com $GPGKEY
+^_^[Mitesh@Shah:~]$ gpg --send-keys --keyserver keyserver.ubuntu.com $GPGKEY
 ```
 
 ### GPG Key FingerPrint:
 
 ```bash
-^_^[Mitesh@Shah:~]# gpg --fingerprint
+^_^[Mitesh@Shah:~]$ gpg --fingerprint
 /home/mitesh/.gnupg/pubring.gpg
 ------------------------
 pub   4096R/387AFF02 2014-04-21
@@ -94,6 +94,6 @@ sub   4096R/0B9C8B2D 2014-04-21
 
 ### Add GPG/PGP Keys To LaunchPad:
 
-	- https://launchpad.net/~miteshshah/+editpgpkeys
-	- Sign The Code Of Conduct
-	- Create A LaunchPad PPA:
+1. https://launchpad.net/~miteshshah/+editpgpkeys
+1. Sign The Code Of Conduct
+1. Create A LaunchPad PPA:
