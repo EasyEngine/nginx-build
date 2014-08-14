@@ -104,7 +104,7 @@ ppa_lib_echo "9/12 nginx-lua"
 git clone https://github.com/chaoslawful/lua-nginx-module.git nginx-lua \
 || ppa_error "Unable to clone nginx-lua repo, exit status = " $?
 
-ppa_lib_echo "10/12  "
+ppa_lib_echo "10/12 nginx-upload-progress-module"
 git clone https://github.com/masterzen/nginx-upload-progress-module.git nginx-upload-progress \
 || ppa_error "Unable to clone nginx-upload-progress repo, exit status = " $?
 
