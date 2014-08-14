@@ -88,7 +88,7 @@ Description: nginx web server with full set of core modules
    Proxy, Referer, Rewrite, SCGI, Split Clients, SSI, Upstream, User ID, UWSGI
  Optional HTTP Modules:
    Addition, Debug, GeoIP, Gzip Precompression, HTTP Sub, Image Filter, IPv6,
-   RealIP, Stub Status, WebDAV, XSLT, HTTP subs
+   RealIP, Stub Status, WebDAV, XSLT
  Mail Modules:
    Mail Core, IMAP, POP3, SMTP, SSL
  Third Party Modules:
@@ -266,7 +266,7 @@ Description: nginx web server with full set of core modules
    SPDY
  Optional HTTP Modules:
    Addition, Debug, GeoIP, Gzip Precompression, HTTP Sub, Image Filter, IPv6,
-   RealIP, Stub Status, XSLT
+   RealIP, Stub Status, XSLT, HTTP Subs
  Third Party Modules:
    Echo, Upstream Fair Queue, Cache Purge, Headers More, Upload Progress,
    Auth Pam

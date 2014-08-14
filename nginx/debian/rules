@@ -88,7 +88,6 @@ config.status.full: config.env.full config.sub config.guess
 	    --add-module=$(MODULESDIR)/nginx-echo \
 	    --add-module=$(MODULESDIR)/nginx-upstream-fair \
 	    --add-module=$(MODULESDIR)/nginx-dav-ext-module \
-	    --add-module=$(MODULESDIR)/nginx-http-subs \
             $(CONFIGURE_OPTS) >$@
 	touch $@
 
@@ -229,6 +228,7 @@ config.status.custom: config.env.custom config.sub config.guess
 	    --add-module=$(MODULESDIR)/nginx-cache-purge \
 	    --add-module=$(MODULESDIR)/nginx-upload-progress \
 	    --add-module=$(MODULESDIR)/headers-more-nginx-module \
+	    --add-module=$(MODULESDIR)/nginx-http-subs \
             $(CONFIGURE_OPTS) >$@
 	touch $@
 
