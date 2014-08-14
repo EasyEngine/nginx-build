@@ -40,6 +40,11 @@ Real name: Mitesh Shah
 Email address: Mr.Miteshah@gmail.com
 Comment: rtCamp Launchpad
 
+You selected this USER-ID:
+    "Mitesh Shah (rtCamp Launchpad) <Mr.Miteshah@gmail.com>"
+
+Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit? O
+
 generator a better chance to gain enough entropy.
 
 Not enough random bytes available.  Please do some other work to give
