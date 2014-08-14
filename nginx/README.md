@@ -5,11 +5,13 @@
 ```
 
 #### Execute nginx.sh
+
 ```bash
 ^_^[Mitesh@Shah:~]$ bash nginx.sh 1.6.1 Mr.Miteshah@gmail.com
 ```
 
 #### Modify Changelog
+
 ```bash
 ^_^[Mitesh@Shah:~]$ vim ~/PPA/nginx/nginx-1.6.1/debian/changelog
 nginx (1.6.1-1ppa~trusty) trusty; urgency=low
@@ -21,17 +23,20 @@ nginx (1.6.1-1ppa~trusty) trusty; urgency=low
 ```
 
 #### Copy Changelog to News.debian
+
 ```bash
 ^_^[Mitesh@Shah:~]$ cp -v ~/PPA/nginx/nginx-1.6.1/debian/changelog ~/PPA/nginx/nginx-1.6.1/debian/News.debian
 ```
 
 #### Make A Debian Source For Upload To PPA:
+
 ```bash
 ^_^[Mitesh@Shah:~]$ cd ~/PPA/nginx/nginx-1.6.1
 ^_^[Mitesh@Shah:~]$ debuild -S -k'387AFF02'
 ```
 
 #### Let Upload To LaunchPad:
+
 ```bash
 ^_^[Mitesh@Shah:~]$ dput ppa:rtcamp/nginx ~/PPA/nginx/nginx_1.6.1-1ppa~trusty_source.changes
 ```
