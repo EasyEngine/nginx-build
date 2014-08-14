@@ -27,6 +27,7 @@ nginx (1.6.1-1ppa~trusty) trusty; urgency=low
 
 #### Make A Debian Source For Upload To PPA:
 ```bash
+^_^[Mitesh@Shah:~]$ cd ~/PPA/nginx/nginx-1.6.1
 ^_^[Mitesh@Shah:~]$ debuild -S -k'387AFF02'
 ```
 
