@@ -1,1 +1,1 @@
-debian/build-custom/objs/nginx usr/sbin
+debian/build-pagespeed/objs/nginx usr/sbin

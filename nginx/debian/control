@@ -71,7 +71,7 @@ Package: nginx-full
 Architecture: any
 Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
 Provides: httpd, nginx
-Conflicts: nginx-extras, nginx-light, nginx-naxsi, nginx-custom
+Conflicts: nginx-extras, nginx-light, nginx-naxsi, nginx-custom, nginx-pagespeed
 Description: nginx web server with full set of core modules
  Nginx (engine x) is a web server created by Igor Sysoev and kindly provided to
  the open-source community. This server can be used as standalone HTTP server
@@ -99,7 +99,7 @@ Architecture: any
 Section: debug
 Priority: extra
 Depends: nginx-full (= ${binary:Version}), ${misc:Depends}
-Conflicts: nginx-extras-dbg, nginx-light-dbg, nginx-naxsi-dbg, nginx-custom-dbg
+Conflicts: nginx-extras-dbg, nginx-light-dbg, nginx-naxsi-dbg, nginx-custom-dbg, nginx-pagespeed-dbg
 Description: Debugging symbols for nginx (full)
  Nginx (engine x) is a web server created by Igor Sysoev and kindly provided to
  the open-source community. This server can be used as standalone HTTP server
@@ -114,7 +114,7 @@ Architecture: any
 Priority: extra
 Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
 Provides: httpd, nginx
-Conflicts: nginx-extras, nginx-full, nginx-naxsi, nginx-custom
+Conflicts: nginx-extras, nginx-full, nginx-naxsi, nginx-custom,nginx-pagespeed
 Description: nginx web server with minimal set of core modules
  Nginx (engine x) is a web server created by Igor Sysoev and kindly provided to
  the open-source community. This server can be used as standalone HTTP server
@@ -140,7 +140,7 @@ Architecture: any
 Section: debug
 Priority: extra
 Depends: nginx-light (= ${binary:Version}), ${misc:Depends}
-Conflicts: nginx-extras-dbg, nginx-full-dbg, nginx-naxsi-dbg, nginx-custom-dbg
+Conflicts: nginx-extras-dbg, nginx-full-dbg, nginx-naxsi-dbg, nginx-custom-dbg, nginx-pagespeed-dbg
 Description: Debugging symbols for nginx (light)
  Nginx (engine x) is a web server created by Igor Sysoev and kindly provided to
  the open-source community. This server can be used as standalone HTTP server
@@ -159,7 +159,7 @@ Depends: nginx-common (= ${source:Version}),
          ${perl:Depends},
          ${shlibs:Depends}
 Provides: httpd, nginx
-Conflicts: nginx-full, nginx-light, nginx-naxsi, nginx-custom
+Conflicts: nginx-full, nginx-light, nginx-naxsi, nginx-custom, nginx-pagespeed
 Description: nginx web server with full set of core modules and extras
  Nginx (engine x) is a web server created by Igor Sysoev and kindly provided to
  the open-source community. This server can be used as standalone HTTP server
@@ -191,7 +191,7 @@ Architecture: any
 Section: debug
 Priority: extra
 Depends: nginx-extras (= ${binary:Version}), ${misc:Depends}
-Conflicts: nginx-full-dbg, nginx-light-dbg, nginx-naxsi-dbg, nginx-custom-dbg
+Conflicts: nginx-full-dbg, nginx-light-dbg, nginx-naxsi-dbg, nginx-custom-dbg, nginx-pagespeed-dbg
 Description: Debugging symbols for nginx (extras)
  Nginx (engine x) is a web server created by Igor Sysoev and kindly provided to
  the open-source community. This server can be used as standalone HTTP server
@@ -207,7 +207,7 @@ Architecture: any
 Priority: extra
 Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
 Provides: httpd, nginx
-Conflicts: nginx-extras, nginx-full, nginx-light, nginx-custom
+Conflicts: nginx-extras, nginx-full, nginx-light, nginx-custom, nginx-pagespeed
 Description: nginx web server with naxsi 0.44 included
  Nginx (engine x) is a web server created by Igor Sysoev and kindly provided to
  the open-source community. This server can be used as standalone HTTP server
@@ -234,7 +234,7 @@ Architecture: any
 Section: debug
 Priority: extra
 Depends: nginx-naxsi (= ${binary:Version}), ${misc:Depends}
-Conflicts: nginx-extras-dbg, nginx-full-dbg, nginx-light-dbg, nginx-custom-dbg
+Conflicts: nginx-extras-dbg, nginx-full-dbg, nginx-light-dbg, nginx-custom-dbg, nginx-pagespeed-dbg
 Description: Debugging symbols for nginx (naxsi)
  Nginx (engine x) is a web server created by Igor Sysoev and kindly provided to
  the open-source community. This server can be used as standalone HTTP server
@@ -249,7 +249,7 @@ Package: nginx-custom
 Architecture: any
 Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
 Provides: httpd, nginx
-Conflicts: nginx-full, nginx-extras, nginx-light, nginx-naxsi
+Conflicts: nginx-full, nginx-extras, nginx-light, nginx-naxsi, nginx-pagespeed
 Description: nginx web server with full set of core modules
  Nginx (engine x) is a web server created by Igor Sysoev and kindly provided to
  the open-source community. This server can be used as standalone HTTP server
@@ -276,7 +276,7 @@ Architecture: any
 Section: debug
 Priority: extra
 Depends: nginx-custom (= ${binary:Version}), ${misc:Depends}
-Conflicts: nginx-full-dbg, nginx-extras-dbg, nginx-light-dbg, nginx-naxsi-dbg
+Conflicts: nginx-full-dbg, nginx-extras-dbg, nginx-light-dbg, nginx-naxsi-dbg, nginx-pagespeed-dbg
 Description: Debugging symbols for nginx (custom)
  Nginx (engine x) is a web server created by Igor Sysoev and kindly provided to
  the open-source community. This server can be used as standalone HTTP server
