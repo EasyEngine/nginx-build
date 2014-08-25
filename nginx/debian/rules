@@ -254,7 +254,7 @@ config.status.pagespeed: config.env.pagespeed config.sub config.guess
 	    --with-http_stub_status_module \
 	    --with-http_ssl_module \
 	    --with-http_xslt_module \
-        --with-http_spdy_module \
+      --with-http_spdy_module \
 	    --with-ipv6 \
 	    --with-sha1=/usr/include/openssl \
 	    --with-md5=/usr/include/openssl \
@@ -269,7 +269,7 @@ config.status.pagespeed: config.env.pagespeed config.sub config.guess
 	    --add-module=$(MODULESDIR)/nginx-upload-progress \
 	    --add-module=$(MODULESDIR)/headers-more-nginx-module \
 	    --add-module=$(MODULESDIR)/nginx-http-subs \
-	    --add-module=$(MODULESDIR)/nginx-pagespeed-${NPS_VERSION}-beta \
+	    --add-module=$(MODULESDIR)/nginx-pagespeed \
             $(CONFIGURE_OPTS) >$@
 	touch $@
 
