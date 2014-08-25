@@ -120,9 +120,10 @@ ppa_lib_echo "13/13 nginx-pagespeed"
 NPS_VERSION=1.8.31.4
 wget https://github.com/pagespeed/ngx_pagespeed/archive/release-${NPS_VERSION}-beta.zip
 tar -zxvf release-${NPS_VERSION}-beta.tar.gz
+mv ngx_pagespeed-release-${NPS_VERSION}-beta  nginx-pagespeed-${NPS_VERSION}-beta
 rm release-${NPS_VERSION}-beta.zip
 
-cd ngx_pagespeed-release-${NPS_VERSION}-beta/
+cd nginx-pagespeed-${NPS_VERSION}-beta/
 wget https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz
 tar -xzvf ${NPS_VERSION}.tar.gz
 rm ${NPS_VERSION}.tar.gz

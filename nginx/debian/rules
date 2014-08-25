@@ -269,7 +269,7 @@ config.status.pagespeed: config.env.pagespeed config.sub config.guess
 	    --add-module=$(MODULESDIR)/nginx-upload-progress \
 	    --add-module=$(MODULESDIR)/headers-more-nginx-module \
 	    --add-module=$(MODULESDIR)/nginx-http-subs \
-	    --add-module=$(MODULESDIR)/nginx-pagespeed \
+	    --add-module=$(MODULESDIR)/nginx-pagespeed-${NPS_VERSION}-beta \
             $(CONFIGURE_OPTS) >$@
 	touch $@
 
