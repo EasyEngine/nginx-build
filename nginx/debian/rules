@@ -15,6 +15,7 @@ BUILDDIR_light = $(CURDIR)/debian/build-light
 BUILDDIR_extras = $(CURDIR)/debian/build-extras
 BUILDDIR_naxsi = $(CURDIR)/debian/build-naxsi
 BUILDDIR_custom = $(CURDIR)/debian/build-custom
+BUILDDIR_pagespeed = $(CURDIR)/debian/build-pagespeed
 MODULESDIR = $(CURDIR)/debian/modules
 BASEDIR = $(CURDIR)
 
@@ -215,7 +216,7 @@ config.status.custom: config.env.custom config.sub config.guess
 	    --with-http_ssl_module \
 	    --with-http_sub_module \
 	    --with-http_xslt_module \
-        --with-http_spdy_module \
+      --with-http_spdy_module \
 	    --with-ipv6 \
 	    --with-sha1=/usr/include/openssl \
 	    --with-md5=/usr/include/openssl \
