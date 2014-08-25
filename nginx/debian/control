@@ -316,7 +316,7 @@ Package: nginx-pagespeed-dbg
 Architecture: any
 Section: debug
 Priority: extra
-Depends: nginx-custom (= ${binary:Version}), ${misc:Depends}
+Depends: nginx-pagespeed (= ${binary:Version}), ${misc:Depends}
 Conflicts: nginx-full-dbg, nginx-extras-dbg, nginx-light-dbg, nginx-naxsi-dbg, nginx-custom-dbg
 Description: Debugging symbols for nginx (custom)
  Nginx (engine x) is a web server created by Igor Sysoev and kindly provided to
