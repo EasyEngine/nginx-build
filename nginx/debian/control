@@ -318,12 +318,12 @@ Section: debug
 Priority: extra
 Depends: nginx-pagespeed (= ${binary:Version}), ${misc:Depends}
 Conflicts: nginx-full-dbg, nginx-extras-dbg, nginx-light-dbg, nginx-naxsi-dbg, nginx-custom-dbg
-Description: Debugging symbols for nginx (custom)
+Description: Debugging symbols for nginx (pagespeed)
  Nginx (engine x) is a web server created by Igor Sysoev and kindly provided to
  the open-source community. This server can be used as standalone HTTP server
  and as a reverse proxy server before some Apache or another big server to
  reduce load to backend servers by many concurrent HTTP-sessions.
  .
- This package provides debugging symbols for nginx-custom, to assist in debugging
+ This package provides debugging symbols for nginx-pagespeed, to assist in debugging
  issues that you may find. It should not be required for normal operation.
  
