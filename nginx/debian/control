@@ -285,3 +285,45 @@ Description: Debugging symbols for nginx (custom)
  .
  This package provides debugging symbols for nginx-custom, to assist in debugging
  issues that you may find. It should not be required for normal operation.
+
+Package: nginx-pagespeed
+Architecture: any
+Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
+Provides: httpd, nginx
+Conflicts: nginx-full, nginx-extras, nginx-light, nginx-naxsi, nginx-custom
+Description: nginx web server with full set of core modules
+ Nginx (engine x) is a web server created by Igor Sysoev and kindly provided to
+ the open-source community. This server can be used as standalone HTTP server
+ and as a reverse proxy server before some Apache or another big server to
+ reduce load to backend servers by many concurrent HTTP-sessions.
+ .
+ This package has the standard set of modules enabled.
+ .
+ MODULES INCLUDED:
+ Standard HTTP Modules:
+   Core, Access, Auth Basic, Auto Index, Browser, Charset, Empty GIF, FastCGI,
+   Geo, Gzip, Headers, Index, Limit Requests, Limit Zone, Log, Map, Memcached,
+   Proxy, Referer, Rewrite, SCGI, Split Clients, SSI, Upstream, User ID, UWSGI,
+   SPDY
+ Optional HTTP Modules:
+   Addition, Debug, GeoIP, Gzip Precompression, Image Filter, IPv6,
+   RealIP, Stub Status, XSLT, HTTP Subs, PageSpeed
+ Third Party Modules:
+   Echo, Upstream Fair Queue, Cache Purge, Headers More, Upload Progress,
+   Auth Pam
+
+Package: nginx-pagespeed-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends: nginx-custom (= ${binary:Version}), ${misc:Depends}
+Conflicts: nginx-full-dbg, nginx-extras-dbg, nginx-light-dbg, nginx-naxsi-dbg, nginx-custom-dbg
+Description: Debugging symbols for nginx (custom)
+ Nginx (engine x) is a web server created by Igor Sysoev and kindly provided to
+ the open-source community. This server can be used as standalone HTTP server
+ and as a reverse proxy server before some Apache or another big server to
+ reduce load to backend servers by many concurrent HTTP-sessions.
+ .
+ This package provides debugging symbols for nginx-custom, to assist in debugging
+ issues that you may find. It should not be required for normal operation.
+ 
