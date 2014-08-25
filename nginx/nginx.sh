@@ -118,7 +118,7 @@ git clone git://github.com/yaoweibin/ngx_http_substitutions_filter_module.git ng
 
 ppa_lib_echo "13/13 nginx-pagespeed"
 NPS_VERSION=1.8.31.4
-wget https://github.com/pagespeed/ngx_pagespeed/archive/release-${NPS_VERSION}-beta.zip
+wget https://github.com/pagespeed/ngx_pagespeed/archive/release-${NPS_VERSION}-beta.tar.gz
 tar -zxvf release-${NPS_VERSION}-beta.tar.gz
 mv ngx_pagespeed-release-${NPS_VERSION}-beta  nginx-pagespeed-${NPS_VERSION}-beta
 rm release-${NPS_VERSION}-beta.zip
