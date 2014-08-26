@@ -121,7 +121,7 @@ NPS_VERSION=1.8.31.4
 wget https://github.com/pagespeed/ngx_pagespeed/archive/release-${NPS_VERSION}-beta.tar.gz
 tar -zxvf release-${NPS_VERSION}-beta.tar.gz
 mv ngx_pagespeed-release-${NPS_VERSION}-beta  nginx-pagespeed
-rm release-${NPS_VERSION}-beta.zip
+rm release-${NPS_VERSION}-beta.tar.gz
 
 cd nginx-pagespeed
 wget -O psol.tar.gz https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz
