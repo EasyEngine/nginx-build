@@ -55,6 +55,8 @@ config.env.%:
 	cp -Pa $(CURDIR)/contrib $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/src $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/man $(BUILDDIR_$*)/
+	cd $(MODULESDIR)/nginx-pagespeed /
+	tar xvf $(MODULESDIR)/nginx_pagespeed/psol.tar.gz -C $(MODULESDIR)/nginx-pagespeed 
 
 config.status.full: config.env.full config.sub config.guess
 	cd $(BUILDDIR_full) && CFLAGS="$(CFLAGS)" CORE_LINK="$(LDFLAGS)" ./configure  \
@@ -234,10 +236,6 @@ config.status.custom: config.env.custom config.sub config.guess
 	touch $@
 
 config.status.pagespeed: config.env.pagespeed config.sub config.guess
-  cd $(MODULESDIR)/nginx_pagespeed && \
-	    curl https://dl.google.com/dl/page-speed/psol/1.8.31.4.tar.gz | tar xz && \
-	    perl -pi -e 'print "#ifdef LOG_INFO\n#undef LOG_INFO\n#endif\n\n#ifdef LOG_WARNING\n#undef LOG_WARNING\n#endif\n\n" if $$. == 1' \
-	    psol/include/third_party/chromium/src/base/logging.h
 	cd $(BUILDDIR_pagespeed) && CFLAGS="$(CFLAGS)" CORE_LINK="$(LDFLAGS)" ./configure  \
 	    --prefix=/etc/nginx \
 	    --conf-path=/etc/nginx/nginx.conf \
@@ -311,6 +309,7 @@ clean:
 	rm -f config.sub config.guess
 	dh_clean
 	rm -rf $(CURDIR)/debian/build-*
+	rm -rf $(MODULESDIR)/nginx-pagespeed/psol
 mime-types:
 	
 
@@ -358,3 +357,4 @@ binary-arch: install build-dbg
 binary: binary-indep binary-arch
 
 .PHONY: build clean binary-indep binary-arch binary install
+

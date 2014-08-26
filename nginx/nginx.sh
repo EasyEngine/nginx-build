@@ -123,6 +123,9 @@ tar -zxvf release-${NPS_VERSION}-beta.tar.gz
 mv ngx_pagespeed-release-${NPS_VERSION}-beta  nginx-pagespeed
 rm release-${NPS_VERSION}-beta.zip
 
+cd nginx-pagespeed
+wget -O psol.tar.gz https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz
+
 
 cp -av ~/PPA/nginx/modules ~/PPA/nginx/nginx-${NGINX_VERSION}/debian/ \
 || ppa_error "Unable to copy launchpad modules files, exit status = " $?
