@@ -326,4 +326,3 @@ Description: Debugging symbols for nginx (pagespeed)
  .
  This package provides debugging symbols for nginx-pagespeed, to assist in debugging
  issues that you may find. It should not be required for normal operation.
- 

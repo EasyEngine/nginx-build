@@ -234,7 +234,10 @@ config.status.custom: config.env.custom config.sub config.guess
 	touch $@
 
 config.status.pagespeed: config.env.pagespeed config.sub config.guess
-  cd $(BUILDDIR_pagespeed) && wget https://dl.google.com/dl/page-speed/psol/1.8.31.4.tar.gz && tar -xzvf 1.8.31.4.tar.gz
+  cd $(MODULESDIR)/nginx_pagespeed && \
+	    curl https://dl.google.com/dl/page-speed/psol/1.8.31.4.tar.gz | tar xz && \
+	    perl -pi -e 'print "#ifdef LOG_INFO\n#undef LOG_INFO\n#endif\n\n#ifdef LOG_WARNING\n#undef LOG_WARNING\n#endif\n\n" if $$. == 1' \
+	    psol/include/third_party/chromium/src/base/logging.h
 	cd $(BUILDDIR_pagespeed) && CFLAGS="$(CFLAGS)" CORE_LINK="$(LDFLAGS)" ./configure  \
 	    --prefix=/etc/nginx \
 	    --conf-path=/etc/nginx/nginx.conf \
