@@ -56,7 +56,7 @@ config.env.%:
 	cp -Pa $(CURDIR)/src $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/man $(BUILDDIR_$*)/
 	cd $(MODULESDIR)/nginx-pagespeed /
-	tar xvf $(MODULESDIR)/nginx_pagespeed/psol.tar.gz -C $(MODULESDIR)/nginx-pagespeed 
+	tar xvf $(MODULESDIR)/nginx-pagespeed/psol.tar.gz -C $(MODULESDIR)/nginx-pagespeed 
 
 config.status.full: config.env.full config.sub config.guess
 	cd $(BUILDDIR_full) && CFLAGS="$(CFLAGS)" CORE_LINK="$(LDFLAGS)" ./configure  \
