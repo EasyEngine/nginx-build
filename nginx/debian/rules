@@ -55,8 +55,8 @@ config.env.%:
 	cp -Pa $(CURDIR)/contrib $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/src $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/man $(BUILDDIR_$*)/
-	cd $(MODULESDIR)/nginx-pagespeed /
-	tar xvf $(MODULESDIR)/nginx-pagespeed/psol.tar.gz -C $(MODULESDIR)/nginx-pagespeed 
+	cd $(MODULESDIR)/ngx_pagespeed /
+	tar xvf $(MODULESDIR)/ngx_pagespeed/psol.tar.gz -C $(MODULESDIR)/ngx_pagespeed 
 
 config.status.full: config.env.full config.sub config.guess
 	cd $(BUILDDIR_full) && CFLAGS="$(CFLAGS)" CORE_LINK="$(LDFLAGS)" ./configure  \
@@ -272,7 +272,7 @@ config.status.pagespeed: config.env.pagespeed config.sub config.guess
 	    --add-module=$(MODULESDIR)/nginx-upload-progress \
 	    --add-module=$(MODULESDIR)/headers-more-nginx-module \
 	    --add-module=$(MODULESDIR)/nginx-http-subs \
-	    --add-module=$(MODULESDIR)/nginx-pagespeed \
+	    --add-module=$(MODULESDIR)/ngx_pagespeed \
             $(CONFIGURE_OPTS) >$@
 	touch $@
 
@@ -309,7 +309,8 @@ clean:
 	rm -f config.sub config.guess
 	dh_clean
 	rm -rf $(CURDIR)/debian/build-*
-	rm -rf $(MODULESDIR)/nginx-pagespeed/psol
+	rm -rf $(MODULESDIR)/ngx_pagespeed/psol
+	rm -rf $(MODULESDIR)/ngx_pagespeed/psol.tar.gz
 mime-types:
 	
 
