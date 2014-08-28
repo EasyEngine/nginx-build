@@ -55,7 +55,7 @@ config.env.%:
 	cp -Pa $(CURDIR)/contrib $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/src $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/man $(BUILDDIR_$*)/
-	cd $(MODULESDIR)/ngx_pagespeed /
+	ls $(MODULESDIR)/ngx_pagespeed /
 	tar xvf $(MODULESDIR)/ngx_pagespeed/psol.tar.gz -C $(MODULESDIR)/ngx_pagespeed 
 
 config.status.full: config.env.full config.sub config.guess
