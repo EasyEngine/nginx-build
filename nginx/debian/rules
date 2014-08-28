@@ -310,7 +310,6 @@ clean:
 	dh_clean
 	rm -rf $(CURDIR)/debian/build-*
 	rm -rf $(MODULESDIR)/ngx_pagespeed/psol
-	rm -rf $(MODULESDIR)/ngx_pagespeed/psol.tar.gz
 mime-types:
 	
 
