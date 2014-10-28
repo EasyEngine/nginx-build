@@ -2,9 +2,8 @@ etc/nginx
 etc/nginx/sites-available
 etc/nginx/sites-enabled
 etc/nginx/conf.d
-etc/nginx/common
 etc/ufw/applications.d
-etc/logrotate.d
 usr/share/nginx
 var/log/nginx
 var/lib/nginx
+var/www/html
