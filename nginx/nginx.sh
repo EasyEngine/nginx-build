@@ -39,8 +39,8 @@ cd nginx-${NGINX_VERSION} \
 || ppa_error "Unable to change directory, exit status = " $?
 
 # Lets start building
-ppa_lib_echo "Execute: dh_make --single --native --copyright gpl --email $EMAIL_ADDRESS , please wait"
-dh_make --single --native --copyright gpl --email $EMAIL_ADDRESS \
+ppa_lib_echo "Execute: dh_make --single --copyright gpl --email $EMAIL_ADDRESS --createorig, please wait"
+dh_make --single --copyright gpl --email $EMAIL_ADDRESS --createorig \
 || ppa_error "Unable to run dh_make command, exit status = " $?
 rm debian/*.ex debian/*.EX \
 || ppa_error "Unable to remove unwanted files, exit status = " $?
@@ -121,15 +121,15 @@ ppa_lib_echo "12/14 ngx_http_substitutions_filter_module"
 git clone git://github.com/yaoweibin/ngx_http_substitutions_filter_module.git \
 || ppa_error "Unable to clone ngx_http_substitutions_filter_module repo, exit status = " $?
 
-ppa_lib_echo "13/14 ngx_pagespeed"
-NPS_VERSION=1.8.31.4
-wget https://github.com/pagespeed/ngx_pagespeed/archive/release-${NPS_VERSION}-beta.tar.gz
-tar -zxvf release-${NPS_VERSION}-beta.tar.gz
-mv ngx_pagespeed-release-${NPS_VERSION}-beta  ngx_pagespeed
-rm release-${NPS_VERSION}-beta.tar.gz
+#ppa_lib_echo "13/14 ngx_pagespeed"
+#NPS_VERSION=1.8.31.4
+#wget https://github.com/pagespeed/ngx_pagespeed/archive/release-${NPS_VERSION}-beta.tar.gz
+#tar -zxvf release-${NPS_VERSION}-beta.tar.gz
+#mv ngx_pagespeed-release-${NPS_VERSION}-beta  ngx_pagespeed
+#rm release-${NPS_VERSION}-beta.tar.gz
 
-cd ngx_pagespeed
-wget -O psol.tar.gz https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz
+#cd ngx_pagespeed
+#wget -O psol.tar.gz https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz
 
 
 cp -av ~/PPA/nginx/modules ~/PPA/nginx/nginx-${NGINX_VERSION}/debian/ \
