@@ -2,7 +2,6 @@ Source: nginx
 Section: httpd
 Priority: optional
 Maintainer: Mitesh Shah <Mr.Miteshah@gmail.com>
-Build-Depends: autotools-dev,
 Uploaders: Gaurav Ashtikar <gaurav.astikar@rtcamp.com>
 Build-Depends: autotools-dev,
                debhelper (>= 9),
