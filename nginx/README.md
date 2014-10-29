@@ -16,16 +16,12 @@
 ^_^[Mitesh@Shah:~]$ vim ~/PPA/nginx/nginx-1.6.1/debian/changelog
 nginx (1.6.1-1ppa~trusty) trusty; urgency=low
 
-  * Added HTTP Subs Module in nginx-custom package.
+  * Remove nginx-naxsi package
+  * Remove nginx-pagespeed package
+  * Add ngx_pagespeed in nginx-extras package
 
- -- Mitesh Shah <Mr.Miteshah@gmail.com>   Thu, 14 Aug 2014 02:51:39 -0700
+ -- Mitesh Shah <Mr.Miteshah@gmail.com>   Wed, 29 Oct 2014 18:57:39 +0530
 
-```
-
-#### Copy Changelog to News.debian
-
-```bash
-^_^[Mitesh@Shah:~]$ cp -v ~/PPA/nginx/nginx-1.6.1/debian/changelog ~/PPA/nginx/nginx-1.6.1/debian/News.debian
 ```
 
 #### Make A Debian Source For Upload To PPA:
