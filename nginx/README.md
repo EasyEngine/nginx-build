@@ -32,7 +32,11 @@ nginx (1.6.1-1ppa~trusty) trusty; urgency=low
 
 ```bash
 ^_^[Mitesh@Shah:~]$ cd ~/PPA/nginx/nginx-1.6.1
+# For new nginx version 1.6.2
 ^_^[Mitesh@Shah:~]$ debuild -S -sa -k'387AFF02'
+# For minor changes on existing nginx 1.6.2
+# Download nginx_1.6.2.orig.tar.xz from launchpad
+^_^[Mitesh@Shah:~]$ debuild -S -k'387AFF02'
 ```
 
 #### Let Upload To LaunchPad:
