@@ -32,7 +32,7 @@ nginx (1.6.1-1ppa~trusty) trusty; urgency=low
 
 ```bash
 ^_^[Mitesh@Shah:~]$ cd ~/PPA/nginx/nginx-1.6.1
-^_^[Mitesh@Shah:~]$ debuild -S -k'387AFF02'
+^_^[Mitesh@Shah:~]$ debuild -S -sa -k'387AFF02'
 ```
 
 #### Let Upload To LaunchPad:
