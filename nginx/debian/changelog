@@ -1,9 +1,10 @@
 nginx (1.6.2-5ppa~utopic) utopic; urgency=high  
 
-  * Clone NGINX launchpad repo
-  * Minor Changes
+  * Remove nginx-naxsi package
+  * Remove nginx-pagespeed package
+  * Add ngx_pagespeed in nginx-extras package
 
- -- Mitesh Shah <Mr.Miteshah@gmail.com>  Tue, 28 Oct 2014 19:20:53 +0530
+ -- Mitesh Shah <Mr.Miteshah@gmail.com>  Tue, 29 Oct 2014 14:56:53 +0530
 
 nginx (1.6.2-4+utopic0) utopic; urgency=high  
 
