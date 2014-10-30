@@ -59,11 +59,13 @@ Depends: lsb-base (>= 3.2-14), ${misc:Depends}
 Replaces: nginx (<< 0.8.54-4),
           nginx-extras (<< 0.8.54-4),
           nginx-full (<< 0.8.54-4),
-          nginx-light (<< 0.8.54-4)
+          nginx-light (<< 0.8.54-4),
+          nginx-custom (<< 0.8.54-4)
 Breaks: nginx (<< 0.8.54-4),
         nginx-extras (<< 0.8.54-4),
         nginx-full (<< 0.8.54-4),
-        nginx-light (<< 0.8.54-4)
+        nginx-light (<< 0.8.54-4),
+        nginx-custom (<< 0.8.54-4)
 Suggests: fcgiwrap, nginx-doc, ssl-cert
 Description: small, powerful, scalable web/proxy server - common files
  Nginx ("engine X") is a high-performance web and reverse proxy server
@@ -78,7 +80,7 @@ Architecture: any
 Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
 Breaks: nginx (<< 1.4.5-1)
 Provides: httpd, httpd-cgi, nginx
-Conflicts: nginx-extras, nginx-light
+Conflicts: nginx-light, nginx-extras, nginx-custom
 Suggests: nginx-doc (= ${source:Version})
 Description: nginx web/proxy server (standard version)
  Nginx ("engine X") is a high-performance web and reverse proxy server
@@ -108,7 +110,7 @@ Architecture: any
 Section: debug
 Priority: extra
 Depends: nginx-full (= ${binary:Version}), ${misc:Depends}
-Conflicts: nginx-extras-dbg, nginx-light-dbg
+Conflicts: nginx-light-dbg, nginx-extras-dbg, nginx-custom-dbg
 Description: nginx web/proxy server (standard version) - debugging symbols
  Nginx ("engine X") is a high-performance web and reverse proxy server
  created by Igor Sysoev. It can be used both as a standalone web server
@@ -123,7 +125,7 @@ Priority: extra
 Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
 Breaks: nginx (<< 1.4.5-1)
 Provides: httpd, httpd-cgi, nginx
-Conflicts: nginx-extras, nginx-full
+Conflicts: nginx-full, nginx-extras, nginx-custom
 Suggests: nginx-doc (= ${source:Version})
 Description: nginx web/proxy server (basic version)
  Nginx ("engine X") is a high-performance web and reverse proxy server
@@ -146,7 +148,7 @@ Architecture: any
 Section: debug
 Priority: extra
 Depends: nginx-light (= ${binary:Version}), ${misc:Depends}
-Conflicts: nginx-extras-dbg, nginx-full-dbg
+Conflicts: nginx-full-dbg, nginx-extras-dbg, nginx-custom-dbg
 Description: nginx web/proxy server (basic version) - debugging symbols
  Nginx ("engine X") is a high-performance web and reverse proxy server
  created by Igor Sysoev. It can be used both as a standalone web server
@@ -165,7 +167,7 @@ Depends: nginx-common (= ${source:Version}),
          ${shlibs:Depends}
 Breaks: nginx (<< 1.4.5-1)
 Provides: httpd, httpd-cgi, nginx
-Conflicts: nginx-full, nginx-light
+Conflicts: nginx-full, nginx-light, nginx-custom
 Suggests: nginx-doc (= ${source:Version})
 Description: nginx web/proxy server (extended version)
  Nginx ("engine X") is a high-performance web and reverse proxy server
@@ -196,7 +198,7 @@ Architecture: any
 Section: debug
 Priority: extra
 Depends: nginx-extras (= ${binary:Version}), ${misc:Depends}
-Conflicts: nginx-full-dbg, nginx-light-dbg
+Conflicts: nginx-full-dbg, nginx-light-dbg, nginx-custom-dbg
 Description: nginx web/proxy server (extended version) - debugging symbols
  Nginx ("engine X") is a high-performance web and reverse proxy server
  created by Igor Sysoev. It can be used both as a standalone web server
@@ -205,3 +207,45 @@ Description: nginx web/proxy server (extended version) - debugging symbols
  This package provides debugging symbols for nginx-extras, to assist in
  debugging issues that you may find. It should not be required for normal
  operation.
+
+Package: nginx-custom
+Architecture: any
+Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
+Breaks: nginx (<< 1.4.5-1)
+Provides: httpd, httpd-cgi, nginx
+Conflicts: nginx-full, nginx-light, nginx-extras
+Suggests: nginx-doc (= ${source:Version})
+Description: nginx web/proxy server with custom setup
+ Nginx ("engine X") is a high-performance web and reverse proxy server
+ created by Igor Sysoev. It can be used both as a standalone web server
+ and as a proxy to reduce the load on back-end HTTP servers.
+ .
+ This package provides a version of nginx with the complete set of
+ standard modules.
+ .
+ STANDARD HTTP MODULES: Core, Access, Auth Basic, Auto Index, Browser,
+ Charset, Empty GIF, FastCGI, Geo, Gzip, Headers, Index, Limit Requests,
+ Limit Zone, Log, Map, Memcached, Proxy, Referer, Rewrite, SCGI,
+ Split Clients, SSI, Upstream, User ID, UWSGI.
+ .
+ OPTIONAL HTTP MODULES: Addition, Auth Request, Debug, GeoIP, Gzip
+ Precompression, HTTP Sub, Image Filter, IPv6, Real IP, Spdy, SSL, Stub Status,
+ Substitution, WebDAV, XSLT.
+ .
+ THIRD PARTY MODULES: Auth PAM, DAV Ext, Echo, HTTP Substitution Filter,
+ Upstream Fair Queue, Headers More, Cache Purge.
+
+Package: nginx-custom-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends: nginx-custom (= ${binary:Version}), ${misc:Depends}
+Conflicts: nginx-full-dbg, nginx-light-dbg, nginx-extras-dbg
+Description: nginx web/proxy server (standard version) - debugging symbols
+ Nginx ("engine X") is a high-performance web and reverse proxy server
+ created by Igor Sysoev. It can be used both as a standalone web server
+ and as a proxy to reduce the load on back-end HTTP server.
+ .
+ This package provides debugging symbols for nginx-custom, to assist in debugging
+ issues that you may find. It should not be required for normal operation.
+

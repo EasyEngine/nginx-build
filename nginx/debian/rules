@@ -9,7 +9,7 @@ debian_ldflags:=$(shell dpkg-buildflags --get LDFLAGS)
 DEBIAN_NGINX_PERL_LDFLAGS:= $(debian_ldflags)
 export DEBIAN_NGINX_PERL_LDFLAGS
 
-FLAVOURS := full light extras
+FLAVOURS := full light extras custom
 
 MODULESDIR = $(CURDIR)/debian/modules
 BASEDIR = $(CURDIR)
@@ -112,6 +112,23 @@ extras_configure_flags := \
 			--add-module=$(MODULESDIR)/nginx-upstream-fair \
 			--add-module=$(MODULESDIR)/ngx_http_substitutions_filter_module \
 			--add-module=$(MODULESDIR)/ngx_pagespeed
+
+custom_configure_flags := \
+			$(common_configure_flags) \
+			--with-http_addition_module \
+			--with-http_geoip_module \
+			--with-http_gzip_static_module \
+			--with-http_image_filter_module \
+			--with-http_spdy_module \
+			--with-http_sub_module \
+			--with-http_xslt_module \
+			--add-module=$(MODULESDIR)/headers-more-nginx-module \
+			--add-module=$(MODULESDIR)/nginx-auth-pam \
+			--add-module=$(MODULESDIR)/nginx-cache-purge \
+			--add-module=$(MODULESDIR)/nginx-echo \
+			--add-module=$(MODULESDIR)/nginx-upload-progress \
+			--add-module=$(MODULESDIR)/nginx-upstream-fair \
+			--add-module=$(MODULESDIR)/ngx_http_substitutions_filter_module
 
 %:
 	dh $@ --with systemd
