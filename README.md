@@ -99,6 +99,16 @@ sub   4096R/0B9C8B2D 2014-04-21
 
 ### Add GPG/PGP Keys To LaunchPad:
 
-1. https://launchpad.net/~miteshshah/+editpgpkeys
+1. https://launchpad.net/people/+me/+editpgpkeys
 1. Sign The Code Of Conduct
-1. Create A LaunchPad PPA:
+1. Create A LaunchPad PPA: nginx
+
+### Add dh-systemd dependency for ubuntu 12.04
+**Note:** Package dh-systemd is not available for Ubuntu 12.04, 
+So if you want to build NGINX package for Ubuntu 12.04 follow below steps
+
+1. https://launchpad.net/people/+me/+archive/ubuntu/nginx/+edit-dependencies
+2. Add PPA dependency: ~nginx/ubuntu/stable
+
+ ![ubuntu 12 04 nginx dh-systemd dependency](https://cloud.githubusercontent.com/assets/1223371/4859329/ec772128-60e8-11e4-9c1a-40196b2fbb86.png)
+3. Click on save button
