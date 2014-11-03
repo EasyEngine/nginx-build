@@ -39,7 +39,7 @@ init-system-helpers (1.7~1ppa~precise) precise; urgency=low
 ##### Let Upload To LaunchPad:
 
 ```bash
-^_^[Mitesh@Shah:~]$ dput ppa:rtcamp/nginx ~/PPA/init-system-helpers/init-system-helpers_1.7-1ppa~precise_source.changes
+^_^[Mitesh@Shah:~]$ dput ppa:rtcamp/nginx ~/PPA/init-system-helpers/init-system-helpers_1.7~1ppa~precise_source.changes
 ```
 
 ## Nginx package
