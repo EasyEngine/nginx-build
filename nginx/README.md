@@ -1,13 +1,13 @@
 #### Download nginx.sh
 
 ```bash
-^_^[Mitesh@Shah:~]$ wget -c https://raw.githubusercontent.com/rtCamp/launchpad/master/nginx.sh
+^_^[Mitesh@Shah:~]$ wget -c https://raw.githubusercontent.com/rtCamp/launchpad/master/ppa.sh
 ```
 
-#### Execute nginx.sh
+#### Execute ppa.sh
 
 ```bash
-^_^[Mitesh@Shah:~]$ bash nginx.sh 1.6.2 Mr.Miteshah@gmail.com
+^_^[Mitesh@Shah:~]$ bash ppa.sh nginx 1.6.2 Mr.Miteshah@gmail.com
 ```
 
 1. [init-system-helpers package] (https://github.com/rtCamp/launchpad/blob/nginx-official/nginx/README.md#init-system-helpers-package)
