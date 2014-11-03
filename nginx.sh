@@ -31,7 +31,7 @@ rm -rf /tmp/launchpad && git clone -b nginx-official https://github.com/MiteshSh
 || ppa_error "Unable to clone launchpad repo, exit status = " $?
 
 # Configure init-system-helpers for Ubuntu 12.04
-mkdir -p ~/PPA/init-system-helpers && cd ~/PPA/init-system-helpers
+mkdir -p ~/PPA/init-system-helpers && cd ~/PPA/init-system-helpers \
 || ppa_error "Unable to create ~/PPA/init-system-helpers, exit status = " $?
 
 # Clone init-system-helpers
@@ -41,9 +41,9 @@ cd init-system-helpers-1.7 && git checkout debian/1.7 \
 || ppa_error "Unable to checkout debian/1.7, exit status = " $?
 
 # Lets start building
-ppa_lib_echo "Execute: dh_make --single --copyright gpl --email $EMAIL_ADDRESS --createorig, please wait"
-dh_make --single --copyright gpl --email $EMAIL_ADDRESS --createorig \
-|| ppa_error "Unable to run dh_make command, exit status = " $?
+#ppa_lib_echo "Execute: dh_make --single --copyright gpl --email $EMAIL_ADDRESS --createorig, please wait"
+#dh_make --single --copyright gpl --email $EMAIL_ADDRESS --createorig \
+#|| ppa_error "Unable to run dh_make command, exit status = " $?
 
 # Let's copy files
 cp -av /tmp/launchpad/init-system-helpers/debian/* ~/PPA/init-system-helpers/init-system-helpers-1.7/debian/ \
