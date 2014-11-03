@@ -13,11 +13,6 @@
 1. [init-system-helpers package] (https://github.com/rtCamp/launchpad/blob/nginx-official/nginx/README.md#init-system-helpers-package)
 2. [Nginx package] (https://github.com/rtCamp/launchpad/blob/nginx-official/nginx/README.md#nginx-package)
 
-## init-system-helpers package
-
-
-
-
 ## Nginx package
 **Note:** Package dh-systemd is not available for Ubuntu 12.04
 If you want to build nginx for Ubuntu 12.04 then you have to first build [init-system-helpers packaage] (https://github.com/rtCamp/launchpad/blob/nginx-official/init-system-helpers/README.md)
