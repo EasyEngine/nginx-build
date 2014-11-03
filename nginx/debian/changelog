@@ -2,7 +2,8 @@ nginx (1.6.2-5ppa~utopic) utopic; urgency=high
 
   * Remove nginx-naxsi package
   * Remove nginx-pagespeed package
-  * Add ngx_pagespeed module in nginx-extras & nginx-custom package
+  * Add ngx_pagespeed module in nginx-extras
+  * Add nginx-lua and ngx-fancyindex in nginx-custom package
 
  -- Mitesh Shah <Mr.Miteshah@gmail.com>  Tue, 29 Oct 2014 14:56:53 +0530
 
