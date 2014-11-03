@@ -10,10 +10,11 @@
 ^_^[Mitesh@Shah:~]$ bash nginx.sh 1.6.2 Mr.Miteshah@gmail.com
 ```
 
-#### Build dh-systemd package for ubuntu 12.04
+## init-system-helpers package
 **Note:** Package dh-systemd is not available for Ubuntu 12.04
 Follow below steps to build init-system-helpers package for Ubuntu 12.04
-#### Modify Changelog
+
+##### Modify Changelog
 
 ```bash
 ^_^[Mitesh@Shah:~]$ vim ~/PPA/nginx/nginx-1.6.2/debian/changelog
@@ -25,20 +26,20 @@ init-system-helpers (1.7~1ppa~precise) precise; urgency=low
 
 ```
 
-#### Make A Debian Source For Upload To PPA:
+##### Make A Debian Source For Upload To PPA:
 ```bash
 ^_^[Mitesh@Shah:~]$ cd ~/PPA/init-system-helpers/init-system-helpers-1.7
 ^_^[Mitesh@Shah:~]$ debuild -S -k'387AFF02'
 ```
 
-#### Let Upload To LaunchPad:
+##### Let Upload To LaunchPad:
 
 ```bash
 ^_^[Mitesh@Shah:~]$ dput ppa:rtcamp/nginx ~/PPA/init-system-helpers/init-system-helpers_1.7-1ppa~precise_source.changes
 ```
 
-
-#### Modify Changelog
+## Nginx package
+##### Modify Changelog
 
 ```bash
 ^_^[Mitesh@Shah:~]$ vim ~/PPA/nginx/nginx-1.6.2/debian/changelog
@@ -52,7 +53,7 @@ nginx (1.6.2-1ppa~trusty) trusty; urgency=low
 
 ```
 
-#### Make A Debian Source For Upload To PPA:
+##### Make A Debian Source For Upload To PPA:
 
 ```bash
 ^_^[Mitesh@Shah:~]$ cd ~/PPA/nginx/nginx-1.6.2
@@ -63,7 +64,7 @@ nginx (1.6.2-1ppa~trusty) trusty; urgency=low
 ^_^[Mitesh@Shah:~]$ debuild -S -k'387AFF02'
 ```
 
-#### Let Upload To LaunchPad:
+##### Let Upload To LaunchPad:
 
 ```bash
 ^_^[Mitesh@Shah:~]$ dput ppa:rtcamp/nginx ~/PPA/nginx/nginx_1.6.2-1ppa~trusty_source.changes
