@@ -10,8 +10,8 @@
 ^_^[Mitesh@Shah:~]$ bash nginx.sh 1.6.2 Mr.Miteshah@gmail.com
 ```
 
-1. [[init-system-helpers package|https://github.com/rtCamp/launchpad/blob/nginx-official/nginx/README.md#init-system-helpers-package]]
-2. [[Nginx package|https://github.com/rtCamp/launchpad/blob/nginx-official/nginx/README.md#nginx-package]]
+1. [init-system-helpers package] (https://github.com/rtCamp/launchpad/blob/nginx-official/nginx/README.md#init-system-helpers-package)
+2. [Nginx package] (https://github.com/rtCamp/launchpad/blob/nginx-official/nginx/README.md#nginx-package)
 
 ## init-system-helpers package
 **Note:** Package dh-systemd is not available for Ubuntu 12.04
