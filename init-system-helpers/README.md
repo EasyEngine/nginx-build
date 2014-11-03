@@ -14,7 +14,7 @@
 ##### Modify Changelog
 
 ```bash
-^_^[Mitesh@Shah:~]$ vim ~/PPA/nginx/nginx-1.6.2/debian/changelog
+^_^[Mitesh@Shah:~]$ vim ~/PPA/init-system-helpers/init-system-helpers-1.7/debian/changelog
 init-system-helpers (1.7~1ppa~precise) precise; urgency=low
 
   * No-change backport to precise
