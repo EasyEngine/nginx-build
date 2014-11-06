@@ -51,8 +51,8 @@ if [ "$PACKAGE_NAME" = "init-system-helpers" ]; then
 	cp -av /tmp/launchpad/init-system-helpers/debian/* ~/PPA/init-system-helpers/init-system-helpers-1.7/debian/ \
 	|| ppa_error "Unable to copy launchpad debian files, exit status = " $?
 
-	cd ~/PPA/init-system-helpers/init-system-helpers-1.7/
-	vim debian/changelog
+	# Edit changelog
+	vim ~/PPA/init-system-helpers/init-system-helpers-1.7/debian/changelog
 
 
 elif [ "$PACKAGE_NAME" = "nginx" ]; then
@@ -162,6 +162,6 @@ elif [ "$PACKAGE_NAME" = "nginx" ]; then
 	cp -av ~/PPA/nginx/modules ~/PPA/nginx/nginx-${NGINX_VERSION}/debian/ \
 	|| ppa_error "Unable to copy launchpad modules files, exit status = " $?
 
-	cd ~/PPA/nginx/nginx-${NGINX_VERSION}/
-	vim debian/changelog
+	# Edit changelog
+	vim ~/PPA/nginx/nginx-${NGINX_VERSION}/debian/changelog
 fi
