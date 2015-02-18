@@ -150,7 +150,7 @@ elif [ "$PACKAGE_NAME" = "nginx" ]; then
 	|| ppa_error "Unable to clone ngx_http_substitutions_filter_module repo, exit status = " $?
 
 	ppa_lib_echo "13/14 ngx_pagespeed"
-	NPS_VERSION=1.9.32.2
+	NPS_VERSION=1.9.32.3
 	wget https://github.com/pagespeed/ngx_pagespeed/archive/release-${NPS_VERSION}-beta.tar.gz
 	tar -zxvf release-${NPS_VERSION}-beta.tar.gz
 	mv ngx_pagespeed-release-${NPS_VERSION}-beta  ngx_pagespeed
