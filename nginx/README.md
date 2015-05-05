@@ -45,3 +45,6 @@ nginx (1.6.2-1ppa~trusty) trusty; urgency=low
 ```bash
 ^_^[Mitesh@Shah:~]$ dput ppa:rtcamp/nginx ~/PPA/nginx/nginx_1.6.2-1ppa~trusty_source.changes
 ```
+
+##### Check Nginx Modules
+Refer: https://docs.google.com/spreadsheets/d/1cNIX6vmar9q7ci6_lXrM_pEsOyc1GrCzfXOiMdpf7Gg/
