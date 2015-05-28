@@ -10,7 +10,7 @@ EMAIL_ADDRESS=$3
 # Capture errors
 function ppa_error()
 {
-	echo "[ `date` ] $(tput setaf 1)$@$(tput sgr0)" 
+	echo "[ `date` ] $(tput setaf 1)$@$(tput sgr0)"
 	exit $2
 }
 
@@ -28,7 +28,7 @@ sudo apt-get -y install git dh-make devscripts debhelper dput gnupg-agent dh-sys
 
 # Lets Clone Launchpad repository
 ppa_lib_echo "Copy Launchpad Debian files, please wait"
-rm -rf /tmp/launchpad && git clone https://github.com/rtCamp/launchpad.git /tmp/launchpad \
+rm -rf /tmp/launchpad && git clone https://github.com/rtCamp/nginx-build.git /tmp/launchpad \
 || ppa_error "Unable to clone launchpad repo, exit status = " $?
 
 if [ "$PACKAGE_NAME" = "init-system-helpers" ]; then
