@@ -29,8 +29,21 @@ init-system-helpers (1.7~1ppa~precise) precise; urgency=low
 ^_^[Mitesh@Shah:~]$ debuild -S -k'387AFF02'
 ```
 
-##### Let Upload To LaunchPad:
+##### Let Upload:
+
+1. To Launchpad:
 
 ```bash
 ^_^[Mitesh@Shah:~]$ dput ppa:rtcamp/nginx ~/PPA/init-system-helpers/init-system-helpers_1.7~1ppa~precise_source.changes
+```
+
+2. To openSuse builder:
+a. Go to package page and click on add file
+b. Now upload following files:
+
+```
+init-system-helpers_1.7.dsc
+init-system-helpers_1.7.tar.gz
+init-system-helpers_1.7_source.build
+init-system-helpers_1.7_source.changes
 ```

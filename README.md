@@ -1,6 +1,13 @@
-# Setup Launchpad:
+# Nginx Debian Package build script
 
-## Create/Verify Account: 
+To build Nginx we can use one of the from following two services
+
+1. Launchpad
+2. openSuse build services
+
+# Launchpad:
+
+## Create/Verify Account:
 
 Create Account: https://launchpad.net/+login
 
@@ -20,7 +27,7 @@ Please select what kind of key you want:
    (2) DSA and Elgamal
    (3) DSA (sign only)
    (4) RSA (sign only)
-Your selection? 1 
+Your selection? 1
 
 RSA keys may be between 1024 and 4096 bits long.
 What keysize do you want? (2048) 4096
@@ -73,7 +80,7 @@ sub   4096R/0B9C8B2D 2014-04-21
 ### Making An ASCII Armored Version Your Public Key:
 
 ```bash
-^_^[Mitesh@Shah:~]$ gpg --output MiteshShah.asc --export -a $GPGKEY 
+^_^[Mitesh@Shah:~]$ gpg --output MiteshShah.asc --export -a $GPGKEY
 ```
 
 NOTE: In This Example $GPGKEY = 387AFF02
@@ -102,3 +109,31 @@ sub   4096R/0B9C8B2D 2014-04-21
 1. https://launchpad.net/people/+me/+editpgpkeys
 1. Sign The Code Of Conduct
 1. Create A LaunchPad PPA: nginx
+
+
+# openSuse build services:
+
+## Create/Verify account:
+Create account using Sign Up Link at: https://build.opensuse.org/
+
+After that check you INBOX and click of verification link
+
+## Create Project under account
+
+To create a home project, do following steps:
+
+1. create on your profile name
+2. After that click on Home Project on uppper right corner
+3. and Click on Create project
+
+## Create Packages
+
+To create package under your project:,
+1. Click on package create package
+2. Fill the package discription and save changes
+
+## Define Build targets
+
+To build package for specific distros you need to define build targets
+1. Click on build targets
+2. Then after that define your build targets and click on "Add selected repositories"
