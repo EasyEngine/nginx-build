@@ -144,12 +144,19 @@ elif [ "$PACKAGE_NAME" = "nginx" ]; then
 	git clone https://github.com/aperezdc/ngx-fancyindex.git ngx-fancyindex \
 	|| ppa_error "Unable to clone ngx-fancyindex repo, exit status = " $?
 
+	ppa_lib_echo "13/16 memc-nginx-module"
+	git clone https://github.com/openresty/memc-nginx-module.git memc-nginx-module \
+	|| ppa_error "Unable to clone memc-nginx-module repo, exit status = " $?
 
-	ppa_lib_echo "12/16 ngx_http_substitutions_filter_module"
+	ppa_lib_echo "14/16 srcache-nginx-module"
+	git clone https://github.com/openresty/srcache-nginx-module.git srcache-nginx-module \
+	|| ppa_error "Unable to clone srcache-nginx-module repo, exit status = " $?
+
+	ppa_lib_echo "15/16 ngx_http_substitutions_filter_module"
 	git clone git://github.com/yaoweibin/ngx_http_substitutions_filter_module.git \
 	|| ppa_error "Unable to clone ngx_http_substitutions_filter_module repo, exit status = " $?
 
-	ppa_lib_echo "13/16 ngx_pagespeed"
+	ppa_lib_echo "16/16 ngx_pagespeed"
 	NPS_VERSION=1.9.32.3
 	wget https://github.com/pagespeed/ngx_pagespeed/archive/release-${NPS_VERSION}-beta.tar.gz
 	tar -zxvf release-${NPS_VERSION}-beta.tar.gz
@@ -158,14 +165,6 @@ elif [ "$PACKAGE_NAME" = "nginx" ]; then
 
 	cd ngx_pagespeed
 	wget -O psol.tar.gz https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz
-
-	ppa_lib_echo "14/16 memc-nginx-module"
-	git clone https://github.com/openresty/memc-nginx-module.git memc-nginx-module \
-	|| ppa_error "Unable to clone memc-nginx-module repo, exit status = " $?
-
-	ppa_lib_echo "15/16 srcache-nginx-module"
-	git clone https://github.com/openresty/srcache-nginx-module.git srcache-nginx-module \
-	|| ppa_error "Unable to clone srcache-nginx-module repo, exit status = " $?
 
 	cp -av ~/PPA/nginx/modules ~/PPA/nginx/nginx-${NGINX_VERSION}/debian/ \
 	|| ppa_error "Unable to copy launchpad modules files, exit status = " $?
