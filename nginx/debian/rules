@@ -157,6 +157,7 @@ exp_configure_flags := \
 			--add-module=$(MODULESDIR)/redis2-nginx-module \
 			--add-module=$(MODULESDIR)/nginx-development-kit \
 			--add-module=$(MODULESDIR)/set-misc-nginx-module \
+			--add-module=$(MODULESDIR)/naxsi/naxsi_src \
 			--add-module=$(MODULESDIR)/ngx_pagespeed
 
 
