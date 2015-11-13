@@ -1,6 +1,7 @@
 nginx (1.9.6-2ppa) stable; urgency=high
 
   * Sync with upstream
+  * Updated PageSpeed version
 
  -- rtCamp <sys@rtcamp.com>  Thu, 13 Nov 2015 15:50:00 +0530
 
