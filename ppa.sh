@@ -28,7 +28,7 @@ sudo apt-get -y install git dh-make devscripts debhelper dput gnupg-agent dh-sys
 
 # Lets Clone Launchpad repository
 ppa_lib_echo "Copy Launchpad Debian files, please wait"
-rm -rf /tmp/launchpad && git clone -b master https://github.com/rtCamp/nginx-build.git /tmp/launchpad \
+rm -rf /tmp/launchpad && git clone -b mainline https://github.com/rtCamp/nginx-build.git /tmp/launchpad \
 || ppa_error "Unable to clone launchpad repo, exit status = " $?
 
 if [ "$PACKAGE_NAME" = "init-system-helpers" ]; then
