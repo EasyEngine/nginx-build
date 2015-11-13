@@ -1,3 +1,10 @@
+nginx (1.9.6-1ppa) stable; urgency=high
+
+  * Upstream update
+  * Enabled HTTP2 module and disabled SPDY module
+
+ -- rtCamp <sys@rtcamp.com>  Thu, 13 Nov 2015 15:00:00 +0530
+
 nginx (1.8.0-8ppa) stable; urgency=high
 
   * Added memc-nginx-module into nginx-custom package
