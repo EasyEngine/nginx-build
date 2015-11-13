@@ -1,5 +1,5 @@
 /var/log/nginx/*.log {
-	size 10M
+	weekly
 	missingok
 	rotate 52
 	compress
