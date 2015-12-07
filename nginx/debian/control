@@ -23,15 +23,16 @@ Standards-Version: 3.9.6.0
 Homepage: http://nginx.net
 Vcs-Git: git://anonscm.debian.org/collab-maint/nginx.git
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/nginx.git;a=summary
-XS-Testsuite: autopkgtest
 
 Package: nginx
 Architecture: all
 Depends: nginx-full   (>= ${source:Version}) |
+         nginx-custom  (>= ${source:Version}) |
          nginx-light  (>= ${source:Version}) |
          nginx-extras (>= ${source:Version}) ,
          nginx-full   (<< ${source:Version}.1~) |
          nginx-light  (<< ${source:Version}.1~) |
+         nginx-custom  (<< ${source:Version}.1~) |
          nginx-extras (<< ${source:Version}.1~) ,
          ${misc:Depends}
 Description: small, powerful, scalable web/proxy server
@@ -55,7 +56,7 @@ Description: small, powerful, scalable web/proxy server - documentation
 
 Package: nginx-common
 Architecture: all
-Depends: lsb-base (>= 3.2-14), ${misc:Depends}
+Depends: lsb-base (>= 3.2-14), ${misc:Depends}, python
 Replaces: nginx (<< 0.8.54-4),
           nginx-extras (<< 0.8.54-4),
           nginx-full (<< 0.8.54-4),
@@ -210,7 +211,10 @@ Description: nginx web/proxy server (extended version) - debugging symbols
 
 Package: nginx-custom
 Architecture: any
-Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
+Depends: nginx-common (= ${source:Version}),
+         ${misc:Depends},
+         ${perl:Depends},
+         ${shlibs:Depends}
 Breaks: nginx (<< 1.4.5-1)
 Provides: httpd, httpd-cgi, nginx
 Conflicts: nginx-full, nginx-light, nginx-extras
@@ -248,4 +252,3 @@ Description: nginx web/proxy server (standard version) - debugging symbols
  .
  This package provides debugging symbols for nginx-custom, to assist in debugging
  issues that you may find. It should not be required for normal operation.
-
