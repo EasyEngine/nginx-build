@@ -98,15 +98,9 @@ elif [ "$PACKAGE_NAME" = "nginx" ]; then
 	cp -av ~/PPA/nginx/modules/naxsi/naxsi_config/naxsi_core.rules ~/PPA/nginx/nginx-${NGINX_VERSION}/debian/conf/ \
 	|| ppa_error "Unable to copy naxsi files, exit status = " $?
 
-	ppa_lib_echo "3/19 nginx-auth-pam"
-	wget http://web.iti.upv.es/~sto/nginx/ngx_http_auth_pam_module-1.3.tar.gz \
-	|| ppa_error "Unable to download ngx_http_auth_pam_module-1.3.tar.gz, exit status = " $?
-	tar -zxvf ngx_http_auth_pam_module-1.3.tar.gz \
-	|| ppa_error "Unable to extract ngx_http_auth_pam_module-1.3, exit status = " $?
-	mv ngx_http_auth_pam_module-1.3 nginx-auth-pam \
-	|| ppa_error "Unable to rename ngx_http_auth_pam_module-1.3, exit status = " $?
-	rm ngx_http_auth_pam_module-1.3.tar.gz \
-	|| ppa_error "Unable to remove ngx_http_auth_pam_module-1.3.tar.gz, exit status = " $?
+	ppa_lib_echo "4/19 nginx-auth-pam"
+	git clone https://github.com/stogh/ngx_http_auth_pam_module.git nginx-auth-pam \
+	|| ppa_error "Unable to clone nginx-auth-pam repo, exit status = " $?
 
 	ppa_lib_echo "4/19 nginx-cache-purge"
 	git clone https://github.com/FRiCKLE/ngx_cache_purge.git nginx-cache-purge \
