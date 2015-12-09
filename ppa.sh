@@ -81,77 +81,30 @@ elif [ "$PACKAGE_NAME" = "nginx" ]; then
 	cp -av /tmp/launchpad/nginx/debian/* ~/PPA/nginx/nginx-${NGINX_VERSION}/debian/ \
 	|| ppa_error "Unable to copy launchpad debian files, exit status = " $?
 
-
-
 	# NGINX modules
 	ppa_lib_echo "Downloading NGINX modules, please wait"
 	mkdir ~/PPA/nginx/modules && cd ~/PPA/nginx/modules \
 	|| ppa_error "Unable to create ~/PPA/nginx/modules, exit status = " $?
 
-	ppa_lib_echo "1/19 headers-more-nginx-module"
-	git clone https://github.com/agentzh/headers-more-nginx-module.git \
-	|| ppa_error "Unable to clone headers-more-nginx-module repo, exit status = " $?
-
-	ppa_lib_echo "2/19 naxsi "
+	ppa_lib_echo "1/7 naxsi "
 	git clone https://github.com/nbs-system/naxsi \
 	|| ppa_error "Unable to clone naxsi repo, exit status = " $?
 	cp -av ~/PPA/nginx/modules/naxsi/naxsi_config/naxsi_core.rules ~/PPA/nginx/nginx-${NGINX_VERSION}/debian/conf/ \
 	|| ppa_error "Unable to copy naxsi files, exit status = " $?
 
-	ppa_lib_echo "4/19 nginx-auth-pam"
-	git clone https://github.com/stogh/ngx_http_auth_pam_module.git nginx-auth-pam \
-	|| ppa_error "Unable to clone nginx-auth-pam repo, exit status = " $?
-
-	ppa_lib_echo "4/19 nginx-cache-purge"
-	git clone https://github.com/FRiCKLE/ngx_cache_purge.git nginx-cache-purge \
-	|| ppa_error "Unable to clone nginx-cache-purge repo, exit status = " $?
-
-	ppa_lib_echo "5/19 nginx-dav-ext-module"
-	git clone https://github.com/arut/nginx-dav-ext-module.git \
-	|| ppa_error "Unable to clone nginx-dav-ext-module repo, exit status = " $?
-
-	ppa_lib_echo "6/19 nginx-development-kit"
-	git clone https://github.com/simpl/ngx_devel_kit.git nginx-development-kit \
-	|| ppa_error "Unable to clone nginx-development-kit repo, exit status = " $?
-
-	ppa_lib_echo "7/19  nginx-echo"
-	git clone https://github.com/agentzh/echo-nginx-module.git nginx-echo \
-	|| ppa_error "Unable to clone nginx-echo repo, exit status = " $?
-
-	ppa_lib_echo "8/19 nginx-http-push"
-	git clone https://github.com/slact/nginx_http_push_module.git nginx-http-push \
-	|| ppa_error "Unable to clone nginx-http-push repo, exit status = " $?
-
-	ppa_lib_echo "9/19 nginx-lua"
-	git clone https://github.com/chaoslawful/lua-nginx-module.git nginx-lua \
-	|| ppa_error "Unable to clone nginx-lua repo, exit status = " $?
-
-	ppa_lib_echo "10/19 nginx-upload-progress-module"
-	git clone https://github.com/masterzen/nginx-upload-progress-module.git nginx-upload-progress \
-	|| ppa_error "Unable to clone nginx-upload-progress repo, exit status = " $?
-
-	ppa_lib_echo "11/19 nginx-upstream-fair"
-	git clone https://github.com/gnosek/nginx-upstream-fair.git \
-	|| ppa_error "Unable to clone nginx-upstream-fair repo, exit status = " $?
-
-	ppa_lib_echo "12/19 ngx-fancyindex"
-	git clone https://github.com/aperezdc/ngx-fancyindex.git ngx-fancyindex \
-	|| ppa_error "Unable to clone ngx-fancyindex repo, exit status = " $?
-
-	ppa_lib_echo "13/19 memc-nginx-module"
+	ppa_lib_echo "2/7 memc-nginx-module"
 	git clone https://github.com/openresty/memc-nginx-module.git memc-nginx-module \
 	|| ppa_error "Unable to clone memc-nginx-module repo, exit status = " $?
 
-	ppa_lib_echo "14/19 srcache-nginx-module"
+	ppa_lib_echo "3/7 srcache-nginx-module"
 	git clone https://github.com/openresty/srcache-nginx-module.git srcache-nginx-module \
 	|| ppa_error "Unable to clone srcache-nginx-module repo, exit status = " $?
 
-
-	ppa_lib_echo "15/19 redis2-nginx-module"
+	ppa_lib_echo "4/7 redis2-nginx-module"
 	git clone https://github.com/openresty/redis2-nginx-module.git redis2-nginx-module \
 	|| ppa_error "Unable to clone redis2-nginx-module repo, exit status = " $?
 
-	ppa_lib_echo "16/19 HttpRedisModule"
+	ppa_lib_echo "5/7 HttpRedisModule"
 	wget http://people.freebsd.org/~osa/ngx_http_redis-0.3.7.tar.gz \
 	|| ppa_error "Unable to download ngx_http_redis-0.3.7.tar.gz, exit status = " $?
 	tar -zxvf ngx_http_redis-0.3.7.tar.gz \
@@ -161,16 +114,11 @@ elif [ "$PACKAGE_NAME" = "nginx" ]; then
 	rm ngx_http_redis-0.3.7.tar.gz \
 	|| ppa_error "ngx_http_redis-0.3.7.tar.gz, exit status = " $?
 
-
-	ppa_lib_echo "17/19 ngx_http_substitutions_filter_module"
-	git clone git://github.com/yaoweibin/ngx_http_substitutions_filter_module.git \
-	|| ppa_error "Unable to clone ngx_http_substitutions_filter_module repo, exit status = " $?
-
-	ppa_lib_echo "18/19 set-misc-nginx-module"
+	ppa_lib_echo "6/7 set-misc-nginx-module"
 	git clone https://github.com/openresty/set-misc-nginx-module.git set-misc-nginx-module \
 	|| ppa_error "Unable to clone set-misc-nginx-module repo, exit status = " $?
 
-	ppa_lib_echo "19/19 ngx_pagespeed"
+	ppa_lib_echo "7/7 ngx_pagespeed"
 	NPS_VERSION=1.9.32.10
 	wget https://github.com/pagespeed/ngx_pagespeed/archive/release-${NPS_VERSION}-beta.tar.gz
 	tar -zxvf release-${NPS_VERSION}-beta.tar.gz
@@ -180,7 +128,7 @@ elif [ "$PACKAGE_NAME" = "nginx" ]; then
 	cd ngx_pagespeed
 	wget -O psol.tar.gz https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz
 
-	cp -av ~/PPA/nginx/modules ~/PPA/nginx/nginx-${NGINX_VERSION}/debian/ \
+	cp -av ~/PPA/nginx/modules/* ~/PPA/nginx/nginx-${NGINX_VERSION}/debian/modules/ \
 	|| ppa_error "Unable to copy launchpad modules files, exit status = " $?
 
 	# Edit changelog
