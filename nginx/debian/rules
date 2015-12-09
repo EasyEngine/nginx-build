@@ -153,7 +153,14 @@ custom_configure_flags := \
 			--add-module=$(MODULESDIR)/nginx-lua \
 			--add-module=$(MODULESDIR)/nginx-upload-progress \
 			--add-module=$(MODULESDIR)/nginx-upstream-fair \
-			--add-module=$(MODULESDIR)/ngx_http_substitutions_filter_module
+			--add-module=$(MODULESDIR)/ngx_http_substitutions_filter_module \
+			--add-module=$(MODULESDIR)/memc-nginx-module \
+			--add-module=$(MODULESDIR)/srcache-nginx-module \
+			--add-module=$(MODULESDIR)/HttpRedisModule \
+			--add-module=$(MODULESDIR)/redis2-nginx-module \
+			--add-module=$(MODULESDIR)/nginx-development-kit \
+			--add-module=$(MODULESDIR)/set-misc-nginx-module \
+			--add-module=$(MODULESDIR)/ngx_pagespeed
 
 %:
 	dh $@ --with systemd
@@ -182,6 +189,8 @@ strip.arch.%:
 config.arch.%:
 	dh_testdir
 	mkdir -p $(BUILDDIR_$*)
+	ls $(MODULESDIR)/ngx_pagespeed
+	tar xvf $(MODULESDIR)/ngx_pagespeed/psol.tar.gz -C $(MODULESDIR)/ngx_pagespeed
 	cp -Pa $(CURDIR)/auto $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/conf $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/configure $(BUILDDIR_$*)/
@@ -192,3 +201,4 @@ config.arch.%:
 
 clean.%:
 	rm -rf $(BUILDDIR_$*)
+	rm -rf $(MODULESDIR)/ngx_pagespeed/psol
