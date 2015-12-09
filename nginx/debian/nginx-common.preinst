@@ -18,7 +18,7 @@ case "$1" in
     rm -f /etc/logrotate.d/nginx-full
     rm -f /etc/logrotate.d/nginx-light
     rm -f /etc/logrotate.d/nginx-extras
-    rm -f /etc/logrotate.d/nginx-custom
+	rm -f /etc/logrotate.d/nginx-custom
     rm -f /etc/logrotate.d/nginx-common
     ;;
 
@@ -31,7 +31,7 @@ case "$1" in
     rm -f /etc/logrotate.d/nginx-full
     rm -f /etc/logrotate.d/nginx-light
     rm -f /etc/logrotate.d/nginx-extras
-    rm -f /etc/logrotate.d/nginx-custom
+	rm -f /etc/logrotate.d/nginx-custom
     rm -f /etc/logrotate.d/nginx-common
     ;;
 

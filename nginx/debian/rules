@@ -124,34 +124,36 @@ extras_configure_flags := \
 custom_configure_flags := \
 			$(common_configure_flags) \
 			--with-http_addition_module \
+			--with-http_dav_module \
+			--with-http_flv_module \
 			--with-http_geoip_module \
 			--with-http_gunzip_module \
 			--with-http_gzip_static_module \
 			--with-http_image_filter_module \
+			--with-http_mp4_module \
+			--with-http_perl_module \
 			--with-http_random_index_module \
 			--with-http_secure_link_module \
 			--with-http_v2_module \
 			--with-http_sub_module \
 			--with-http_xslt_module \
+			--with-mail \
+			--with-mail_ssl_module \
 			--with-stream \
 			--with-stream_ssl_module \
 			--with-threads \
 			--add-module=$(MODULESDIR)/headers-more-nginx-module \
 			--add-module=$(MODULESDIR)/nginx-auth-pam \
 			--add-module=$(MODULESDIR)/nginx-cache-purge \
+			--add-module=$(MODULESDIR)/nginx-dav-ext-module \
+			--add-module=$(MODULESDIR)/nginx-development-kit \
 			--add-module=$(MODULESDIR)/nginx-echo \
 			--add-module=$(MODULESDIR)/ngx-fancyindex \
+			--add-module=$(MODULESDIR)/nginx-http-push \
 			--add-module=$(MODULESDIR)/nginx-lua \
 			--add-module=$(MODULESDIR)/nginx-upload-progress \
 			--add-module=$(MODULESDIR)/nginx-upstream-fair \
-			--add-module=$(MODULESDIR)/ngx_http_substitutions_filter_module \
-			--add-module=$(MODULESDIR)/memc-nginx-module \
-			--add-module=$(MODULESDIR)/srcache-nginx-module \
-			--add-module=$(MODULESDIR)/HttpRedisModule \
-			--add-module=$(MODULESDIR)/redis2-nginx-module \
-			--add-module=$(MODULESDIR)/nginx-development-kit \
-			--add-module=$(MODULESDIR)/set-misc-nginx-module \
-			--add-module=$(MODULESDIR)/ngx_pagespeed
+			--add-module=$(MODULESDIR)/ngx_http_substitutions_filter_module
 
 %:
 	dh $@ --with systemd
@@ -180,8 +182,6 @@ strip.arch.%:
 config.arch.%:
 	dh_testdir
 	mkdir -p $(BUILDDIR_$*)
-	ls $(MODULESDIR)/ngx_pagespeed
-	tar xvf $(MODULESDIR)/ngx_pagespeed/psol.tar.gz -C $(MODULESDIR)/ngx_pagespeed
 	cp -Pa $(CURDIR)/auto $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/conf $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/configure $(BUILDDIR_$*)/
@@ -192,4 +192,3 @@ config.arch.%:
 
 clean.%:
 	rm -rf $(BUILDDIR_$*)
-	rm -rf $(MODULESDIR)/ngx_pagespeed/psol

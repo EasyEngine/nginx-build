@@ -1,8 +1,9 @@
 Source: nginx
 Section: httpd
 Priority: optional
-Maintainer: Mitesh Shah <Mr.Miteshah@gmail.com>
-Uploaders: Gaurav Ashtikar <gaurav.astikar@rtcamp.com>
+Maintainer: System <sys@rtcamp.com>
+Uploaders: Gaurav Ashtikar <gaurav.astikar@rtcamp.com>,
+           Harshad Yeola <harshad.yeola@rtcamp.com>
 Build-Depends: autotools-dev,
                debhelper (>= 9),
                dh-systemd (>= 1.5),
@@ -27,13 +28,13 @@ Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/nginx.git;a=summar
 Package: nginx
 Architecture: all
 Depends: nginx-full   (>= ${source:Version}) |
-         nginx-custom  (>= ${source:Version}) |
          nginx-light  (>= ${source:Version}) |
-         nginx-extras (>= ${source:Version}) ,
+         nginx-extras (>= ${source:Version}) |
+         nginx-custom (>= ${source:Version}) ,
          nginx-full   (<< ${source:Version}.1~) |
          nginx-light  (<< ${source:Version}.1~) |
-         nginx-custom  (<< ${source:Version}.1~) |
-         nginx-extras (<< ${source:Version}.1~) ,
+         nginx-extras (<< ${source:Version}.1~) |
+         nginx-custom  (<< ${source:Version}.1~) ,
          ${misc:Depends}
 Description: small, powerful, scalable web/proxy server
  Nginx ("engine X") is a high-performance web and reverse proxy server
@@ -81,7 +82,7 @@ Architecture: any
 Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
 Breaks: nginx (<< 1.4.5-1)
 Provides: httpd, httpd-cgi, nginx
-Conflicts: nginx-light, nginx-extras, nginx-custom
+Conflicts: nginx-extras, nginx-light, nginx-custom
 Suggests: nginx-doc (= ${source:Version})
 Description: nginx web/proxy server (standard version)
  Nginx ("engine X") is a high-performance web and reverse proxy server
@@ -92,26 +93,26 @@ Description: nginx web/proxy server (standard version)
  standard modules included (but omitting some of those included in
  nginx-extra).
  .
- STANDARD HTTP MODULES: Core, Access, Auth Basic, Auto Index, Browser,
- Charset, Empty GIF, FastCGI, Geo, Gzip, Headers, Index, Limit Requests,
- Limit Zone, Log, Map, Memcached, Proxy, Referer, Rewrite, SCGI,
- Split Clients, SSI, Upstream, User ID, UWSGI.
+ STANDARD HTTP MODULES: Core, Access, Auth Basic, Auto Index, Browser, Empty
+ GIF, FastCGI, Geo, Limit Connections, Limit Requests, Map, Memcached, Proxy,
+ Referer, Rewrite, SCGI, Split Clients, UWSGI.
  .
- OPTIONAL HTTP MODULES: Addition, Auth Request, Debug, GeoIP, Gzip
- Precompression, HTTP Sub, Image Filter, IPv6, Real IP, Spdy, SSL, Stub Status,
- Substitution, WebDAV, XSLT.
+ OPTIONAL HTTP MODULES: Addition, Auth Request, Charset, WebDAV, GeoIP, Gunzip,
+ Gzip, Gzip Precompression, Headers, HTTP/2, Image Filter, Index, Log, Real IP,
+ SSI, SSL, Stream, Stub Status, Substitution, Thread Pool, Upstream, User ID,
+ XSLT.
  .
- MAIL MODULES: Mail Core, IMAP, POP3, SMTP, SSL.
+ MAIL MODULES: Mail Core, Auth HTTP, Proxy, SSL, IMAP, POP3, SMTP.
  .
- THIRD PARTY MODULES: Auth PAM, DAV Ext, Echo, HTTP Substitution Filter,
- Upstream Fair Queue.
+ THIRD PARTY MODULES: Auth PAM, DAV Ext, Echo, HTTP Substitutions, Upstream
+ Fair Queue.
 
 Package: nginx-full-dbg
 Architecture: any
 Section: debug
 Priority: extra
 Depends: nginx-full (= ${binary:Version}), ${misc:Depends}
-Conflicts: nginx-light-dbg, nginx-extras-dbg, nginx-custom-dbg
+Conflicts: nginx-extras-dbg, nginx-light-dbg, nginx-custom-dbg
 Description: nginx web/proxy server (standard version) - debugging symbols
  Nginx ("engine X") is a high-performance web and reverse proxy server
  created by Igor Sysoev. It can be used both as a standalone web server
@@ -126,7 +127,7 @@ Priority: extra
 Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
 Breaks: nginx (<< 1.4.5-1)
 Provides: httpd, httpd-cgi, nginx
-Conflicts: nginx-full, nginx-extras, nginx-custom
+Conflicts: nginx-extras, nginx-full, nginx-custom
 Suggests: nginx-doc (= ${source:Version})
 Description: nginx web/proxy server (basic version)
  Nginx ("engine X") is a high-performance web and reverse proxy server
@@ -136,11 +137,11 @@ Description: nginx web/proxy server (basic version)
  This package provides a very light version of nginx with only the
  minimal set of features and modules.
  .
- STANDARD HTTP MODULES: Core, Access, Auth Basic, Auto Index, Charset,
- Empty GIF, FastCGI, Gzip, Headers, Index, Log, Map, Proxy, Rewrite, Upstream.
+ STANDARD HTTP MODULES: Core, Access, Auth Basic, Auto Index, Empty GIF,
+ FastCGI, Map, Proxy, Rewrite.
  .
- OPTIONAL HTTP MODULES: Auth Request, Debug, Gzip Precompression, IPv6, Real
- Ip, SSL, Stub Status.
+ OPTIONAL HTTP MODULES: Auth Request, Charset, Gzip, Gzip Precompression,
+ Headers, Index, Log, Real IP, SSL, Stub Status, Upstream.
  .
  THIRD PARTY MODULES: Echo.
 
@@ -149,7 +150,7 @@ Architecture: any
 Section: debug
 Priority: extra
 Depends: nginx-light (= ${binary:Version}), ${misc:Depends}
-Conflicts: nginx-full-dbg, nginx-extras-dbg, nginx-custom-dbg
+Conflicts: nginx-extras-dbg, nginx-full-dbg, nginx-custom-dbg
 Description: nginx web/proxy server (basic version) - debugging symbols
  Nginx ("engine X") is a high-performance web and reverse proxy server
  created by Igor Sysoev. It can be used both as a standalone web server
@@ -179,20 +180,20 @@ Description: nginx web/proxy server (extended version)
  extra features and modules such as the Perl module, which allows the
  addition of Perl in configuration files.
  .
- STANDARD HTTP MODULES: Core, Access, Auth Basic, Auto Index, Browser,
- Charset, Empty GIF, FastCGI, Geo, Gzip, Headers, Index, Limit Requests,
- Limit Zone, Log, Map, Memcached, Proxy, Referer, Rewrite, SCGI,
- Split Clients, SSI, Upstream, User ID, UWSGI.
+ STANDARD HTTP MODULES: Core, Access, Auth Basic, Auto Index, Browser, Empty
+ GIF, FastCGI, Geo, Limit Connections, Limit Requests, Map, Memcached, Proxy,
+ Referer, Rewrite, SCGI, Split Clients, UWSGI.
  .
- OPTIONAL HTTP MODULES: Addition, Auth Request, Debug, Embedded Perl, FLV,
- GeoIP, Gzip Precompression, Image Filter, IPv6, MP4, Random Index, Real IP,
- Secure Link, Spdy, SSL, Stub Status, Substitution, WebDAV, XSLT.
+ OPTIONAL HTTP MODULES: Addition, Auth Request, Charset, WebDAV, FLV, GeoIP,
+ Gunzip, Gzip, Gzip Precompression, Headers, HTTP/2, Image Filter, Index, Log,
+ MP4, Embedded Perl, Random Index, Real IP, Secure Link, SSI, SSL, Stream,
+ Stub Status, Substitution, Thread Pool, Upstream, User ID, XSLT.
  .
- MAIL MODULES: Mail Core, IMAP, POP3, SMTP, SSL.
+ MAIL MODULES: Mail Core, Auth HTTP, Proxy, SSL, IMAP, POP3, SMTP.
  .
- THIRD PARTY MODULES: Auth PAM, Chunkin, DAV Ext, Echo, Embedded Lua,
- Fancy Index, HttpHeadersMore, HTTP Substitution Filter, http push,
- Nginx Development Kit, Upload Progress, Upstream Fair Queue.
+ THIRD PARTY MODULES: Auth PAM, Cache Purge, DAV Ext, Echo, Fancy Index,
+ Headers More, Embedded Lua, HTTP Push, HTTP Substitutions, Upload Progress,
+ Upstream Fair Queue.
 
 Package: nginx-extras-dbg
 Architecture: any
@@ -211,6 +212,7 @@ Description: nginx web/proxy server (extended version) - debugging symbols
 
 Package: nginx-custom
 Architecture: any
+Priority: extra
 Depends: nginx-common (= ${source:Version}),
          ${misc:Depends},
          ${perl:Depends},
@@ -219,25 +221,29 @@ Breaks: nginx (<< 1.4.5-1)
 Provides: httpd, httpd-cgi, nginx
 Conflicts: nginx-full, nginx-light, nginx-extras
 Suggests: nginx-doc (= ${source:Version})
-Description: nginx web/proxy server with custom setup
+Description: nginx web/proxy server (extended version)
  Nginx ("engine X") is a high-performance web and reverse proxy server
  created by Igor Sysoev. It can be used both as a standalone web server
- and as a proxy to reduce the load on back-end HTTP servers.
+ and as a proxy to reduce the load on back-end HTTP or mail servers.
  .
- This package provides a version of nginx with the complete set of
- standard modules.
+ This package provides a version of nginx with the standard modules, plus
+ extra features and modules such as the Perl module, which allows the
+ addition of Perl in configuration files.
  .
- STANDARD HTTP MODULES: Core, Access, Auth Basic, Auto Index, Browser,
- Charset, Empty GIF, FastCGI, Geo, Gzip, Headers, Index, Limit Requests,
- Limit Zone, Log, Map, Memcached, Proxy, Referer, Rewrite, SCGI,
- Split Clients, SSI, Upstream, User ID, UWSGI.
+ STANDARD HTTP MODULES: Core, Access, Auth Basic, Auto Index, Browser, Empty
+ GIF, FastCGI, Geo, Limit Connections, Limit Requests, Map, Memcached, Proxy,
+ Referer, Rewrite, SCGI, Split Clients, UWSGI.
  .
- OPTIONAL HTTP MODULES: Addition, Auth Request, Debug, GeoIP, Gzip
- Precompression, HTTP Sub, Image Filter, IPv6, Real IP, Spdy, SSL, Stub Status,
- Substitution, WebDAV, XSLT.
+ OPTIONAL HTTP MODULES: Addition, Auth Request, Charset, WebDAV, FLV, GeoIP,
+ Gunzip, Gzip, Gzip Precompression, Headers, HTTP/2, Image Filter, Index, Log,
+ MP4, Embedded Perl, Random Index, Real IP, Secure Link, SSI, SSL, Stream,
+ Stub Status, Substitution, Thread Pool, Upstream, User ID, XSLT.
  .
- THIRD PARTY MODULES: Auth PAM, DAV Ext, Echo, HTTP Substitution Filter,
- Upstream Fair Queue, Headers More, Cache Purge.
+ MAIL MODULES: Mail Core, Auth HTTP, Proxy, SSL, IMAP, POP3, SMTP.
+ .
+ THIRD PARTY MODULES: Auth PAM, Cache Purge, DAV Ext, Echo, Fancy Index,
+ Headers More, Embedded Lua, HTTP Push, HTTP Substitutions, Upload Progress,
+ Upstream Fair Queue.
 
 Package: nginx-custom-dbg
 Architecture: any
@@ -245,10 +251,11 @@ Section: debug
 Priority: extra
 Depends: nginx-custom (= ${binary:Version}), ${misc:Depends}
 Conflicts: nginx-full-dbg, nginx-light-dbg, nginx-extras-dbg
-Description: nginx web/proxy server (standard version) - debugging symbols
+Description: nginx web/proxy server (extended version) - debugging symbols
  Nginx ("engine X") is a high-performance web and reverse proxy server
  created by Igor Sysoev. It can be used both as a standalone web server
- and as a proxy to reduce the load on back-end HTTP server.
+ and as a proxy to reduce the load on back-end HTTP or mail servers.
  .
- This package provides debugging symbols for nginx-custom, to assist in debugging
- issues that you may find. It should not be required for normal operation.
+ This package provides debugging symbols for nginx-extras, to assist in
+ debugging issues that you may find. It should not be required for normal
+ operation.
