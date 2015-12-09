@@ -146,7 +146,6 @@ custom_configure_flags := \
 			--add-module=$(MODULESDIR)/nginx-auth-pam \
 			--add-module=$(MODULESDIR)/nginx-cache-purge \
 			--add-module=$(MODULESDIR)/nginx-dav-ext-module \
-			--add-module=$(MODULESDIR)/nginx-development-kit \
 			--add-module=$(MODULESDIR)/nginx-echo \
 			--add-module=$(MODULESDIR)/ngx-fancyindex \
 			--add-module=$(MODULESDIR)/nginx-http-push \
