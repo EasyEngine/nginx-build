@@ -1,0 +1,54 @@
+README for Modules versions
+---------------------------
+
+ This file lists third party modules built with nginx in Debian, homepage and
+ version.
+
+ headers-more-nginx-module
+  Homepage: https://github.com/agentzh/headers-more-nginx-module
+  Version: v0.25
+
+ nginx-development-kit
+  Homepage: https://github.com/simpl/ngx_devel_kit/
+  Version: v0.2.19
+
+ nginx-auth-pam
+  Homepage: https://github.com/stogh/ngx_http_auth_pam_module
+  Version: 1.4
+
+ nginx-echo
+  Homepage: https://github.com/agentzh/echo-nginx-module
+  Version: v0.57
+
+ nginx-lua
+  Homepage: https://github.com/openresty/lua-nginx-module
+  Version: v0.9.16
+
+ nginx-upstream-fair
+  Homepage: https://github.com/gnosek/nginx-upstream-fair
+  Version: a18b409
+
+ nginx-push
+  Homepage: https://github.com/slact/nginx_http_push_module
+  Version: 0.73
+
+ nginx-upload-progress
+  Homepage: https://github.com/masterzen/nginx-upload-progress-module
+    rm -r debian/nginx-upload-progress/test
+  Version: v0.9.1
+
+ nginx-cache-purge
+  Homepage: https://github.com/FRiCKLE/ngx_cache_purge/
+  Version: 2.3
+
+ nginx-dav-ext-module
+  Homepage: https://github.com/arut/nginx-dav-ext-module
+  Version: v0.0.3
+
+ ngx-fancyindex
+  Homepage: https://github.com/aperezdc/ngx-fancyindex
+  Version: v0.3.5
+
+ ngx_http_substitutions_filter_module
+  Homepage: https://github.com/yaoweibin/ngx_http_substitutions_filter_module
+  Version: v0.6.4
