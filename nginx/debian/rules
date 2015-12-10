@@ -21,7 +21,7 @@ ifeq ($(DEB_BUILD_ARCH),sparc)
 	debian_cflags += -m32 -mcpu=ultrasparc
 endif
 
-ifeq ($(DEB_BUILD_ARCH),x86_64)
+ifeq ($(DEB_BUILD_ARCH),amd64)
 	debian_cflags += -fPIC
 endif
 
