@@ -135,7 +135,6 @@ custom_configure_flags := \
 			--with-http_gzip_static_module \
 			--with-http_image_filter_module \
 			--with-http_mp4_module \
-			--with-http_perl_module \
 			--with-http_random_index_module \
 			--with-http_secure_link_module \
 			--with-http_v2_module \
