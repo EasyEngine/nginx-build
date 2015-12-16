@@ -80,6 +80,7 @@ full_configure_flags := \
 			--with-http_v2_module \
 			--with-http_sub_module \
 			--with-http_xslt_module \
+			--with-http_slice_module \
 			--with-stream \
 			--with-stream_ssl_module \
 			--with-mail \
@@ -107,6 +108,7 @@ extras_configure_flags := \
 			--with-http_v2_module \
 			--with-http_sub_module \
 			--with-http_xslt_module \
+			--with-http_slice_module \
 			--with-mail \
 			--with-mail_ssl_module \
 			--with-stream \
@@ -140,6 +142,7 @@ custom_configure_flags := \
 			--with-http_v2_module \
 			--with-http_sub_module \
 			--with-http_xslt_module \
+			--with-http_slice_module \
 			--with-mail \
 			--with-mail_ssl_module \
 			--with-stream \
