@@ -1,3 +1,9 @@
+nginx (1.9.9-3ppa) stable; urgency=medium
+
+  * Change package nginx-custom to nginx-mainline
+
+ -- Gaurav Astikar <gaurav.astikar@rtcamp.com>  Wed, 29 Dec 2015 13:30:00 +0530
+
 nginx (1.9.9-2ppa) stable; urgency=medium
 
   * Downgrade pagespeed to 1.9.32.6
