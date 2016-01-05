@@ -1,3 +1,9 @@
+nginx (1.9.9-6ppa) stable; urgency=medium
+
+  * Updated SSL cipher for more security and for HTTP2 support
+
+ -- Gaurav Astikar <gaurav.astikar@rtcamp.com>  Tue, 5 Jan 2016 18:31:44 +0530
+
 nginx (1.9.9-5ppa) stable; urgency=medium
 
   * Fix conflicts with nginx-mainline package
