@@ -1,6 +1,6 @@
-nginx (1.9.9-4ppa) stable; urgency=medium
+nginx (1.9.9-5ppa) stable; urgency=medium
 
-  * Fix issue for control file
+  * Fix conflicts with nginx-mainline package
 
  -- Gaurav Astikar <gaurav.astikar@rtcamp.com>  Wed, 29 Dec 2015 14:10:00 +0530
 
