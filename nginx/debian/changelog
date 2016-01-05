@@ -1,3 +1,9 @@
+nginx (1.8.0-9ppa) stable; urgency=high
+
+  * Improved SSL Cipher for better security and support with HTTP2
+
+ -- rtCamp <sys@rtcamp.com>  Tue, 5 Jan 2016 16:49:16 +0530
+
 nginx (1.8.0-8ppa) stable; urgency=high
 
   * Added memc-nginx-module into nginx-custom package
