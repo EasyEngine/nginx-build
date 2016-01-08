@@ -1,1 +1,0 @@
-conf debian/php@PHP_VERSION@-cgi.conf

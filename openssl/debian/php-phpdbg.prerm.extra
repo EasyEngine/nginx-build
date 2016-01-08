@@ -1,3 +1,0 @@
-if [ "$1" = "remove" -o "$1" = "deconfigure" ]; then
-    update-alternatives --remove phpdbg /usr/bin/phpdbg@PHP_VERSION@
-fi

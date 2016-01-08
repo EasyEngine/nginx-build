@@ -1,2 +1,0 @@
-interest-noawait /etc/php/@PHP_VERSION@/@sapi@/conf.d
-#EXTRA#

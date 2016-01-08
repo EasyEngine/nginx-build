@@ -1,3 +1,0 @@
-; configuration for php @extname@ module
-; priority=@priority@
-@extension@=@dsoname@.so

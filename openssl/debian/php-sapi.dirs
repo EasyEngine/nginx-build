@@ -1,4 +1,0 @@
-/etc/php/@PHP_VERSION@/@sapi@
-/etc/php/@PHP_VERSION@/@sapi@/conf.d
-/usr/lib/php/@PHP_VERSION@/sapi/
-#EXTRA#

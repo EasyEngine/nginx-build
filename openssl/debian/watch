@@ -1,5 +1,2 @@
 version=3
-opts=downloadurlmangle=s#/a/#/this/#,\
-filenamemangle=s#/get/(php-(7\.0\..*)\.tar\.xz)/.*#$1#,\
-dversionmangle=s/\+dfsg$// \
-https://secure.php.net/downloads.php /get/php-(7\.0\..*)\.tar\.xz/from/a/mirror debian
+opts=pgpsigurlmangle=s/$/.asc/ ftp://ftp.openssl.org/source/openssl-(\d+\.\d+\.\d+[a-z]?)\.tar\.gz

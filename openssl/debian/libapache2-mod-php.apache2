@@ -1,2 +1,0 @@
-mod debian/php@PHP_VERSION@.load
-mod debian/php@PHP_VERSION@.conf

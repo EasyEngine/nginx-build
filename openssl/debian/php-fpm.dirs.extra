@@ -1,3 +1,0 @@
-/etc/php/@PHP_VERSION@/fpm/pool.d
-/usr/sbin
-/usr/lib/php/@PHP_VERSION@
