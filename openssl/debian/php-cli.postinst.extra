@@ -1,0 +1,7 @@
+if [ "$1" = "configure" ]; then
+    for binary in php phar phar.phar; do
+        update-alternatives \
+	    --install /usr/bin/${binary} ${binary} /usr/bin/${binary}@PHP_VERSION@ @PHP_MAJOR@@PHP_MINOR@ \
+	    --slave /usr/share/man/man1/${binary}.1.gz ${binary}.1.gz /usr/share/man/man1/${binary}@PHP_VERSION@.1.gz
+    done
+fi
