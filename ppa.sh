@@ -54,7 +54,7 @@ if [ "$PACKAGE_NAME" = "init-system-helpers" ]; then
 	# Edit changelog
 	vim ~/PPA/init-system-helpers/init-system-helpers-1.7/debian/changelog
 
-if [ "$PACKAGE_NAME" = "openssl" ]; then
+elif [ "$PACKAGE_NAME" = "openssl" ]; then
 	# Configure init-system-helpers for Ubuntu 12.04
 	mkdir -p ~/PPA/$PACKAGE_NAME && cd ~/PPA/$PACKAGE_NAME \
 	|| ppa_error "Unable to create ~/PPA/$PACKAGE_NAME, exit status = " $?
