@@ -1,3 +1,9 @@
+openssl (1.0.2e-ppa1) stable; urgency=medium
+
+  * Backport EasyEngine
+
+ -- Gaurav Ashtikar <gaurav.astikar@rtcamp.com>  Fri, 08 Jan 2016 20:10:41 +0530
+
 openssl (1.0.2e-1+deb.sury.org~trusty+1) trusty; urgency=medium
 
   * Backport for Trusty Tahr (14.04 LTS)
@@ -193,7 +199,7 @@ openssl (1.0.1e-5) unstable; urgency=low
     ca-certificates has been split.
   * Fix libdoc-manpgs-pod-spell.patch to only fix spalling errors
   * Remove make-targets.patch.  It prevented the test dir from being cleaned.
-  * Update to a git snapshot of the OpenSSL_1_0_1-stable branch. 
+  * Update to a git snapshot of the OpenSSL_1_0_1-stable branch.
     - Fixes CVE-2013-6449 (Closes: #732754)
     - Fixes CVE-2013-6450
     - Drop patches ssltest_no_sslv2.patch cpuid.patch aesni-mac.patch
@@ -738,7 +744,7 @@ openssl (0.9.8g-11) unstable; urgency=low
  -- Christoph Martin <Christoph.Martin@Uni-Mainz.DE>  Thu, 17 Jul 2008 09:53:01 +0200
 
 openssl (0.9.8g-10.1) unstable; urgency=high
- 
+
   * Non-maintainer upload by the Security team.
   * Fix denial of service if the 'Server Key exchange message'
     is omitted from a TLS handshake which could lead to a client
@@ -747,7 +753,7 @@ openssl (0.9.8g-10.1) unstable; urgency=high
     done in Debian.
   * Fix double free in TLS server name extension which leads to a remote
     denial of service (CVE-2008-0891; Closes: #483379).
- 
+
  -- Nico Golde <nion@debian.org>  Tue, 27 May 2008 11:13:44 +0200
 
 openssl (0.9.8g-10) unstable; urgency=low
@@ -932,9 +938,9 @@ openssl (0.9.8e-5) unstable; urgency=low
 
 openssl (0.9.8e-4) unstable; urgency=low
 
-  * openssl should depend on libssl0.9.8 0.9.8e-1 since it 
+  * openssl should depend on libssl0.9.8 0.9.8e-1 since it
     uses some of the defines that changed to functions.
-    Other things build against libssl or libcrypto shouldn't 
+    Other things build against libssl or libcrypto shouldn't
     have this problem since they use the old headers.
     (Closes: #414283)
 
@@ -1076,7 +1082,7 @@ openssl (0.9.8b-1) unstable; urgency=low
       fetchmail ftpd-ssl proftpd proftpd-ldap proftpd-mysql proftpd-pgsql
   * libssl0.9.8.postinst: The check to see if something was installed
     wasn't working.
-  * libssl0.9.8.postinst: Add workaround to find the name of the init 
+  * libssl0.9.8.postinst: Add workaround to find the name of the init
     script for proftpd and dovecot.
   * libssl0.9.8.postinst: Use invoke-rc.d when it's available.
   * Change Standards-Version to 3.7.0:
@@ -1158,7 +1164,7 @@ openssl (0.9.8a-4) unstable; urgency=low
     had the location in the string wrong, powerpc had it missing.
   * Add includes for stddef to get size_t in md2.h, md4.h, md5.h,
     ripemd.h and sha.h.  (Closes: #333101)
-  * Run make test for each of the versions we build, make it 
+  * Run make test for each of the versions we build, make it
     not fail the build process if an error is found.
   * Add build dependency on bc for the regression tests.
 
@@ -1199,7 +1205,7 @@ openssl (0.9.8a-1) unstable; urgency=low
   * add swedish debconf template (closes: #330554)
 
   Kurt Roeckx:
-  * Also add noexecstack option for amd64, since it now has an 
+  * Also add noexecstack option for amd64, since it now has an
     executable stack with the assembler fixes for amd64.
 
  -- Christoph Martin <christoph.martin@uni-mainz.de>  Mon, 17 Oct 2005 17:01:06 +0200
@@ -1281,10 +1287,10 @@ openssl (0.9.7g-1) unstable; urgency=low
 openssl (0.9.7e-3) unstable; urgency=high
 
   * really fix der_chop. The fix from -1 was not really included (closes:
-    #281212) 
+    #281212)
   * still fixes security problem CAN-2004-0975 etc.
     - tempfile raise condition in der_chop
-    - Avoid a race condition when CRLs are checked in a multi threaded 
+    - Avoid a race condition when CRLs are checked in a multi threaded
       environment.
 
  -- Christoph Martin <christoph.martin@uni-mainz.de>  Thu, 16 Dec 2004 18:41:29 +0100
@@ -1294,7 +1300,7 @@ openssl (0.9.7e-2) unstable; urgency=high
   * fix perl path in der_chop and c_rehash (closes: #281212)
   * still fixes security problem CAN-2004-0975 etc.
     - tempfile raise condition in der_chop
-    - Avoid a race condition when CRLs are checked in a multi threaded 
+    - Avoid a race condition when CRLs are checked in a multi threaded
       environment.
 
  -- Christoph Martin <christoph.martin@uni-mainz.de>  Sun, 14 Nov 2004 20:16:21 +0100
@@ -1302,7 +1308,7 @@ openssl (0.9.7e-2) unstable; urgency=high
 openssl (0.9.7e-1) unstable; urgency=high
 
   * SECURITY UPDATE: fix insecure temporary file handling
-  * apps/der_chop: 
+  * apps/der_chop:
     - replaced $$-style creation of temporary files with
       File::Temp::tempfile()
     - removed unused temporary file name in do_certificate()
@@ -1310,12 +1316,12 @@ openssl (0.9.7e-1) unstable; urgency=high
     CAN-2004-0975 (closes: #278260)
   * fix ASN1_STRING_to_UTF8 with UTF8 (closes: #260357)
   * New upstream release with security fixes
-    - Avoid a race condition when CRLs are checked in a multi threaded 
+    - Avoid a race condition when CRLs are checked in a multi threaded
       environment.
     - Various fixes to s3_pkt.c so alerts are sent properly.
     - Reduce the chances of duplicate issuer name and serial numbers (in
       violation of RFC3280) using the OpenSSL certificate creation
-      utilities. 
+      utilities.
   * depends openssl on perl-base instead of perl (closes: #280225)
   * support powerpc64 in Configure (closes: #275224)
   * include cs translation (closes: #273517)
@@ -1389,7 +1395,7 @@ openssl (0.9.7c-4) unstable; urgency=low
 openssl (0.9.7c-3) unstable; urgency=low
 
   * fix POSIX conformance for head in libssl0.9.7.postinst (closes:
-    #214700) 
+    #214700)
 
  -- Christoph Martin <christoph.martin@uni-mainz.de>  Wed,  8 Oct 2003 14:02:38 +0200
 
@@ -1479,13 +1485,13 @@ openssl (0.9.7-4) unstable; urgency=low
 openssl (0.9.7-3) unstable; urgency=low
 
   * enable build of ultrasparc code on non ultrasparc machines (closes:
-    #177024) 
+    #177024)
 
  -- Christoph Martin <christoph.martin@uni-mainz.de>  Fri, 17 Jan 2003 08:22:13 +0100
 
 openssl (0.9.7-2) unstable; urgency=low
 
-  * include changes between 0.9.6g-9 and -10 
+  * include changes between 0.9.6g-9 and -10
     * fix problem in build-process on i386 with libc6 version number
 
  -- Christoph Martin <christoph.martin@uni-mainz.de>  Mon, 13 Jan 2003 14:26:56 +0100
@@ -1587,7 +1593,7 @@ openssl (0.9.6d-1) unstable; urgency=low
   * new upstream (minor) version
   * includes Configure lines for debian-*bsd-* (closes: #130413)
   * fix wrong prototype for BN_pseudo_rand_range in BN_rand(3ssl) (closes:
-    #144586) 
+    #144586)
   * fix typos in package description (closes: #141469)
   * fix typo in SSL_CTX_set_cert_store manpage (closes: #135297)
 
@@ -1603,7 +1609,7 @@ openssl (0.9.6c-1) unstable; urgency=low
 
   * new upstream version with a lot of bugfixes
   * remove directory /usr/include/openssl from openssl package (closes:
-    bug #121226)  
+    bug #121226)
   * remove selfdepends from libssl0.9.6
   * link openssl binary shared again
 
@@ -1618,7 +1624,7 @@ openssl (0.9.6b-4) unstable; urgency=low
 
 openssl (0.9.6b-3) unstable; urgency=low
 
-  * disable idea, mdc2 and rc5 because they are not free (closes: #65368) 
+  * disable idea, mdc2 and rc5 because they are not free (closes: #65368)
   * ready to be moved from nonus to main
 
  -- Christoph Martin <christoph.martin@uni-mainz.de>  Wed, 21 Nov 2001 17:51:41 +0100
@@ -1632,11 +1638,11 @@ openssl (0.9.6b-2) unstable; urgency=high
 
 openssl (0.9.6b-1) unstable; urgency=medium
 
-  * new upstream fixes some security issues (closes: #105835, #100146) 
+  * new upstream fixes some security issues (closes: #105835, #100146)
   * added support for s390 (closes: #105681)
   * added support for sh (closes: #100003)
   * change priority of libssl096 to standard as ssh depends on it (closes:
-    #105440) 
+    #105440)
   * don't optimize for i486 to support i386. (closes: #104127, #82194)
 
  -- Christoph Martin <christoph.martin@uni-mainz.de>  Fri, 20 Jul 2001 15:52:42 +0200
@@ -1652,7 +1658,7 @@ openssl (0.9.6a-2) unstable; urgency=medium
 
   * change Architecture of ssleay from any to all (closes: #92913)
   * depend libssl-dev on the exact same version of libssl0.9.6 (closes:
-    #88939) 
+    #88939)
   * remove lib{crypto,ssl}.a from openssl (closes: #93666)
   * rebuild with newer gcc to fix atexit problem (closes: #94036)
 
@@ -1698,7 +1704,7 @@ openssl (0.9.5a-5) unstable; urgency=low
 
 openssl (0.9.5a-4) unstable; urgency=low
 
-  * include edg_rand_bytes patch from and for apache-ssl 
+  * include edg_rand_bytes patch from and for apache-ssl
 
  -- Christoph Martin <christoph.martin@uni-mainz.de>  Sat, 23 Sep 2000 16:48:06 +0200
 
@@ -1713,8 +1719,8 @@ openssl (0.9.5a-3) unstable; urgency=low
 
 openssl (0.9.5a-2) unstable; urgency=low
 
-  * try to fix the sharedlib problem. change soname of library 
-  (closes: Bug#4622, #66102, #66538, #66123) 
+  * try to fix the sharedlib problem. change soname of library
+  (closes: Bug#4622, #66102, #66538, #66123)
 
  -- Christoph Martin <christoph.martin@uni-mainz.de>  Wed, 12 Jul 2000 03:26:30 +0200
 
@@ -1733,7 +1739,7 @@ openssl (0.9.5a-1) unstable; urgency=low
 openssl (0.9.4-5) frozen unstable; urgency=medium
 
   * cleanup of move of doc directories to /usr/share/doc (closes:
-    Bug#56430) 
+    Bug#56430)
   * lintian issues (closes: Bug#49358)
   * move demos from openssl to libssl09-dev (closes: Bug#59201)
   * move to debhelpers
@@ -1786,7 +1792,7 @@ openssl (0.9.2b-2) unstable; urgency=low
   * added convenience package ssleay to help upgrade to openssl (Bug
     #37185, #37623, #36326)
   * added some missing dependencies from libssl09 (Bug #36681, #35867,
-    #36326) 
+    #36326)
   * move lib*.so to libssl09-dev (Bug #36761)
   * corrected version numbers of library files
   * introduce link from /usr/lib/ssl to /etc/ssl (Bug #36710)
