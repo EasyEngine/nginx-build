@@ -74,11 +74,11 @@ elif [ "$PACKAGE_NAME" = "openssl" ]; then
 	#|| ppa_error "Unable to run dh_make command, exit status = " $?
 
 	# Let's copy files
-	cp -av /tmp/launchpad/openssl/debian ~/PPA/init-system-helpers/openssl-${NGINX_VERSION}/ \
+	cp -av /tmp/launchpad/openssl/debian ~/PPA/openssl/openssl-${NGINX_VERSION}/ \
 	|| ppa_error "Unable to copy openssl debian files, exit status = " $?
 
 	# Edit changelog
-	vim ~/PPA/init-system-helpers/openssl-${NGINX_VERSION}/debian/changelog
+	vim ~/PPA/openssl/openssl-${NGINX_VERSION}/debian/changelog
 
 elif [ "$PACKAGE_NAME" = "nginx" ]; then
 
