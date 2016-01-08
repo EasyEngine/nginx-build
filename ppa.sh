@@ -24,7 +24,7 @@ function ppa_lib_echo()
 ppa_lib_echo "Execute: apt-get update, please wait"
 sudo apt-get update || ppa_error "Unable to update packages, exit status = " $?
 ppa_lib_echo "Installing required packages, please wait"
-sudo apt-get -y install git dh-make devscripts debhelper dput gnupg-agent dh-systemd || ppa_error "Unable to install packages, exit status = " $?
+sudo apt-get -y install git dh-make devscripts debhelper dput gnupg-agent dh-systemd m4 bc dpkg-dev || ppa_error "Unable to install packages, exit status = " $?
 
 # Lets Clone Launchpad repository
 ppa_lib_echo "Copy Launchpad Debian files, please wait"
@@ -54,6 +54,31 @@ if [ "$PACKAGE_NAME" = "init-system-helpers" ]; then
 	# Edit changelog
 	vim ~/PPA/init-system-helpers/init-system-helpers-1.7/debian/changelog
 
+if [ "$PACKAGE_NAME" = "openssl" ]; then
+	# Configure init-system-helpers for Ubuntu 12.04
+	mkdir -p ~/PPA/$PACKAGE_NAME && cd ~/PPA/$PACKAGE_NAME \
+	|| ppa_error "Unable to create ~/PPA/$PACKAGE_NAME, exit status = " $?
+	https://www.openssl.org/source/openssl-1.0.2e.tar.gz
+	# Clone init-system-helpers
+	ppa_lib_echo "Downloading OpenSSL, please wait"
+	wget -c https://www.openssl.org/source/openssl-${NGINX_VERSION}.tar.gz \
+	|| ppa_error "Unable to download openssl-${NGINX_VERSION}.tar.gz, exit status = " $?
+	tar -zxvf openssl-${NGINX_VERSION}.tar.gz \
+	|| ppa_error "Unable to extract nginx, exit status = " $?
+	cd openssl-${NGINX_VERSION} \
+	|| ppa_error "Unable to change directory, exit status = " $?
+
+	# Lets start building
+	#ppa_lib_echo "Execute: dh_make --single --copyright gpl --email $EMAIL_ADDRESS --createorig, please wait"
+	#dh_make --single --copyright gpl --email $EMAIL_ADDRESS --createorig \
+	#|| ppa_error "Unable to run dh_make command, exit status = " $?
+
+	# Let's copy files
+	cp -av /tmp/launchpad/openssl/debian ~/PPA/init-system-helpers/openssl-${NGINX_VERSION}/ \
+	|| ppa_error "Unable to copy openssl debian files, exit status = " $?
+
+	# Edit changelog
+	vim ~/PPA/init-system-helpers/openssl-${NGINX_VERSION}/debian/changelog
 
 elif [ "$PACKAGE_NAME" = "nginx" ]; then
 
