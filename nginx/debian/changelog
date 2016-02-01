@@ -1,74 +1,45 @@
-nginx (1.9.9-7ppa) stable; urgency=medium
+nginx (1.9.10-1ppa) stable; urgency=medium
 
-  * Added OpenSSL 1.0.2 dependency
+  * Resync PPA with Ubuntu.
 
- -- Gaurav Astikar <gaurav.astikar@rtcamp.com>  Tue, 11 Jan 2016 18:47:44 +0530
+ -- Gaurav Ashtikar <gaurav.astikar@rtcamp.com>  Mon, 1 Feb 2016 14:15:22 +0530
 
-nginx (1.9.9-6ppa) stable; urgency=medium
+nginx (1.9.10-1+trusty0) trusty; urgency=medium
 
-  * Updated SSL cipher for more security and for HTTP2 support
+  * Resync PPA with Debian.
+  * Upload for trusty.
 
- -- Gaurav Astikar <gaurav.astikar@rtcamp.com>  Tue, 5 Jan 2016 18:31:44 +0530
+ -- Thomas Ward <teward@ubuntu.com>  Tue, 26 Jan 2016 18:28:22 -0500
 
-nginx (1.9.9-5ppa) stable; urgency=medium
+nginx (1.9.10-1) unstable; urgency=medium
 
-  * Fix conflicts with nginx-mainline package
+  [ Christos Trochalakis ]
+  * New upstream release (1.9.10) (Closes: #812806)
+  * debian/control:
+    + Drop python dependency from nginx-common. (Closes: #808699)
 
- -- Gaurav Astikar <gaurav.astikar@rtcamp.com>  Wed, 29 Dec 2015 14:10:00 +0530
+ -- Christos Trochalakis <yatiohi@ideopolis.gr>  Tue, 26 Jan 2016 20:12:06 +0200
 
-nginx (1.9.9-3ppa) stable; urgency=medium
+nginx (1.9.9-1) unstable; urgency=medium
 
-  * Change package nginx-custom to nginx-mainline
+  [ Michael Lustfield ]
+  * debian/nginx-common.nginx.logrotate:
+    + Switching logrotate to 14 days. (Closes: #805322)
 
- -- Gaurav Astikar <gaurav.astikar@rtcamp.com>  Wed, 29 Dec 2015 13:30:00 +0530
+  [ Christos Trochalakis ]
+  * New upstream release (1.9.9).
+  * debian/modules/nginx-lua:
+    + Update nginx-lua to v0.10.0.
 
-nginx (1.9.9-2ppa) stable; urgency=medium
+ -- Christos Trochalakis <yatiohi@ideopolis.gr>  Thu, 14 Jan 2016 10:40:35 +0200
 
-  * Downgrade pagespeed to 1.9.32.6
+nginx (1.9.6-2) unstable; urgency=medium
 
- -- Gaurav Astikar <gaurav.astikar@rtcamp.com>  Wed, 16 Dec 2015 13:00:00 +0530
+  [ Christos Trochalakis]
+  * debian/modules/nginx-lua:
+    + Update nginx-lua to v0.9.19 fixing HTTP/2 compatibility.
 
-nginx (1.9.9-1ppa) stable; urgency=medium
-
-  * Added ngx_http_slice_module
-
- -- Gaurav Astikar <gaurav.astikar@rtcamp.com>  Wed, 16 Dec 2015 13:00:00 +0530
-
-nginx (1.9.7-1ppa) stable; urgency=medium
-
-  * Upstream sync
-
- -- Gaurav Astikar <gaurav.astikar@rtcamp.com>  Wed, 9 Dec 2015 15:50:00 +0530
-
-nginx (1.9.7-0+trusty0) trusty; urgency=medium
-
-  * Initial upload of 1.9.7 for trusty
-
- -- Thomas Ward <teward@ubuntu.com>  Wed, 25 Nov 2015 15:43:38 -0500
-
-nginx (1.9.7-0) UNRELEASED; urgency=medium
-
-  * New upstream release (1.9.7).
-  * Changes with nginx 1.9.7 (17 Nov 2015):
-    * Feature: the "nohostname" parameter of logging to syslog.
-    * Feature: the "proxy_cache_convert_head" directive.
-    * Feature: the $realip_remote_addr variable in the
-      ngx_http_realip_module.
-    * Bugfix: the "expires" directive might not work when using variables.
-    * Bugfix: a segmentation fault might occur in a worker process when
-      using HTTP/2; the bug had appeared in 1.9.6.
-    * Bugfix: if nginx was built with the ngx_http_v2_module it was
-      possible to use the HTTP/2 protocol even if the "http2" parameter of
-      the "listen" directive was not specified.
-    * Bugfix: in the ngx_http_v2_module.
-
- -- Thomas Ward <teward@ubuntu.com>  Wed, 25 Nov 2015 15:41:48 -0500
-
-nginx (1.9.6-1+trusty2) trusty; urgency=medium
-
-  * Resync PPA with Debian, override current PPA builds.
-
- -- Thomas Ward <teward@ubuntu.com>  Thu, 05 Nov 2015 09:51:25 -0500
+ -- Christos Trochalakis <yatiohi@ideopolis.gr>  Fri, 13 Nov 2015 16:08:01 +0200
 
 nginx (1.9.6-1) unstable; urgency=medium
 
@@ -1703,14 +1674,14 @@ nginx (0.7.61-2) unstable; urgency=low
 nginx (0.7.61-1) unstable; urgency=low
 
   * New upstream version:
-    *) Bugfix: nginx could not be built --without-http-cache; the bug had
+    *) Bugfix: nginx could not be built --without-http-cache; the bug had 
        appeared in 0.7.60.
-    *) Bugfix: a segmentation fault occurred in worker process, if a
-       backend 401 error was intercepted and the backend did not set the
+    *) Bugfix: a segmentation fault occurred in worker process, if a 
+       backend 401 error was intercepted and the backend did not set the 
        "WWW-Authenticate" response header line.
        Thanks to Eugene Mychlo.
     *) Feature: the "keepalive_requests" directive.
-    *) Bugfix: in open_file_cache and proxy/fastcgi cache interaction on
+    *) Bugfix: in open_file_cache and proxy/fastcgi cache interaction on 
        start up.
     *) Bugfix: open_file_cache might cache open file descriptors too long.
     *) Bugfix: XLST filter did not work in subrequests.
@@ -1841,14 +1812,14 @@ nginx (0.5.33-1) unstable; urgency=low
   * New stable upstream release (Closes: #451173)
   * nginx now provides httpd, httpd-cgi virtual packages
     (Closes: #439468, #452025)
-  * sites-enabled/default link is now provided only on fresh
+  * sites-enabled/default link is now provided only on fresh 
     installations (Closes: #432961)
   * Updated code for online upgrading of nginx (Closes: #445246)
   * Reviewed maintainer scripts for correct behaviour on updates
     (Closes: #452787, #435965)
   * Removed debian/nginx.links and debian/preinst.
   * Changing Maintainer address to bureado@debian.org.
-  * Welcoming Fabio Tranchitella <kobold@debian.org> as an nginx
+  * Welcoming Fabio Tranchitella <kobold@debian.org> as an nginx 
     uploader for Debian. Thanks for your patches.
 
  -- Jose Parrella <bureado@debian.org>  Sat, 08 Dec 2007 11:27:54 -0400
@@ -1856,7 +1827,7 @@ nginx (0.5.33-1) unstable; urgency=low
 nginx (0.5.30-1) unstable; urgency=low
 
   * New stable upstream release.
-  * Adding mime.types (and other upstream conffiles) to the package
+  * Adding mime.types (and other upstream conffiles) to the package 
     since it was lost on 0.5.26 (Closes: #435964)
 
  -- Jose Parrella <joseparrella@cantv.net>  Sat, 04 Aug 2007 10:39:40 -0400
@@ -1886,7 +1857,7 @@ nginx (0.5.13-1) unstable; urgency=low
 
 nginx (0.5.12-2) unstable; urgency=low
 
-  * Patching src/core/ngx_shmtx.h in order to solve FTBFS problems in
+  * Patching src/core/ngx_shmtx.h in order to solve FTBFS problems in 
     non-x86 archs (Thanks to Igor Sysoev) (Closes: #410884)
 
  -- Jose Parrella <joseparrella@cantv.net>  Wed, 14 Feb 2007 13:32:01 -0400
@@ -1942,3 +1913,4 @@ nginx (0.4.2-1) unstable; urgency=low
   * Tweaked the configuration file and the path handling for Debian.
 
  -- Jose Parrella <joseparrella@cantv.net>  Thu, 14 Sep 2006 11:40:20 -0400
+
