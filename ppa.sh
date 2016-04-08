@@ -173,7 +173,7 @@ elif [ "$PACKAGE_NAME" = "nginx" ]; then
 	|| ppa_error "Unable to clone set-misc-nginx-module repo, exit status = " $?
 
 	ppa_lib_echo "18/18 ngx_pagespeed"
-	NPS_VERSION=1.9.32.6
+	NPS_VERSION=1.11.33.0
 	wget https://github.com/pagespeed/ngx_pagespeed/archive/release-${NPS_VERSION}-beta.tar.gz
 	tar -zxvf release-${NPS_VERSION}-beta.tar.gz
 	mv ngx_pagespeed-release-${NPS_VERSION}-beta  ngx_pagespeed
