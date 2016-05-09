@@ -1,15 +1,16 @@
 #!/usr/bin/make -f
 export DH_VERBOSE=1
 
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 debian_cflags:=$(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
 debian_ldflags:=$(shell dpkg-buildflags --get LDFLAGS)
 
 # export necessary perl hardenging flags
 # see: src/http/modules/perl/Makefile.PL
-DEBIAN_NGINX_PERL_LDFLAGS:= $(debian_ldflags)
+DEBIAN_NGINX_PERL_LDFLAGS:= $(shell DEB_BUILD_MAINT_OPTIONS=hardening=+all,-pie dpkg-buildflags --get LDFLAGS)
 export DEBIAN_NGINX_PERL_LDFLAGS
 
-FLAVOURS := full light extras custom
+FLAVOURS := full light extras mainline
 
 MODULESDIR = $(CURDIR)/debian/modules
 BASEDIR = $(CURDIR)
@@ -18,6 +19,10 @@ $(foreach flavour,$(FLAVOURS),$(eval BUILDDIR_$(flavour) = $(CURDIR)/debian/buil
 DEB_BUILD_ARCH ?=$(shell dpkg-architecture -qDEB_BUILD_ARCH)
 ifeq ($(DEB_BUILD_ARCH),sparc)
 	debian_cflags += -m32 -mcpu=ultrasparc
+endif
+
+ifeq ($(DEB_BUILD_ARCH),amd64)
+	debian_cflags += -fPIC
 endif
 
 ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
@@ -54,7 +59,7 @@ light_configure_flags := \
 			--without-http_browser_module \
 			--without-http_geo_module \
 			--without-http_limit_req_module \
-			--without-http_limit_zone_module \
+			--without-http_limit_conn_module \
 			--without-http_memcached_module \
 			--without-http_referer_module \
 			--without-http_scgi_module \
@@ -69,13 +74,18 @@ full_configure_flags := \
 			--with-http_addition_module \
 			--with-http_dav_module \
 			--with-http_geoip_module \
+			--with-http_gunzip_module \
 			--with-http_gzip_static_module \
 			--with-http_image_filter_module \
-			--with-http_spdy_module \
+			--with-http_v2_module \
 			--with-http_sub_module \
 			--with-http_xslt_module \
+			--with-http_slice_module \
+			--with-stream \
+			--with-stream_ssl_module \
 			--with-mail \
 			--with-mail_ssl_module \
+			--with-threads \
 			--add-module=$(MODULESDIR)/nginx-auth-pam \
 			--add-module=$(MODULESDIR)/nginx-dav-ext-module \
 			--add-module=$(MODULESDIR)/nginx-echo \
@@ -88,17 +98,22 @@ extras_configure_flags := \
 			--with-http_dav_module \
 			--with-http_flv_module \
 			--with-http_geoip_module \
+			--with-http_gunzip_module \
 			--with-http_gzip_static_module \
 			--with-http_image_filter_module \
 			--with-http_mp4_module \
 			--with-http_perl_module \
 			--with-http_random_index_module \
 			--with-http_secure_link_module \
-			--with-http_spdy_module \
+			--with-http_v2_module \
 			--with-http_sub_module \
 			--with-http_xslt_module \
+			--with-http_slice_module \
 			--with-mail \
 			--with-mail_ssl_module \
+			--with-stream \
+			--with-stream_ssl_module \
+			--with-threads \
 			--add-module=$(MODULESDIR)/headers-more-nginx-module \
 			--add-module=$(MODULESDIR)/nginx-auth-pam \
 			--add-module=$(MODULESDIR)/nginx-cache-purge \
@@ -110,23 +125,36 @@ extras_configure_flags := \
 			--add-module=$(MODULESDIR)/nginx-lua \
 			--add-module=$(MODULESDIR)/nginx-upload-progress \
 			--add-module=$(MODULESDIR)/nginx-upstream-fair \
-			--add-module=$(MODULESDIR)/ngx_http_substitutions_filter_module \
-			--add-module=$(MODULESDIR)/ngx_pagespeed
+			--add-module=$(MODULESDIR)/ngx_http_substitutions_filter_module
 
-custom_configure_flags := \
+mainline_configure_flags := \
 			$(common_configure_flags) \
 			--with-http_addition_module \
+			--with-http_dav_module \
+			--with-http_flv_module \
 			--with-http_geoip_module \
+			--with-http_gunzip_module \
 			--with-http_gzip_static_module \
 			--with-http_image_filter_module \
-			--with-http_spdy_module \
+			--with-http_mp4_module \
+			--with-http_random_index_module \
+			--with-http_secure_link_module \
+			--with-http_v2_module \
 			--with-http_sub_module \
 			--with-http_xslt_module \
+			--with-http_slice_module \
+			--with-mail \
+			--with-mail_ssl_module \
+			--with-stream \
+			--with-stream_ssl_module \
+			--with-threads \
 			--add-module=$(MODULESDIR)/headers-more-nginx-module \
 			--add-module=$(MODULESDIR)/nginx-auth-pam \
 			--add-module=$(MODULESDIR)/nginx-cache-purge \
+			--add-module=$(MODULESDIR)/nginx-dav-ext-module \
 			--add-module=$(MODULESDIR)/nginx-echo \
 			--add-module=$(MODULESDIR)/ngx-fancyindex \
+			--add-module=$(MODULESDIR)/nginx-http-push \
 			--add-module=$(MODULESDIR)/nginx-lua \
 			--add-module=$(MODULESDIR)/nginx-upload-progress \
 			--add-module=$(MODULESDIR)/nginx-upstream-fair \
@@ -136,8 +164,7 @@ custom_configure_flags := \
 			--add-module=$(MODULESDIR)/HttpRedisModule \
 			--add-module=$(MODULESDIR)/redis2-nginx-module \
 			--add-module=$(MODULESDIR)/nginx-development-kit \
-			--add-module=$(MODULESDIR)/set-misc-nginx-module \
-			--add-module=$(MODULESDIR)/ngx_pagespeed
+			--add-module=$(MODULESDIR)/set-misc-nginx-module
 
 %:
 	dh $@ --with systemd
@@ -166,8 +193,6 @@ strip.arch.%:
 config.arch.%:
 	dh_testdir
 	mkdir -p $(BUILDDIR_$*)
-	ls $(MODULESDIR)/ngx_pagespeed
-	tar xvf $(MODULESDIR)/ngx_pagespeed/psol.tar.gz -C $(MODULESDIR)/ngx_pagespeed
 	cp -Pa $(CURDIR)/auto $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/conf $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/configure $(BUILDDIR_$*)/
@@ -178,4 +203,3 @@ config.arch.%:
 
 clean.%:
 	rm -rf $(BUILDDIR_$*)
-	rm -rf $(MODULESDIR)/ngx_pagespeed/psol
