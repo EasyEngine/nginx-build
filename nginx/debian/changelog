@@ -1,3 +1,12 @@
+nginx (1.10.0-1ppa) stable; urgency=medium
+
+  * Updated package to next stable version and rebuilt for Ubuntu 16.04, Xenial.
+  * pagespeed module removed
+  * Support for spdy module is superseded by http_v2
+  * http_limit_zone_module is now a part of http_limit_conn_module
+
+ -- Sushant Salil <sushant.salil@rtcamp.com>  Mon, 9 May 2016 19:11:22 +0530
+
 nginx (1.9.10-1ppa) stable; urgency=medium
 
   * Resync PPA with Ubuntu.
