@@ -172,7 +172,7 @@ elif [ "$PACKAGE_NAME" = "nginx" ]; then
 	|| ppa_error "Unable to download ngx_http_redis-0.3.8.tar.gz, exit status = " $?
 	tar -zxvf ngx_http_redis-0.3.8.tar.gz \
 	|| ppa_error "Unable to extract ngx_http_redis-0.3.8.tar.gz, exit status = " $?
-	mv ngx_http_redis-0.3.7 HttpRedisModule \
+	mv ngx_http_redis-0.3.8 HttpRedisModule \
 	|| ppa_error "Unable to ngx_http_redis-0.3.8, exit status = " $?
 	rm ngx_http_redis-0.3.8.tar.gz \
 	|| ppa_error "ngx_http_redis-0.3.8.tar.gz, exit status = " $?
