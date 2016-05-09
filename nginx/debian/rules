@@ -164,8 +164,7 @@ mainline_configure_flags := \
 			--add-module=$(MODULESDIR)/HttpRedisModule \
 			--add-module=$(MODULESDIR)/redis2-nginx-module \
 			--add-module=$(MODULESDIR)/nginx-development-kit \
-			--add-module=$(MODULESDIR)/set-misc-nginx-module \
-			--add-module=$(MODULESDIR)/ngx_pagespeed
+			--add-module=$(MODULESDIR)/set-misc-nginx-module
 
 %:
 	dh $@ --with systemd
@@ -194,8 +193,6 @@ strip.arch.%:
 config.arch.%:
 	dh_testdir
 	mkdir -p $(BUILDDIR_$*)
-	ls $(MODULESDIR)/ngx_pagespeed
-	tar xvf $(MODULESDIR)/ngx_pagespeed/psol.tar.gz -C $(MODULESDIR)/ngx_pagespeed
 	cp -Pa $(CURDIR)/auto $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/conf $(BUILDDIR_$*)/
 	cp -Pa $(CURDIR)/configure $(BUILDDIR_$*)/
@@ -206,4 +203,3 @@ config.arch.%:
 
 clean.%:
 	rm -rf $(BUILDDIR_$*)
-	rm -rf $(MODULESDIR)/ngx_pagespeed/psol
