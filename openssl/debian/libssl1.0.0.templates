@@ -1,4 +1,4 @@
-Template: libssl1.0.2/restart-services
+Template: libssl1.0.0/restart-services
 Type: string
 _Description: Services to restart to make them use the new libraries:
  This release of OpenSSL fixes some security issues. Services will not
@@ -14,7 +14,7 @@ _Description: Services to restart to make them use the new libraries:
  be restarted. It is recommended to reboot this host to avoid any
  SSL-related trouble.
 
-Template: libssl1.0.2/restart-failed
+Template: libssl1.0.0/restart-failed
 Type: error
 #flag:translate!:3
 #flag:comment:2

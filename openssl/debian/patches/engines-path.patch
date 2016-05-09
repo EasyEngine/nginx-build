@@ -7,7 +7,7 @@ Index: openssl-1.0.2~beta3/Makefile.org
  	@$(PERL) $(TOP)/util/mkdir-p.pl $(INSTALL_PREFIX)$(INSTALLTOP)/bin \
  		$(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR) \
 -		$(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines \
-+		$(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.2/engines \
++		$(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines \
  		$(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/pkgconfig \
  		$(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl \
  		$(INSTALL_PREFIX)$(OPENSSLDIR)/misc \
@@ -20,14 +20,14 @@ Index: openssl-1.0.2~beta3/engines/Makefile
  	@if [ -n "$(SHARED_LIBS)" ]; then \
  		set -e; \
 -		$(PERL) $(TOP)/util/mkdir-p.pl $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines; \
-+		$(PERL) $(TOP)/util/mkdir-p.pl $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.2/engines; \
++		$(PERL) $(TOP)/util/mkdir-p.pl $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines; \
  		for l in $(LIBNAMES); do \
  			( echo installing $$l; \
  			  pfx=lib; \
  			  if expr "$(PLATFORM)" : "Cygwin" >/dev/null; then \
  				sfx=".so"; \
 -				cp cyg$$l.dll $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$$pfx$$l$$sfx.new; \
-+				cp cyg$$l.dll $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.2/engines/$$pfx$$l$$sfx.new; \
++				cp cyg$$l.dll $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines/$$pfx$$l$$sfx.new; \
  			  else \
  				case "$(CFLAGS)" in \
  				*DSO_BEOS*)	sfx=".so";;	\
@@ -36,12 +36,12 @@ Index: openssl-1.0.2~beta3/engines/Makefile
  				*)		sfx=".bad";;	\
  				esac; \
 -				cp $$pfx$$l$$sfx $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$$pfx$$l$$sfx.new; \
-+				cp $$pfx$$l$$sfx $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.2/engines/$$pfx$$l$$sfx.new; \
++				cp $$pfx$$l$$sfx $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines/$$pfx$$l$$sfx.new; \
  			  fi; \
 -			  chmod 555 $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$$pfx$$l$$sfx.new; \
 -			  mv -f $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$$pfx$$l$$sfx.new $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$$pfx$$l$$sfx ); \
-+			  chmod 555 $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.2/engines/$$pfx$$l$$sfx.new; \
-+			  mv -f $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.2/engines/$$pfx$$l$$sfx.new $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.2/engines/$$pfx$$l$$sfx ); \
++			  chmod 555 $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines/$$pfx$$l$$sfx.new; \
++			  mv -f $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines/$$pfx$$l$$sfx.new $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines/$$pfx$$l$$sfx ); \
  		done; \
  	fi
  	@target=install; $(RECURSIVE_MAKE)
@@ -54,7 +54,7 @@ Index: openssl-1.0.2~beta3/Configure
  	elsif	(/^#define\s+ENGINESDIR/)
  		{
 -		my $foo = "$prefix/$libdir/engines";
-+		my $foo = "$prefix/$libdir/openssl-1.0.2/engines";
++		my $foo = "$prefix/$libdir/openssl-1.0.0/engines";
  		$foo =~ s/\\/\\\\/g;
  		print OUT "#define ENGINESDIR \"$foo\"\n";
  		}
@@ -67,7 +67,7 @@ Index: openssl-1.0.2~beta3/engines/ccgost/Makefile
  		if expr "$(PLATFORM)" : "Cygwin" >/dev/null; then \
  			sfx=".so"; \
 -			cp cyg$(LIBNAME).dll $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$${pfx}$(LIBNAME)$$sfx.new; \
-+			cp cyg$(LIBNAME).dll $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.2/engines/$${pfx}$(LIBNAME)$$sfx.new; \
++			cp cyg$(LIBNAME).dll $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines/$${pfx}$(LIBNAME)$$sfx.new; \
  		else \
  			case "$(CFLAGS)" in \
  			*DSO_BEOS*) sfx=".so";; \
@@ -76,12 +76,12 @@ Index: openssl-1.0.2~beta3/engines/ccgost/Makefile
  			*) sfx=".bad";; \
  			esac; \
 -			cp $${pfx}$(LIBNAME)$$sfx $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$${pfx}$(LIBNAME)$$sfx.new; \
-+			cp $${pfx}$(LIBNAME)$$sfx $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.2/engines/$${pfx}$(LIBNAME)$$sfx.new; \
++			cp $${pfx}$(LIBNAME)$$sfx $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines/$${pfx}$(LIBNAME)$$sfx.new; \
  		fi; \
 -		chmod 555 $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$${pfx}$(LIBNAME)$$sfx.new; \
 -		mv -f $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$${pfx}$(LIBNAME)$$sfx.new $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$${pfx}$(LIBNAME)$$sfx; \
-+		chmod 555 $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.2/engines/$${pfx}$(LIBNAME)$$sfx.new; \
-+		mv -f $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.2/engines/$${pfx}$(LIBNAME)$$sfx.new $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.2/engines/$${pfx}$(LIBNAME)$$sfx; \
++		chmod 555 $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines/$${pfx}$(LIBNAME)$$sfx.new; \
++		mv -f $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines/$${pfx}$(LIBNAME)$$sfx.new $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/openssl-1.0.0/engines/$${pfx}$(LIBNAME)$$sfx; \
  	fi
  
  links:

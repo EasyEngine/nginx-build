@@ -1,0 +1,3 @@
+# If building on amd64, Makefiles are regenerated
+# We could move .save Makefiles back in place....
+extend-diff-ignore = "(^|/)(Makefile)$"

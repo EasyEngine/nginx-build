@@ -1,0 +1,3193 @@
+commit f13fe282dfde82d0b079805beacd0ccf8905af3a
+Author: Joy Latten <joy.latten@canonical.com>
+Date:   Thu Apr 14 02:14:18 2016 -0500
+
+    From: Joy Latten <joy.latten@canonical.com>
+    Description: [PATCH 6/6] Use upstream algorithms and cleanup compiler warnings.
+    Forwarded: not-needed
+    
+    Use the DSA, DSA2, error codes, and EC curves from upstream openssl for fips;
+    use fips_utl.h from upstream; remove fips prngs from Makefile since fips
+    no longer allows them; cleanup compiler warnings; add additional tests from
+    upstream to fips-test-suite.
+
+diff --git a/crypto/dsa/dsa.h b/crypto/dsa/dsa.h
+index 4abe46c..45e1472 100644
+--- a/crypto/dsa/dsa.h
++++ b/crypto/dsa/dsa.h
+@@ -115,6 +115,7 @@
+  */
+ 
+ # define DSA_FLAG_NON_FIPS_ALLOW                 0x0400
++#define DSA_FLAG_FIPS_CHECKED                    0x0800
+ 
+ #ifdef  __cplusplus
+ extern "C" {
+@@ -268,20 +269,6 @@ int DSA_print_fp(FILE *bp, const DSA *x, int off);
+ DH *DSA_dup_DH(const DSA *r);
+ # endif
+ 
+-# ifdef OPENSSL_FIPS
+-int FIPS_dsa_builtin_paramgen(DSA *ret, size_t bits, size_t qbits,
+-                              const EVP_MD *evpmd,
+-                              const unsigned char *seed_in,
+-                              size_t seed_len, int *counter_ret,
+-                              unsigned long *h_ret, BN_GENCB *cb);
+-int FIPS_dsa_generate_pq(BN_CTX *ctx, size_t bits, size_t qbits,
+-                         const EVP_MD *evpmd, unsigned char *seed,
+-                         int seed_len, BIGNUM **p_ret, BIGNUM **q_ret,
+-                         int *counter_ret, BN_GENCB *cb);
+-int FIPS_dsa_generate_g(BN_CTX *ctx, BIGNUM *p, BIGNUM *q, BIGNUM **g_ret,
+-                            unsigned long *h_ret, BN_GENCB *cb);
+-# endif
+-
+ # define EVP_PKEY_CTX_set_dsa_paramgen_bits(ctx, nbits) \
+         EVP_PKEY_CTX_ctrl(ctx, EVP_PKEY_DSA, EVP_PKEY_OP_PARAMGEN, \
+                                 EVP_PKEY_CTRL_DSA_PARAMGEN_BITS, nbits, NULL)
+@@ -304,14 +291,11 @@ void ERR_load_DSA_strings(void);
+ # define DSA_F_DO_DSA_PRINT                               104
+ # define DSA_F_DSAPARAMS_PRINT                            100
+ # define DSA_F_DSAPARAMS_PRINT_FP                         101
+-# define DSA_F_DSA_BUILTIN_KEYGEN                         124
+-# define DSA_F_DSA_BUILTIN_PARAMGEN                       123
+-# define DSA_F_DSA_BUILTIN_PARAMGEN2                      226
++# define DSA_F_DSA_BUILTIN_PARAMGEN2                      126
+ # define DSA_F_DSA_DO_SIGN                                112
+ # define DSA_F_DSA_DO_VERIFY                              113
+-# define DSA_F_DSA_GENERATE_KEY                           126
+-# define DSA_F_DSA_GENERATE_PARAMETERS_EX                 127
+-# define DSA_F_DSA_GENERATE_PARAMETERS   /* unused */     125
++# define DSA_F_DSA_GENERATE_KEY                           124
++# define DSA_F_DSA_GENERATE_PARAMETERS_EX                 123
+ # define DSA_F_DSA_NEW_METHOD                             103
+ # define DSA_F_DSA_PARAM_DECODE                           119
+ # define DSA_F_DSA_PRINT_FP                               105
+@@ -329,6 +313,8 @@ void ERR_load_DSA_strings(void);
+ # define DSA_F_PKEY_DSA_CTRL                              120
+ # define DSA_F_PKEY_DSA_KEYGEN                            121
+ # define DSA_F_SIG_CB                                     114
++# define DSA_F_DSA_BUILTIN_KEYGEN                         200
++# define DSA_F_DSA_BUILTIN_PARAMGEN                       201
+ 
+ /* Reason codes. */
+ # define DSA_R_BAD_Q_VALUE                                102
+@@ -337,18 +323,16 @@ void ERR_load_DSA_strings(void);
+ # define DSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE                100
+ # define DSA_R_DECODE_ERROR                               104
+ # define DSA_R_INVALID_DIGEST_TYPE                        106
+-# define DSA_R_INVALID_PARAMETERS                         212
+-# define DSA_R_KEY_SIZE_INVALID                           113
+-# define DSA_R_KEY_SIZE_TOO_SMALL                         110
++# define DSA_R_INVALID_PARAMETERS                         112
+ # define DSA_R_MISSING_PARAMETERS                         101
+ # define DSA_R_MODULUS_TOO_LARGE                          103
+-# define DSA_R_NEED_NEW_SETUP_VALUES                      112
++# define DSA_R_NEED_NEW_SETUP_VALUES                      110
+ # define DSA_R_NON_FIPS_DSA_METHOD                        111
+-# define DSA_R_NON_FIPS_METHOD                            111
+ # define DSA_R_NO_PARAMETERS_SET                          107
+-# define DSA_R_OPERATION_NOT_ALLOWED_IN_FIPS_MODE /* unused */ 112
+ # define DSA_R_PARAMETER_ENCODING_ERROR                   105
+ # define DSA_R_Q_NOT_PRIME                                113
++# define DSA_R_KEY_SIZE_INVALID                           200
++# define DSA_R_KEY_SIZE_TOO_SMALL                         201
+ 
+ #ifdef  __cplusplus
+ }
+diff --git a/crypto/dsa/dsa_err.c b/crypto/dsa/dsa_err.c
+index 5bae45c..1b67170 100644
+--- a/crypto/dsa/dsa_err.c
++++ b/crypto/dsa/dsa_err.c
+@@ -111,8 +111,6 @@ static ERR_STRING_DATA DSA_str_reasons[] = {
+     {ERR_REASON(DSA_R_DECODE_ERROR), "decode error"},
+     {ERR_REASON(DSA_R_INVALID_DIGEST_TYPE), "invalid digest type"},
+     {ERR_REASON(DSA_R_INVALID_PARAMETERS), "invalid parameters"},
+-    {ERR_REASON(DSA_R_KEY_SIZE_INVALID), "key size invalid"},
+-    {ERR_REASON(DSA_R_KEY_SIZE_TOO_SMALL), "key size too small"},
+     {ERR_REASON(DSA_R_MISSING_PARAMETERS), "missing parameters"},
+     {ERR_REASON(DSA_R_MODULUS_TOO_LARGE), "modulus too large"},
+     {ERR_REASON(DSA_R_NEED_NEW_SETUP_VALUES), "need new setup values"},
+@@ -120,6 +118,8 @@ static ERR_STRING_DATA DSA_str_reasons[] = {
+     {ERR_REASON(DSA_R_NO_PARAMETERS_SET), "no parameters set"},
+     {ERR_REASON(DSA_R_PARAMETER_ENCODING_ERROR), "parameter encoding error"},
+     {ERR_REASON(DSA_R_Q_NOT_PRIME), "q not prime"},
++    {ERR_REASON(DSA_R_KEY_SIZE_INVALID), "key size invalid"},
++    {ERR_REASON(DSA_R_KEY_SIZE_TOO_SMALL), "key size too small"},
+     {0, NULL}
+ };
+ 
+diff --git a/crypto/dsa/dsa_gen.c b/crypto/dsa/dsa_gen.c
+index ca86915..40a73bc 100644
+--- a/crypto/dsa/dsa_gen.c
++++ b/crypto/dsa/dsa_gen.c
+@@ -84,21 +84,9 @@
+ # include <openssl/rand.h>
+ # include <openssl/sha.h>
+ # include "dsa_locl.h"
+-
+-# ifdef OPENSSL_FIPS
+-/* Workaround bug in prototype */
+-#  define fips_dsa_builtin_paramgen2 fips_dsa_paramgen_bad
+-#  include <openssl/fips.h>
+-# endif
+-
+-# ifndef OPENSSL_FIPS
+-static int FIPS_dsa_generate_pq(BN_CTX *ctx, size_t bits, size_t qbits,
+-                                const EVP_MD *evpmd, unsigned char *seed,
+-                                int seed_len, BIGNUM **p_ret, BIGNUM **q_ret,
+-                                int *counter_ret, BN_GENCB *cb);
+-static int FIPS_dsa_generate_g(BN_CTX *ctx, BIGNUM *p, BIGNUM *q,
+-                               BIGNUM **g_ret, unsigned long *h_ret,
+-                               BN_GENCB *cb);
++#ifdef OPENSSL_FIPS
++#include <openssl/fips.h>
++#include <openssl/fips_rand.h>
+ # endif
+ 
+ int DSA_generate_parameters_ex(DSA *ret, int bits,
+@@ -121,162 +109,97 @@ int DSA_generate_parameters_ex(DSA *ret, int bits,
+         size_t qbits = EVP_MD_size(evpmd) * 8;
+ 
+         return dsa_builtin_paramgen(ret, bits, qbits, evpmd,
+-                                    seed_in, seed_len, counter_ret,
++                                    seed_in, seed_len, NULL, counter_ret,
+                                     h_ret, cb);
+     }
+ }
+ 
+-# ifdef OPENSSL_FIPS
+-int FIPS_dsa_builtin_paramgen(DSA *ret, size_t bits, size_t qbits,
+-                              const EVP_MD *evpmd,
+-                              const unsigned char *seed_in, size_t seed_len,
+-                              int *counter_ret, unsigned long *h_ret,
+-                              BN_GENCB *cb)
+-{
+-    return dsa_builtin_paramgen(ret, bits, qbits,
+-                                evpmd, seed_in, seed_len,
+-                                counter_ret, h_ret, cb);
+-}
+-# endif
+-
+ int dsa_builtin_paramgen(DSA *ret, size_t bits, size_t qbits,
+                          const EVP_MD *evpmd, const unsigned char *seed_in,
+-                         size_t seed_len,
++                         size_t seed_len, unsigned char *seed_out,
+                          int *counter_ret, unsigned long *h_ret, BN_GENCB *cb)
+ {
+     int ok = 0;
+     unsigned char seed[SHA256_DIGEST_LENGTH];
++    unsigned char md[SHA256_DIGEST_LENGTH];
++    unsigned char buf[SHA256_DIGEST_LENGTH], buf2[SHA256_DIGEST_LENGTH];
++    BIGNUM *r0, *W, *X, *c, *test;
+     BIGNUM *g = NULL, *q = NULL, *p = NULL;
+-    size_t qsize = qbits >> 3;
++    BN_MONT_CTX *mont = NULL;
++    int i, k, n = 0, m = 0, qsize = qbits >> 3;
++    int counter = 0;
++    int r = 0;
+     BN_CTX *ctx = NULL;
+-    
+-# ifdef OPENSSL_FIPS
++    unsigned int h = 2;
++#ifdef OPENSSL_FIPS
+     if (FIPS_selftest_failed()) {
+         FIPSerr(FIPS_F_DSA_BUILTIN_PARAMGEN, FIPS_R_FIPS_SELFTEST_FAILED);
+         goto err;
+     }
+ 
+-    if (FIPS_module_mode() &&
+-        (getenv("OPENSSL_ENFORCE_MODULUS_BITS") || bits != 1024
+-         || qbits != 160) && (bits != 2048 || qbits != 224) && (bits != 2048
+-                                                                || qbits !=
+-                                                                256)
+-        && (bits != 3072 || qbits != 256)) {
+-        DSAerr(DSA_F_DSA_BUILTIN_PARAMGEN, DSA_R_KEY_SIZE_INVALID);
+-        goto err;
+-    }
+-# endif
+-    if (seed_len && (seed_len < (size_t)qsize))
+-        seed_in = NULL;         /* seed buffer too small -- ignore */
+-    if (seed_len > sizeof(seed))
+-        seed_len = sizeof(seed); /* App. 2.2 of FIPS PUB 186 allows larger SEED,
+-                                  * but our internal buffers are restricted to 256 bits*/
+-    if (seed_in != NULL)
+-        memcpy(seed, seed_in, seed_len);
+-    else
+-        seed_len = 0;
+-        
+-    if ((ctx = BN_CTX_new()) == NULL)
+-        goto err;
+- 
+-    BN_CTX_start(ctx);
+- 
+-    if (!FIPS_dsa_generate_pq(ctx, bits, qbits, evpmd,
+-                              seed, seed_len, &p, &q, counter_ret, cb))
++    if (FIPS_module_mode() && !(ret->flags & DSA_FLAG_NON_FIPS_ALLOW)
++        && ((bits != 1024 || qbits != 160) && (bits != 2048 || qbits != 224)
++        && (bits != 2048 || qbits != 256) && (bits != 3072 || qbits != 256))) {
++        DSAerr(DSA_F_DSA_BUILTIN_PARAMGEN, DSA_R_KEY_SIZE_TOO_SMALL);
+         goto err;
+- 
+-    if (!FIPS_dsa_generate_g(ctx, p, q, &g, h_ret, cb))
+-        goto err;
+- 
+-    ok = 1;
+- err:
+-    if (ok) {
+-        if (ret->p) {
+-            BN_free(ret->p);
+-            ret->p = NULL;
+-        }
+-        if (ret->q) {
+-            BN_free(ret->q);
+-            ret->q = NULL;
+-        }
+-        if (ret->g) {
+-            BN_free(ret->g);
+-            ret->g = NULL;
+-        }
+-        ret->p = BN_dup(p);
+-        ret->q = BN_dup(q);
+-        ret->g = BN_dup(g);
+-        if (ret->p == NULL || ret->q == NULL || ret->g == NULL)
+-            ok = 0;
+-    }
+-    if (ctx) {
+-        BN_CTX_end(ctx);
+-        BN_CTX_free(ctx);
+     }
+-    return ok;
+-}
+-
+-# ifndef OPENSSL_FIPS
+-static
+-# endif
+-int FIPS_dsa_generate_pq(BN_CTX *ctx, size_t bits, size_t qbits,
+-                         const EVP_MD *evpmd, unsigned char *seed,
+-                         int seed_len, BIGNUM **p_ret, BIGNUM **q_ret,
+-                         int *counter_ret, BN_GENCB *cb)
+-{
+-    int ok = 0;
+-    unsigned char md[SHA256_DIGEST_LENGTH];
+-    unsigned char buf[SHA256_DIGEST_LENGTH];
+-    BIGNUM *r0, *W, *X, *c, *test;
+-    BIGNUM *q = NULL, *p = NULL;
+-    int i, k, b, n = 0, m = 0, qsize = qbits >> 3;
+-    int counter = 0;
+-    int r = 0;
+-
++#endif
+     if (qsize != SHA_DIGEST_LENGTH && qsize != SHA224_DIGEST_LENGTH &&
+         qsize != SHA256_DIGEST_LENGTH)
+         /* invalid q size */
+         return 0;
+ 
+-    if (evpmd == NULL) {
+-        if (qbits <= 160)
++    if (evpmd == NULL)
++        /* use SHA1 as default */
+         evpmd = EVP_sha1();
+-        else if (qbits <= 224)
+-            evpmd = EVP_sha224();
+-        else
+-            evpmd = EVP_sha256();
+-    }
+ 
+     if (bits < 512)
+         bits = 512;
+ 
+     bits = (bits + 63) / 64 * 64;
+ 
++    /*
++     * NB: seed_len == 0 is special case: copy generated seed to seed_in if
++     * it is not NULL.
++     */
++    if (seed_len && (seed_len < (size_t)qsize))
++        seed_in = NULL;         /* seed buffer too small -- ignore */
++    if (seed_len > (size_t)qsize)
++        seed_len = qsize;       /* App. 2.2 of FIPS PUB 186 allows larger
++                                 * SEED, but our internal buffers are
++                                 * restricted to 160 bits */
++    if (seed_in != NULL)
++        memcpy(seed, seed_in, seed_len);
++
++    if ((mont = BN_MONT_CTX_new()) == NULL)
++        goto err;
++
++    if ((ctx = BN_CTX_new()) == NULL)
++        goto err;
++
++    BN_CTX_start(ctx);
++
+     r0 = BN_CTX_get(ctx);
++    g = BN_CTX_get(ctx);
+     W = BN_CTX_get(ctx);
+-    *q_ret = q = BN_CTX_get(ctx);
++    q = BN_CTX_get(ctx);
+     X = BN_CTX_get(ctx);
+     c = BN_CTX_get(ctx);
+-    *p_ret = p = BN_CTX_get(ctx);
++    p = BN_CTX_get(ctx);
+     test = BN_CTX_get(ctx);
+ 
+     if (!BN_lshift(test, BN_value_one(), bits - 1))
+         goto err;
+ 
+-    /* step 3 n = \lceil bits / qbits \rceil - 1 */
+-    n = (bits + qbits - 1) / qbits - 1;
+-    /* step 4 b = bits - 1 - n * qbits */
+-    b = bits - 1 - n * qbits;
+-
+     for (;;) {
+         for (;;) {              /* find q */
+             int seed_is_random;
+ 
+-            /* step 5 generate seed */
++            /* step 1 */
+             if (!BN_GENCB_call(cb, 0, m++))
+                 goto err;
+ 
+-            if (!seed_len) {
++            if (!seed_len || !seed_in) {
+                 if (RAND_pseudo_bytes(seed, qsize) < 0)
+                     goto err;
+                 seed_is_random = 1;
+@@ -286,18 +209,29 @@ int FIPS_dsa_generate_pq(BN_CTX *ctx, size_t bits, size_t qbits,
+                                  * be bad */
+             }
+             memcpy(buf, seed, qsize);
++            memcpy(buf2, seed, qsize);
++            /* precompute "SEED + 1" for step 7: */
++            for (i = qsize - 1; i >= 0; i--) {
++                buf[i]++;
++                if (buf[i] != 0)
++                    break;
++            }
+ 
+-            /* step 6 U = hash(seed) */
++            /* step 2 */
+             if (!EVP_Digest(seed, qsize, md, NULL, evpmd, NULL))
+                 goto err;
++            if (!EVP_Digest(buf, qsize, buf2, NULL, evpmd, NULL))
++                goto err;
++            for (i = 0; i < qsize; i++)
++                md[i] ^= buf2[i];
+ 
+-            /* step 7 q = 2^(qbits-1) + U + 1 - (U mod 2) */
++            /* step 3 */
+             md[0] |= 0x80;
+             md[qsize - 1] |= 0x01;
+             if (!BN_bin2bn(md, qsize, q))
+                 goto err;
+ 
+-            /* step 8 test for prime (64 round of Rabin-Miller) */
++            /* step 4 */
+             r = BN_is_prime_fasttest_ex(q, DSS_prime_checks, ctx,
+                                         seed_is_random, cb);
+             if (r > 0)
+@@ -305,6 +239,8 @@ int FIPS_dsa_generate_pq(BN_CTX *ctx, size_t bits, size_t qbits,
+             if (r != 0)
+                 goto err;
+ 
++            /* do a callback call */
++            /* step 5 */
+         }
+ 
+         if (!BN_GENCB_call(cb, 2, 0))
+@@ -312,16 +248,19 @@ int FIPS_dsa_generate_pq(BN_CTX *ctx, size_t bits, size_t qbits,
+         if (!BN_GENCB_call(cb, 3, 0))
+             goto err;
+ 
+-        /* step 11 */
++        /* step 6 */
+         counter = 0;
+-        /* "offset = 1" */
++        /* "offset = 2" */
++
++        n = (bits - 1) / 160;
+ 
+         for (;;) {
+             if ((counter != 0) && !BN_GENCB_call(cb, 0, counter))
+                 goto err;
+ 
+-            /* step 11.1, 11.2 obtain W */
++            /* step 7 */
+             BN_zero(W);
++            /* now 'buf' contains "SEED + offset - 1" */
+             for (k = 0; k <= n; k++) {
+                 /*
+                  * obtain "SEED + offset + k" by incrementing:
+@@ -335,37 +274,36 @@ int FIPS_dsa_generate_pq(BN_CTX *ctx, size_t bits, size_t qbits,
+                 if (!EVP_Digest(buf, qsize, md, NULL, evpmd, NULL))
+                     goto err;
+ 
++                /* step 8 */
+                 if (!BN_bin2bn(md, qsize, r0))
+                     goto err;
+-                if (k == n)
+-                    BN_mask_bits(r0, b);
+-                if (!BN_lshift(r0, r0, qbits * k))
++                if (!BN_lshift(r0, r0, (qsize << 3) * k))
+                     goto err;
+                 if (!BN_add(W, W, r0))
+                     goto err;
+             }
+ 
+-            /* step 11.3 X = W + 2^(L-1) */
++            /* more of step 8 */
++            if (!BN_mask_bits(W, bits - 1))
++                goto err;
+             if (!BN_copy(X, W))
+                 goto err;
+             if (!BN_add(X, X, test))
+                 goto err;
+ 
+-            /* step 11.4 c = X mod 2*q */
++            /* step 9 */
+             if (!BN_lshift1(r0, q))
+                 goto err;
+             if (!BN_mod(c, X, r0, ctx))
+                 goto err;
+-
+-            /* step 11.5 p = X - (c - 1) */
+             if (!BN_sub(r0, c, BN_value_one()))
+                 goto err;
+             if (!BN_sub(p, X, r0))
+                 goto err;
+ 
+-            /* step 11.6 */
++            /* step 10 */
+             if (BN_cmp(p, test) >= 0) {
+-                /* step 11.7 */
++                /* step 11 */
+                 r = BN_is_prime_fasttest_ex(p, DSS_prime_checks, ctx, 1, cb);
+                 if (r > 0)
+                     goto end;   /* found it */
+@@ -373,12 +311,12 @@ int FIPS_dsa_generate_pq(BN_CTX *ctx, size_t bits, size_t qbits,
+                     goto err;
+             }
+ 
+-            /* step 11.9 */
++            /* step 13 */
+             counter++;
+             /* "offset = offset + n + 1" */
+ 
+-            /* step 12 */
+-            if (counter >= 4 * bits)
++            /* step 14 */
++            if (counter >= 4096)
+                 break;
+         }
+     }
+@@ -386,33 +324,7 @@ int FIPS_dsa_generate_pq(BN_CTX *ctx, size_t bits, size_t qbits,
+     if (!BN_GENCB_call(cb, 2, 1))
+         goto err;
+ 
+-    ok = 1;
+- err:
+-    if (ok) {
+-        if (counter_ret != NULL)
+-            *counter_ret = counter;
+-    }
+-    return ok;
+-}
+-
+-# ifndef OPENSSL_FIPS
+-static
+-# endif
+-int FIPS_dsa_generate_g(BN_CTX *ctx, BIGNUM *p, BIGNUM *q,
+-                        BIGNUM **g_ret, unsigned long *h_ret, BN_GENCB *cb)
+-{
+-    int ok = 0;
+-    BIGNUM *r0, *test, *g = NULL;
+-    BN_MONT_CTX *mont;
+-    unsigned int h = 2;
+-
+-    if ((mont = BN_MONT_CTX_new()) == NULL)
+-        goto err;
+-
+-    r0 = BN_CTX_get(ctx);
+-    *g_ret = g = BN_CTX_get(ctx);
+-    test = BN_CTX_get(ctx);
+-
++    /* We now need to generate g */
+     /* Set r0=(p-1)/q */
+     if (!BN_sub(test, p, BN_value_one()))
+         goto err;
+@@ -441,14 +353,106 @@ int FIPS_dsa_generate_g(BN_CTX *ctx, BIGNUM *p, BIGNUM *q,
+     ok = 1;
+  err:
+     if (ok) {
++        if (ret->p)
++            BN_free(ret->p);
++        if (ret->q)
++            BN_free(ret->q);
++        if (ret->g)
++            BN_free(ret->g);
++        ret->p = BN_dup(p);
++        ret->q = BN_dup(q);
++        ret->g = BN_dup(g);
++        if (ret->p == NULL || ret->q == NULL || ret->g == NULL) {
++            ok = 0;
++            goto err;
++        }
++        if (counter_ret != NULL)
++            *counter_ret = counter;
+         if (h_ret != NULL)
+             *h_ret = h;
++        if (seed_out)
++            memcpy(seed_out, seed, qsize);
++    }
++    if (ctx) {
++        BN_CTX_end(ctx);
++        BN_CTX_free(ctx);
+     }
+     if (mont != NULL)
+         BN_MONT_CTX_free(mont);
+     return ok;
+ }
+ 
++#ifdef OPENSSL_FIPS
++
++/* Security strength of parameter values for (L,N): see FIPS186-3 4.2
++ * and SP800-131A
++ */
++
++static int fips_ffc_strength(size_t L, size_t N)
++{
++	if (L >= 15360 && N >= 512)
++		return 256;
++	if (L >= 7680 && N >= 384)
++		return 192;
++	if (L >= 3072 && N >= 256)
++		return 128;
++	if (L >= 2048 && N >= 224)
++		return 112;
++	if (L >= 1024 && N >= 160)
++		return  80;
++	return 0;
++}
++
++/* Valid DSA2 parameters from FIPS 186-3 */
++
++static int dsa2_valid_parameters(size_t L, size_t N)
++{
++	if (L == 1024 && N == 160)
++		return 80;
++	if (L == 2048 && N == 224)
++		return 112;
++	if (L == 2048 && N == 256)
++		return 112;
++	if (L == 3072 && N == 256)
++		return 128;
++	return 0;
++}
++
++int fips_check_dsa_prng(DSA *dsa, size_t L, size_t N)
++{
++	int strength;
++
++	if (!FIPS_module_mode())
++		return 1;
++
++	if (dsa->flags & (DSA_FLAG_NON_FIPS_ALLOW|DSA_FLAG_FIPS_CHECKED))
++		return 1;
++
++	if (!L || !N) {
++		L = BN_num_bits(dsa->p);
++		N = BN_num_bits(dsa->q);
++	}
++	if (!dsa2_valid_parameters(L, N)) {
++		FIPSerr(FIPS_F_FIPS_CHECK_DSA_PRNG, FIPS_R_INVALID_PARAMETERS);
++		return 0;
++	}
++
++	strength = fips_ffc_strength(L, N);
++
++	if (!strength) {
++		FIPSerr(FIPS_F_FIPS_CHECK_DSA_PRNG,FIPS_R_KEY_TOO_SHORT);
++		return 0;
++	}
++
++	if (FIPS_rand_strength() >= strength)
++		return 1;
++
++	FIPSerr(FIPS_F_FIPS_CHECK_DSA_PRNG,FIPS_R_PRNG_STRENGTH_TOO_LOW);
++	return 0;
++
++}
++#endif /* OPENSSL_FIPS */
++
+ /*
+  * This is a parameter generation algorithm for the DSA2 algorithm as
+  * described in FIPS 186-3.
+@@ -474,6 +478,17 @@ int dsa_builtin_paramgen2(DSA *ret, size_t L, size_t N,
+     EVP_MD_CTX mctx;
+     unsigned int h = 2;
+ 
++# ifdef OPENSSL_FIPS
++
++    if (FIPS_selftest_failed()) {
++        FIPSerr(FIPS_F_DSA_BUILTIN_PARAMGEN2, FIPS_R_FIPS_SELFTEST_FAILED);
++        goto err;
++    }
++
++    if (!fips_check_dsa_prng(ret, L, N))
++        goto err;
++# endif
++
+     EVP_MD_CTX_init(&mctx);
+ 
+     if (evpmd == NULL) {
+diff --git a/crypto/dsa/dsa_key.c b/crypto/dsa/dsa_key.c
+index f235fce..2d96c99 100644
+--- a/crypto/dsa/dsa_key.c
++++ b/crypto/dsa/dsa_key.c
+@@ -70,7 +70,7 @@
+ 
+ static int fips_check_dsa(DSA *dsa)
+ {
+-    EVP_PKEY *pk;
++    EVP_PKEY *pk = NULL;
+     unsigned char tbs[] = "DSA Pairwise Check Data";
+     int ret = 0;
+ 
+@@ -101,7 +101,7 @@ static int dsa_builtin_keygen(DSA *dsa);
+ int DSA_generate_key(DSA *dsa)
+ {
+ # ifdef OPENSSL_FIPS
+-    if (FIPS_mode() && !(dsa->meth->flags & DSA_FLAG_FIPS_METHOD)
++    if (FIPS_module_mode() && !(dsa->meth->flags & DSA_FLAG_FIPS_METHOD)
+         && !(dsa->flags & DSA_FLAG_NON_FIPS_ALLOW)) {
+         DSAerr(DSA_F_DSA_GENERATE_KEY, DSA_R_NON_FIPS_DSA_METHOD);
+         return 0;
+@@ -119,11 +119,14 @@ static int dsa_builtin_keygen(DSA *dsa)
+     BIGNUM *pub_key = NULL, *priv_key = NULL;
+ 
+ # ifdef OPENSSL_FIPS
+-    if (FIPS_mode() && !(dsa->flags & DSA_FLAG_NON_FIPS_ALLOW)
++    if (FIPS_module_mode() && !(dsa->flags & DSA_FLAG_NON_FIPS_ALLOW)
+         && (BN_num_bits(dsa->p) < OPENSSL_DSA_FIPS_MIN_MODULUS_BITS_GEN)) {
+         DSAerr(DSA_F_DSA_BUILTIN_KEYGEN, DSA_R_KEY_SIZE_TOO_SMALL);
+         goto err;
+     }
++
++    if (!fips_check_dsa_prng(dsa, 0, 0))
++                goto err;
+ # endif
+ 
+     if ((ctx = BN_CTX_new()) == NULL)
+diff --git a/crypto/dsa/dsa_locl.h b/crypto/dsa/dsa_locl.h
+index f4f54fc..9c23c3e 100644
+--- a/crypto/dsa/dsa_locl.h
++++ b/crypto/dsa/dsa_locl.h
+@@ -56,7 +56,7 @@
+ 
+ int dsa_builtin_paramgen(DSA *ret, size_t bits, size_t qbits,
+                          const EVP_MD *evpmd, const unsigned char *seed_in,
+-                         size_t seed_len,
++                         size_t seed_len, unsigned char *seed_out,
+                          int *counter_ret, unsigned long *h_ret,
+                          BN_GENCB *cb);
+ 
+diff --git a/crypto/dsa/dsa_ossl.c b/crypto/dsa/dsa_ossl.c
+index 12c4a06..816ec91 100644
+--- a/crypto/dsa/dsa_ossl.c
++++ b/crypto/dsa/dsa_ossl.c
+@@ -154,6 +154,9 @@ static DSA_SIG *dsa_do_sign(const unsigned char *dgst, int dlen, DSA *dsa)
+         DSAerr(DSA_F_DSA_DO_SIGN, DSA_R_KEY_SIZE_TOO_SMALL);
+         return NULL;
+     }
++
++    if (!fips_check_dsa_prng(dsa, 0, 0))
++	goto err;
+ #endif
+ 
+     BN_init(&m);
+diff --git a/crypto/dsa/dsa_pmeth.c b/crypto/dsa/dsa_pmeth.c
+index 5c22962..42b8bb0 100644
+--- a/crypto/dsa/dsa_pmeth.c
++++ b/crypto/dsa/dsa_pmeth.c
+@@ -253,7 +253,7 @@ static int pkey_dsa_paramgen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey)
+     if (!dsa)
+         return 0;
+     ret = dsa_builtin_paramgen(dsa, dctx->nbits, dctx->qbits, dctx->pmd,
+-                               NULL, 0, NULL, NULL, pcb);
++                               NULL, 0, NULL, NULL, NULL, pcb);
+     if (ret)
+         EVP_PKEY_assign_DSA(pkey, dsa);
+     else
+diff --git a/crypto/dsa/dsatest.c b/crypto/dsa/dsatest.c
+index a71973b..8a224a8 100644
+--- a/crypto/dsa/dsatest.c
++++ b/crypto/dsa/dsatest.c
+@@ -100,41 +100,36 @@ static int MS_CALLBACK dsa_cb(int p, int n, BN_GENCB *arg);
+  * PUB 186 and also appear in Appendix 5 to FIPS PIB 186-1
+  */
+ static unsigned char seed[20] = {
+-    0x02, 0x47, 0x11, 0x92, 0x11, 0x88, 0xC8, 0xFB, 0xAF, 0x48, 0x4C, 0x62,
+-    0xDF, 0xA5, 0xBE, 0xA0, 0xA4, 0x3C, 0x56, 0xE3,
++    0xd5, 0x01, 0x4e, 0x4b, 0x60, 0xef, 0x2b, 0xa8, 0xb6, 0x21, 0x1b, 0x40,
++    0x62, 0xba, 0x32, 0x24, 0xe0, 0x42, 0x7d, 0xd3,
+ };
+ 
+ static unsigned char out_p[] = {
+-    0xAC, 0xCB, 0x1E, 0x63, 0x60, 0x69, 0x0C, 0xFB, 0x06, 0x19, 0x68, 0x3E,
+-    0xA5, 0x01, 0x5A, 0xA2, 0x15, 0x5C, 0xE2, 0x99, 0x2D, 0xD5, 0x30, 0x99,
+-    0x7E, 0x5F, 0x8D, 0xE2, 0xF7, 0xC6, 0x2E, 0x8D, 0xA3, 0x9F, 0x58, 0xAD,
+-    0xD6, 0xA9, 0x7D, 0x0E, 0x0D, 0x95, 0x53, 0xA6, 0x71, 0x3A, 0xDE, 0xAB,
+-    0xAC, 0xE9, 0xF4, 0x36, 0x55, 0x9E, 0xB9, 0xD6, 0x93, 0xBF, 0xF3, 0x18,
+-    0x1C, 0x14, 0x7B, 0xA5, 0x42, 0x2E, 0xCD, 0x00, 0xEB, 0x35, 0x3B, 0x1B,
+-    0xA8, 0x51, 0xBB, 0xE1, 0x58, 0x42, 0x85, 0x84, 0x22, 0xA7, 0x97, 0x5E,
+-    0x99, 0x6F, 0x38, 0x20, 0xBD, 0x9D, 0xB6, 0xD9, 0x33, 0x37, 0x2A, 0xFD,
+-    0xBB, 0xD4, 0xBC, 0x0C, 0x2A, 0x67, 0xCB, 0x9F, 0xBB, 0xDF, 0xF9, 0x93,
+-    0xAA, 0xD6, 0xF0, 0xD6, 0x95, 0x0B, 0x5D, 0x65, 0x14, 0xD0, 0x18, 0x9D,
+-    0xC6, 0xAF, 0xF0, 0xC6, 0x37, 0x7C, 0xF3, 0x5F,
++    0x8d, 0xf2, 0xa4, 0x94, 0x49, 0x22, 0x76, 0xaa,
++    0x3d, 0x25, 0x75, 0x9b, 0xb0, 0x68, 0x69, 0xcb,
++    0xea, 0xc0, 0xd8, 0x3a, 0xfb, 0x8d, 0x0c, 0xf7,
++    0xcb, 0xb8, 0x32, 0x4f, 0x0d, 0x78, 0x82, 0xe5,
++    0xd0, 0x76, 0x2f, 0xc5, 0xb7, 0x21, 0x0e, 0xaf,
++    0xc2, 0xe9, 0xad, 0xac, 0x32, 0xab, 0x7a, 0xac,
++    0x49, 0x69, 0x3d, 0xfb, 0xf8, 0x37, 0x24, 0xc2,
++    0xec, 0x07, 0x36, 0xee, 0x31, 0xc8, 0x02, 0x91,
+ };
+ 
+ static unsigned char out_q[] = {
+-    0xE3, 0x8E, 0x5E, 0x6D, 0xBF, 0x2B, 0x79, 0xF8, 0xC5, 0x4B, 0x89, 0x8B,
+-    0xBA, 0x2D, 0x91, 0xC3, 0x6C, 0x80, 0xAC, 0x87,
++    0xc7, 0x73, 0x21, 0x8c, 0x73, 0x7e, 0xc8, 0xee,
++    0x99, 0x3b, 0x4f, 0x2d, 0xed, 0x30, 0xf4, 0x8e,
++    0xda, 0xce, 0x91, 0x5f,
+ };
+ 
+ static unsigned char out_g[] = {
+-    0x42, 0x4A, 0x04, 0x4E, 0x79, 0xB4, 0x99, 0x7F, 0xFD, 0x58, 0x36, 0x2C,
+-    0x1B, 0x5F, 0x18, 0x7E, 0x0D, 0xCC, 0xAB, 0x81, 0xC9, 0x5D, 0x10, 0xCE,
+-    0x4E, 0x80, 0x7E, 0x58, 0xB4, 0x34, 0x3F, 0xA7, 0x45, 0xC7, 0xAA, 0x36,
+-    0x24, 0x42, 0xA9, 0x3B, 0xE8, 0x0E, 0x04, 0x02, 0x2D, 0xFB, 0xA6, 0x13,
+-    0xB9, 0xB5, 0x15, 0xA5, 0x56, 0x07, 0x35, 0xE4, 0x03, 0xB6, 0x79, 0x7C,
+-    0x62, 0xDD, 0xDF, 0x3F, 0x71, 0x3A, 0x9D, 0x8B, 0xC4, 0xF6, 0xE7, 0x1D,
+-    0x52, 0xA8, 0xA9, 0x43, 0x1D, 0x33, 0x51, 0x88, 0x39, 0xBD, 0x73, 0xE9,
+-    0x5F, 0xBE, 0x82, 0x49, 0x27, 0xE6, 0xB5, 0x53, 0xC1, 0x38, 0xAC, 0x2F,
+-    0x6D, 0x97, 0x6C, 0xEB, 0x67, 0xC1, 0x5F, 0x67, 0xF8, 0x35, 0x05, 0x5E,
+-    0xD5, 0x68, 0x80, 0xAA, 0x96, 0xCA, 0x0B, 0x8A, 0xE6, 0xF1, 0xB1, 0x41,
+-    0xC6, 0x75, 0x94, 0x0A, 0x0A, 0x2A, 0xFA, 0x29,
++    0x62, 0x6d, 0x02, 0x78, 0x39, 0xea, 0x0a, 0x13,
++    0x41, 0x31, 0x63, 0xa5, 0x5b, 0x4c, 0xb5, 0x00,
++    0x29, 0x9d, 0x55, 0x22, 0x95, 0x6c, 0xef, 0xcb,
++    0x3b, 0xff, 0x10, 0xf3, 0x99, 0xce, 0x2c, 0x2e,
++    0x71, 0xcb, 0x9d, 0xe5, 0xfa, 0x24, 0xba, 0xbf,
++    0x58, 0xe5, 0xb7, 0x95, 0x21, 0x92, 0x5c, 0x9c,
++    0xc4, 0x2e, 0x9f, 0x6f, 0x46, 0x4b, 0x08, 0x8c,
++    0xc5, 0x72, 0xaf, 0x53, 0xe6, 0xd7, 0x88, 0x02,
+ };
+ 
+ static const unsigned char str1[] = "12345678901234567890";
+@@ -167,7 +162,7 @@ int main(int argc, char **argv)
+     BIO_printf(bio_err, "test generation of DSA parameters\n");
+ 
+     BN_GENCB_set(&cb, dsa_cb, bio_err);
+-    if (((dsa = DSA_new()) == NULL) || !DSA_generate_parameters_ex(dsa, 1024,
++    if (((dsa = DSA_new()) == NULL) || !DSA_generate_parameters_ex(dsa, 512,
+                                                                    seed, 20,
+                                                                    &counter,
+                                                                    &h, &cb))
+@@ -181,8 +176,8 @@ int main(int argc, char **argv)
+     BIO_printf(bio_err, "\ncounter=%d h=%ld\n", counter, h);
+ 
+     DSA_print(bio_err, dsa, 0);
+-    if (counter != 239) {
+-        BIO_printf(bio_err, "counter should be 239\n");
++    if (counter != 105) {
++        BIO_printf(bio_err, "counter should be 105\n");
+         goto end;
+     }
+     if (h != 2) {
+diff --git a/crypto/ec/ec2_smpl.c b/crypto/ec/ec2_smpl.c
+index 5b27b91..d5cb4a9 100644
+--- a/crypto/ec/ec2_smpl.c
++++ b/crypto/ec/ec2_smpl.c
+@@ -73,10 +73,6 @@
+ 
+ #ifndef OPENSSL_NO_EC2M
+ 
+-# ifdef OPENSSL_FIPS
+-#  include <openssl/fips.h>
+-# endif
+-
+ const EC_METHOD *EC_GF2m_simple_method(void)
+ {
+     static const EC_METHOD ret = {
+@@ -124,11 +120,6 @@ const EC_METHOD *EC_GF2m_simple_method(void)
+         0                       /* field_set_to_one */
+     };
+ 
+-# ifdef OPENSSL_FIPS
+-    if (FIPS_mode())
+-        return fips_ec_gf2m_simple_method();
+-# endif
+-
+     return &ret;
+ }
+ 
+diff --git a/crypto/ec/ec_curve.c b/crypto/ec/ec_curve.c
+index 6dbe9d8..81846ec 100644
+--- a/crypto/ec/ec_curve.c
++++ b/crypto/ec/ec_curve.c
+@@ -75,10 +75,6 @@
+ #include <openssl/obj_mac.h>
+ #include <openssl/opensslconf.h>
+ 
+-#ifdef OPENSSL_FIPS
+-# include <openssl/fips.h>
+-#endif
+-
+ typedef struct {
+     int field_type,             /* either NID_X9_62_prime_field or
+                                  * NID_X9_62_characteristic_two_field */
+@@ -3162,10 +3158,6 @@ EC_GROUP *EC_GROUP_new_by_curve_name(int nid)
+     size_t i;
+     EC_GROUP *ret = NULL;
+ 
+-#ifdef OPENSSL_FIPS
+-    if (FIPS_mode())
+-        return FIPS_ec_group_new_by_curve_name(nid);
+-#endif
+     if (nid <= 0)
+         return NULL;
+ 
+diff --git a/crypto/ec/ecp_smpl.c b/crypto/ec/ecp_smpl.c
+index b0e69cb..6edb60a 100644
+--- a/crypto/ec/ecp_smpl.c
++++ b/crypto/ec/ecp_smpl.c
+@@ -178,11 +178,6 @@ int ec_GFp_simple_group_set_curve(EC_GROUP *group,
+         return 0;
+     }
+ 
+-    if (BN_num_bits(p) < 256) {
+-        ECerr(EC_F_EC_GFP_SIMPLE_GROUP_SET_CURVE, EC_R_UNSUPPORTED_FIELD);
+-        return 0;
+-    }
+-
+     if (ctx == NULL) {
+         ctx = new_ctx = BN_CTX_new();
+         if (ctx == NULL)
+diff --git a/crypto/ecdh/ecdhtest.c b/crypto/ecdh/ecdhtest.c
+index 4d6594a..5ddb745 100644
+--- a/crypto/ecdh/ecdhtest.c
++++ b/crypto/ecdh/ecdhtest.c
+@@ -382,6 +382,7 @@ static const unsigned char bp512_Z[] = {
+ 
+ /* Given private value and NID, create EC_KEY structure */
+ 
++#if 0
+ static EC_KEY *mk_eckey(int nid, const unsigned char *p, size_t plen)
+ {
+     int ok = 0;
+@@ -469,6 +470,7 @@ static int ecdh_kat(BIO *out, const char *cname, int nid,
+     }
+     return rv;
+ }
++#endif
+ 
+ # define test_ecdh_kat(bio, curve, bits) \
+         ecdh_kat(bio, curve, NID_brainpoolP##bits##r1, \
+diff --git a/crypto/evp/evp.h b/crypto/evp/evp.h
+index 2c34f51..55d9bd1 100644
+--- a/crypto/evp/evp.h
++++ b/crypto/evp/evp.h
+@@ -366,15 +366,15 @@ struct evp_cipher_st {
+ /* cipher handles random key generation */
+ # define         EVP_CIPH_RAND_KEY               0x200
+ /* cipher has its own additional copying logic */
+-# define         EVP_CIPH_CUSTOM_COPY            0x4000
++# define         EVP_CIPH_CUSTOM_COPY            0x400
+ /* Allow use default ASN1 get/set iv */
+ # define         EVP_CIPH_FLAG_DEFAULT_ASN1      0x1000
+ /* Buffer length in bits not bytes: CFB1 mode only */
+ # define         EVP_CIPH_FLAG_LENGTH_BITS       0x2000
+ /* Note if suitable for use in FIPS mode */
+-# define         EVP_CIPH_FLAG_FIPS              0x400
++# define         EVP_CIPH_FLAG_FIPS              0x4000
+ /* Allow non FIPS cipher in FIPS mode */
+-# define         EVP_CIPH_FLAG_NON_FIPS_ALLOW    0x800
++# define         EVP_CIPH_FLAG_NON_FIPS_ALLOW    0x8000
+ /*
+  * Cipher handles any and all padding logic as well as finalisation.
+  */
+diff --git a/crypto/evp/evp_enc.c b/crypto/evp/evp_enc.c
+index 891a3c7..cb368a2 100644
+--- a/crypto/evp/evp_enc.c
++++ b/crypto/evp/evp_enc.c
+@@ -87,7 +87,7 @@ static int bad_init(EVP_CIPHER_CTX *ctx, const unsigned char *key,
+ }
+ 
+ static int bad_do_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
+-                         const unsigned char *in, unsigned int inl)
++                         const unsigned char *in, size_t inl)
+ {
+     FIPS_ERROR_IGNORED("Cipher update");
+     return 0;
+diff --git a/crypto/fips/Makefile b/crypto/fips/Makefile
+index 8d4bf9a..3fef7c9 100644
+--- a/crypto/fips/Makefile
++++ b/crypto/fips/Makefile
+@@ -13,21 +13,21 @@ AR=		ar r
+ CFLAGS= $(INCLUDES) $(CFLAG)
+ 
+ GENERAL=Makefile
+-TEST=fips_test_suite.c fips_randtest.c
++TEST=fips_test_suite.c
+ APPS=
+ 
+-PROGRAM= fips_standalone_hmac
++#PROGRAM= fips_standalone_hmac
+ EXE= $(PROGRAM)$(EXE_EXT)
+ 
+ LIB=$(TOP)/libcrypto.a
+-LIBSRC=fips_aes_selftest.c fips_des_selftest.c fips_hmac_selftest.c fips_rand_selftest.c \
++LIBSRC=fips_aes_selftest.c fips_des_selftest.c fips_hmac_selftest.c \
+     fips_rsa_selftest.c fips_sha_selftest.c fips.c fips_dsa_selftest.c  fips_rand.c \
+     fips_rsa_x931g.c fips_post.c fips_drbg_ctr.c fips_drbg_hash.c fips_drbg_hmac.c \
+     fips_drbg_lib.c fips_drbg_rand.c fips_drbg_selftest.c fips_rand_lib.c \
+     fips_cmac_selftest.c fips_ecdh_selftest.c fips_ecdsa_selftest.c fips_enc.c fips_md.c \
+     fips_dh_selftest.c
+ 
+-LIBOBJ=fips_aes_selftest.o fips_des_selftest.o fips_hmac_selftest.o fips_rand_selftest.o \
++LIBOBJ=fips_aes_selftest.o fips_des_selftest.o fips_hmac_selftest.o \
+     fips_rsa_selftest.o fips_sha_selftest.o fips.o fips_dsa_selftest.o  fips_rand.o \
+     fips_rsa_x931g.o fips_post.o fips_drbg_ctr.o fips_drbg_hash.o fips_drbg_hmac.o \
+     fips_drbg_lib.o fips_drbg_rand.o fips_drbg_selftest.o fips_rand_lib.o \
+@@ -36,7 +36,8 @@ LIBOBJ=fips_aes_selftest.o fips_des_selftest.o fips_hmac_selftest.o fips_rand_se
+ 
+ LIBCRYPTO=-L.. -lcrypto
+ 
+-SRC= $(LIBSRC) fips_standalone_hmac.c
++#SRC= $(LIBSRC) fips_standalone_hmac.c
++SRC= $(LIBSRC)
+ 
+ EXHEADER= fips.h fips_rand.h
+ HEADER=	$(EXHEADER)
+diff --git a/crypto/fips/fips.c b/crypto/fips/fips.c
+index c4602e2..2a63bd5 100644
+--- a/crypto/fips/fips.c
++++ b/crypto/fips/fips.c
+@@ -371,21 +371,6 @@ static int verify_checksums(void)
+     return 1;
+ }
+ 
+-# ifndef FIPS_MODULE_PATH
+-#  define FIPS_MODULE_PATH "/etc/system-fips"
+-# endif
+-
+-int FIPS_module_installed(void)
+-{
+-    int rv;
+-    rv = access(FIPS_MODULE_PATH, F_OK);
+-    if (rv < 0 && errno != ENOENT)
+-        rv = 0;
+-
+-    /* Installed == true */
+-    return !rv;
+-}
+-
+ int FIPS_module_mode_set(int onoff, const char *auth)
+ {
+     int ret = 0;
+@@ -418,6 +403,8 @@ int FIPS_module_mode_set(int onoff, const char *auth)
+                 ret = 0;
+                 goto end;
+             }
++            OPENSSL_ia32cap_P[0] |= (1<<28);        /* set "shared cache" */
++            OPENSSL_ia32cap_P[1] &= ~(1<<(60-32));  /* clear AVX */
+         }
+ # endif
+ 
+@@ -443,6 +430,7 @@ int FIPS_module_mode_set(int onoff, const char *auth)
+     fips_selftest_fail = 0;
+     ret = 1;
+  end:
++    ERR_clear_error(); /* clear above err msg; fips mode disabled for now */
+     fips_clear_owning_thread();
+     fips_w_unlock();
+     return ret;
+diff --git a/crypto/fips/fips.h b/crypto/fips/fips.h
+index 8c9be43..d39204d 100644
+--- a/crypto/fips/fips.h
++++ b/crypto/fips/fips.h
+@@ -92,7 +92,6 @@ extern "C" {
+     void FIPS_corrupt_rsa_keygen(void);
+     int FIPS_selftest_rsa(void);
+     void FIPS_corrupt_dsa(void);
+-    void FIPS_corrupt_dsa_keygen(void);
+     int FIPS_selftest_dsa(void);
+     int FIPS_selftest_ecdsa(void);
+     int FIPS_selftest_ecdh(void);
+@@ -110,6 +109,9 @@ extern "C" {
+ 
+     void FIPS_get_timevec(unsigned char *buf, unsigned long *pctr);
+ 
++int fips_check_rsa(struct rsa_st *rsa);
++int fips_check_dsa_prng(struct dsa_st *dsa, size_t L, size_t N);
++
+ # define FIPS_ERROR_IGNORED(alg) OpenSSLDie(__FILE__, __LINE__, \
+                 alg " previous FIPS forbidden algorithm error ignored");
+ 
+@@ -146,116 +148,110 @@ extern "C" {
+ # define FIPS_F_DH_INIT                                   148
+ # define FIPS_F_DRBG_RESEED                               162
+ # define FIPS_F_DSA_BUILTIN_PARAMGEN                      101
+-# define FIPS_F_DSA_BUILTIN_PARAMGEN2                     107
+-# define FIPS_F_DSA_DO_SIGN                               102
+-# define FIPS_F_DSA_DO_VERIFY                             103
++# define FIPS_F_DSA_BUILTIN_PARAMGEN2                     102
++# define FIPS_F_DSA_DO_SIGN                               103
++# define FIPS_F_DSA_DO_VERIFY                             104
+ # define FIPS_F_ECDH_COMPUTE_KEY                          163
+ # define FIPS_F_ECDSA_DO_SIGN                             164
+ # define FIPS_F_ECDSA_DO_VERIFY                           165
+ # define FIPS_F_EC_KEY_GENERATE_KEY                       166
+-# define FIPS_F_EVP_CIPHERINIT_EX                         124
+-# define FIPS_F_EVP_DIGESTINIT_EX                         125
+-# define FIPS_F_FIPS_CHECK_DSA                            104
++# define FIPS_F_FIPS_CHECK_DSA                            105
+ # define FIPS_F_FIPS_CHECK_DSA_PRNG                       151
+-# define FIPS_F_FIPS_CHECK_EC                             142
++# define FIPS_F_FIPS_CHECK_EC                             106
+ # define FIPS_F_FIPS_CHECK_EC_PRNG                        152
+-# define FIPS_F_FIPS_CHECK_INCORE_FINGERPRINT             105
+-# define FIPS_F_FIPS_CHECK_RSA                            106
++# define FIPS_F_FIPS_CHECK_INCORE_FINGERPRINT             107
++# define FIPS_F_FIPS_CHECK_RSA                            108
+ # define FIPS_F_FIPS_CHECK_RSA_PRNG                       150
+ # define FIPS_F_FIPS_CIPHER                               160
+-# define FIPS_F_FIPS_CIPHERINIT                           143
++# define FIPS_F_FIPS_CIPHERINIT                           109
+ # define FIPS_F_FIPS_CIPHER_CTX_CTRL                      161
+ # define FIPS_F_FIPS_DIGESTFINAL                          158
+-# define FIPS_F_FIPS_DIGESTINIT                           128
++# define FIPS_F_FIPS_DIGESTINIT                           110
+ # define FIPS_F_FIPS_DIGESTUPDATE                         159
+-# define FIPS_F_FIPS_DRBG_BYTES                           131
++# define FIPS_F_FIPS_DRBG_BYTES                           111
+ # define FIPS_F_FIPS_DRBG_CHECK                           146
+-# define FIPS_F_FIPS_DRBG_CPRNG_TEST                      132
+-# define FIPS_F_FIPS_DRBG_ERROR_CHECK                     136
+-# define FIPS_F_FIPS_DRBG_GENERATE                        134
+-# define FIPS_F_FIPS_DRBG_INIT                            135
+-# define FIPS_F_FIPS_DRBG_INSTANTIATE                     138
+-# define FIPS_F_FIPS_DRBG_NEW                             139
+-# define FIPS_F_FIPS_DRBG_RESEED                          140
+-# define FIPS_F_FIPS_DRBG_SINGLE_KAT                      141
+-# define FIPS_F_FIPS_DSA_CHECK           /* unused */     107
++# define FIPS_F_FIPS_DRBG_CPRNG_TEST                      112
++# define FIPS_F_FIPS_DRBG_ERROR_CHECK                     114
++# define FIPS_F_FIPS_DRBG_GENERATE                        113
++# define FIPS_F_FIPS_DRBG_INIT                            115
++# define FIPS_F_FIPS_DRBG_INSTANTIATE                     116
++# define FIPS_F_FIPS_DRBG_NEW                             117
++# define FIPS_F_FIPS_DRBG_RESEED                          118
++# define FIPS_F_FIPS_DRBG_SINGLE_KAT                      119
+ # define FIPS_F_FIPS_DSA_SIGN_DIGEST                      154
+ # define FIPS_F_FIPS_DSA_VERIFY_DIGEST                    155
+ # define FIPS_F_FIPS_GET_ENTROPY                          147
+-# define FIPS_F_FIPS_MODE_SET            /* unused */     108
+-# define FIPS_F_FIPS_MODULE_MODE_SET                      108
+-# define FIPS_F_FIPS_PKEY_SIGNATURE_TEST                  109
+-# define FIPS_F_FIPS_RAND_ADD                             137
+-# define FIPS_F_FIPS_RAND_BYTES                           122
+-# define FIPS_F_FIPS_RAND_PSEUDO_BYTES                    167
+-# define FIPS_F_FIPS_RAND_SEED                            168
++# define FIPS_F_FIPS_MODULE_MODE_SET                      120
++# define FIPS_F_FIPS_PKEY_SIGNATURE_TEST                  121
++# define FIPS_F_FIPS_RAND_ADD                             122
++# define FIPS_F_FIPS_RAND_BYTES                           123
++# define FIPS_F_FIPS_RAND_PSEUDO_BYTES                    124
++# define FIPS_F_FIPS_RAND_SEED                            125
+ # define FIPS_F_FIPS_RAND_SET_METHOD                      126
+ # define FIPS_F_FIPS_RAND_STATUS                          127
+ # define FIPS_F_FIPS_RSA_SIGN_DIGEST                      156
+ # define FIPS_F_FIPS_RSA_VERIFY_DIGEST                    157
+-# define FIPS_F_FIPS_SELFTEST_AES                         110
++# define FIPS_F_FIPS_SELFTEST_AES                         128
+ # define FIPS_F_FIPS_SELFTEST_AES_CCM                     145
+ # define FIPS_F_FIPS_SELFTEST_AES_GCM                     129
+ # define FIPS_F_FIPS_SELFTEST_AES_XTS                     144
+ # define FIPS_F_FIPS_SELFTEST_CMAC                        130
+-# define FIPS_F_FIPS_SELFTEST_DES                         111
+-# define FIPS_F_FIPS_SELFTEST_DSA                         112
++# define FIPS_F_FIPS_SELFTEST_DES                         131
++# define FIPS_F_FIPS_SELFTEST_DSA                         132
+ # define FIPS_F_FIPS_SELFTEST_ECDSA                       133
+-# define FIPS_F_FIPS_SELFTEST_HMAC                        113
+-# define FIPS_F_FIPS_SELFTEST_RNG        /* unused */     114
+-# define FIPS_F_FIPS_SELFTEST_SHA1                        115
+-# define FIPS_F_FIPS_SELFTEST_X931                        114
++# define FIPS_F_FIPS_SELFTEST_HMAC                        134
++# define FIPS_F_FIPS_SELFTEST_SHA1                        135
++# define FIPS_F_FIPS_SELFTEST_X931                        136
+ # define FIPS_F_FIPS_SET_PRNG_KEY                         153
+-# define FIPS_F_HASH_FINAL                                123
+-# define FIPS_F_RSA_BUILTIN_KEYGEN                        116
++# define FIPS_F_HASH_FINAL                                137
++# define FIPS_F_RSA_BUILTIN_KEYGEN                        138
+ # define FIPS_F_RSA_EAY_INIT                              149
+-# define FIPS_F_RSA_EAY_PRIVATE_DECRYPT                   117
+-# define FIPS_F_RSA_EAY_PRIVATE_ENCRYPT                   118
+-# define FIPS_F_RSA_EAY_PUBLIC_DECRYPT                    119
+-# define FIPS_F_RSA_EAY_PUBLIC_ENCRYPT                    120
+-# define FIPS_F_RSA_X931_GENERATE_KEY_EX                  121
+-# define FIPS_F_SSLEAY_RAND_BYTES        /* unused */     122
++# define FIPS_F_RSA_EAY_PRIVATE_DECRYPT                   139
++# define FIPS_F_RSA_EAY_PRIVATE_ENCRYPT                   140
++# define FIPS_F_RSA_EAY_PUBLIC_DECRYPT                    141
++# define FIPS_F_RSA_EAY_PUBLIC_ENCRYPT                    142
++# define FIPS_F_RSA_X931_GENERATE_KEY_EX                  143
++# define FIPS_F_EVP_CIPHERINIT_EX                         200
++# define FIPS_F_EVP_DIGESTINIT_EX                         201
++# define FIPS_F_FIPS_SELFTEST_SHA2                        202
+ 
+ /* Reason codes. */
+ # define FIPS_R_ADDITIONAL_INPUT_ERROR_UNDETECTED         150
+-# define FIPS_R_ADDITIONAL_INPUT_TOO_LONG                 125
+-# define FIPS_R_ALREADY_INSTANTIATED                      134
++# define FIPS_R_ADDITIONAL_INPUT_TOO_LONG                 100
++# define FIPS_R_ALREADY_INSTANTIATED                      101
+ # define FIPS_R_AUTHENTICATION_FAILURE                    151
+-# define FIPS_R_CANNOT_READ_EXE          /* unused */     103
+-# define FIPS_R_CANNOT_READ_EXE_DIGEST   /* unused */     104
+-# define FIPS_R_CONTRADICTING_EVIDENCE                    114
++# define FIPS_R_CONTRADICTING_EVIDENCE                    102
+ # define FIPS_R_DRBG_NOT_INITIALISED                      152
+ # define FIPS_R_DRBG_STUCK                                103
+ # define FIPS_R_ENTROPY_ERROR_UNDETECTED                  104
+ # define FIPS_R_ENTROPY_NOT_REQUESTED_FOR_RESEED          105
+ # define FIPS_R_ENTROPY_SOURCE_STUCK                      142
+-# define FIPS_R_ERROR_INITIALISING_DRBG                   115
+-# define FIPS_R_ERROR_INSTANTIATING_DRBG                  127
+-# define FIPS_R_ERROR_RETRIEVING_ADDITIONAL_INPUT         124
+-# define FIPS_R_ERROR_RETRIEVING_ENTROPY                  122
+-# define FIPS_R_ERROR_RETRIEVING_NONCE                    140
+-# define FIPS_R_EXE_DIGEST_DOES_NOT_MATCH   /* unused */  105
+-# define FIPS_R_FINGERPRINT_DOES_NOT_MATCH                110
+-# define FIPS_R_FINGERPRINT_DOES_NOT_MATCH_NONPIC_RELOCATED 111
+-# define FIPS_R_FINGERPRINT_DOES_NOT_MATCH_SEGMENT_ALIASING 112
+-# define FIPS_R_FIPS_MODE_ALREADY_SET                     102
+-# define FIPS_R_FIPS_SELFTEST_FAILED                      106
++# define FIPS_R_ERROR_INITIALISING_DRBG                   106
++# define FIPS_R_ERROR_INSTANTIATING_DRBG                  107
++# define FIPS_R_ERROR_RETRIEVING_ADDITIONAL_INPUT         108
++# define FIPS_R_ERROR_RETRIEVING_ENTROPY                  109
++# define FIPS_R_ERROR_RETRIEVING_NONCE                    110
++# define FIPS_R_FINGERPRINT_DOES_NOT_MATCH                111
++# define FIPS_R_FINGERPRINT_DOES_NOT_MATCH_NONPIC_RELOCATED 112
++# define FIPS_R_FINGERPRINT_DOES_NOT_MATCH_SEGMENT_ALIASING 113
++# define FIPS_R_FIPS_MODE_ALREADY_SET                     114
++# define FIPS_R_FIPS_SELFTEST_FAILED                      115
+ # define FIPS_R_FUNCTION_ERROR                            116
+-# define FIPS_R_GENERATE_ERROR                            137
++# define FIPS_R_GENERATE_ERROR                            117
+ # define FIPS_R_GENERATE_ERROR_UNDETECTED                 118
+ # define FIPS_R_INSTANTIATE_ERROR                         119
+ # define FIPS_R_INSUFFICIENT_SECURITY_STRENGTH            120
+ # define FIPS_R_INTERNAL_ERROR                            121
+-# define FIPS_R_INVALID_KEY_LENGTH                        109
++# define FIPS_R_INVALID_KEY_LENGTH                        122
+ # define FIPS_R_INVALID_PARAMETERS                        144
+ # define FIPS_R_IN_ERROR_STATE                            123
+-# define FIPS_R_KEY_TOO_SHORT                             108
++# define FIPS_R_KEY_TOO_SHORT                             124
+ # define FIPS_R_NONCE_ERROR_UNDETECTED                    149
+-# define FIPS_R_NON_FIPS_METHOD                           100
++# define FIPS_R_NON_FIPS_METHOD                           125
+ # define FIPS_R_NOPR_TEST1_FAILURE                        145
+ # define FIPS_R_NOPR_TEST2_FAILURE                        146
+ # define FIPS_R_NOT_INSTANTIATED                          126
+-# define FIPS_R_PAIRWISE_TEST_FAILED                      107
++# define FIPS_R_PAIRWISE_TEST_FAILED                      127
+ # define FIPS_R_PERSONALISATION_ERROR_UNDETECTED          128
+ # define FIPS_R_PERSONALISATION_STRING_TOO_LONG           129
+ # define FIPS_R_PRNG_STRENGTH_TOO_LOW                     143
+@@ -265,16 +261,14 @@ extern "C" {
+ # define FIPS_R_REQUEST_TOO_LARGE_FOR_DRBG                131
+ # define FIPS_R_RESEED_COUNTER_ERROR                      132
+ # define FIPS_R_RESEED_ERROR                              133
+-# define FIPS_R_RSA_DECRYPT_ERROR        /* unused */     115
+-# define FIPS_R_RSA_ENCRYPT_ERROR        /* unused */     116
+-# define FIPS_R_SELFTEST_FAILED                           101
++# define FIPS_R_SELFTEST_FAILED                           134
+ # define FIPS_R_SELFTEST_FAILURE                          135
+ # define FIPS_R_STRENGTH_ERROR_UNDETECTED                 136
+-# define FIPS_R_TEST_FAILURE                              117
++# define FIPS_R_TEST_FAILURE                              137
+ # define FIPS_R_UNINSTANTIATE_ERROR                       141
+ # define FIPS_R_UNINSTANTIATE_ZEROISE_ERROR               138
+ # define FIPS_R_UNSUPPORTED_DRBG_TYPE                     139
+-# define FIPS_R_UNSUPPORTED_PLATFORM                      113
++# define FIPS_R_UNSUPPORTED_PLATFORM                      140
+ 
+ # ifdef  __cplusplus
+ }
+diff --git a/crypto/fips/fips_cmac_selftest.c b/crypto/fips/fips_cmac_selftest.c
+index 9e75ec9..3955c35 100644
+--- a/crypto/fips/fips_cmac_selftest.c
++++ b/crypto/fips/fips_cmac_selftest.c
+@@ -49,11 +49,12 @@
+ 
+ #include <string.h>
+ #include <openssl/err.h>
+-#include <openssl/fips.h>
+ #include <openssl/cmac.h>
+-#include "fips_locl.h"
+ 
+ #ifdef OPENSSL_FIPS
++#include <openssl/fips.h>
++#include "fips_locl.h"
++
+ typedef struct {
+     int nid;
+     const unsigned char key[EVP_MAX_KEY_LENGTH];
+diff --git a/crypto/fips/fips_dh_selftest.c b/crypto/fips/fips_dh_selftest.c
+index 2b1eb25..e205bad 100644
+--- a/crypto/fips/fips_dh_selftest.c
++++ b/crypto/fips/fips_dh_selftest.c
+@@ -51,13 +51,13 @@
+ #include <string.h>
+ #include <openssl/crypto.h>
+ #include <openssl/dh.h>
+-#include <openssl/fips.h>
+ #include <openssl/err.h>
+ #include <openssl/evp.h>
+ #include <openssl/bn.h>
+-#include "fips_locl.h"
+ 
+ #ifdef OPENSSL_FIPS
++#include <openssl/fips.h>
++#include "fips_locl.h"
+ 
+ static const unsigned char dh_test_2048_p[] = {
+     0xAE, 0xEC, 0xEE, 0x22, 0xFA, 0x3A, 0xA5, 0x22, 0xC0, 0xDE, 0x0F, 0x09,
+diff --git a/crypto/fips/fips_drbg_ctr.c b/crypto/fips/fips_drbg_ctr.c
+index a830b2c..11b5f92 100644
+--- a/crypto/fips/fips_drbg_ctr.c
++++ b/crypto/fips/fips_drbg_ctr.c
+@@ -54,6 +54,8 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <openssl/crypto.h>
++
++#ifdef OPENSSL_FIPS
+ #include <openssl/fips.h>
+ #include <openssl/fips_rand.h>
+ #include "fips_rand_lcl.h"
+@@ -413,3 +415,4 @@ int fips_drbg_ctr_init(DRBG_CTX *dctx)
+ 
+     return 1;
+ }
++#endif
+diff --git a/crypto/fips/fips_drbg_hash.c b/crypto/fips/fips_drbg_hash.c
+index b19420a..176a9e6 100644
+--- a/crypto/fips/fips_drbg_hash.c
++++ b/crypto/fips/fips_drbg_hash.c
+@@ -56,6 +56,8 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <openssl/crypto.h>
++
++#ifdef OPENSSL_FIPS
+ #include <openssl/fips.h>
+ #include <openssl/fips_rand.h>
+ #include "fips_rand_lcl.h"
+@@ -356,3 +358,4 @@ int fips_drbg_hash_init(DRBG_CTX *dctx)
+ 
+     return 1;
+ }
++#endif
+diff --git a/crypto/fips/fips_drbg_hmac.c b/crypto/fips/fips_drbg_hmac.c
+index 105db12..7e1bfc3 100644
+--- a/crypto/fips/fips_drbg_hmac.c
++++ b/crypto/fips/fips_drbg_hmac.c
+@@ -57,6 +57,8 @@
+ #include <openssl/evp.h>
+ #include <openssl/hmac.h>
+ #include <openssl/aes.h>
++
++#ifdef OPENSSL_FIPS
+ #include <openssl/fips.h>
+ #include <openssl/fips_rand.h>
+ #include "fips_rand_lcl.h"
+@@ -268,3 +270,4 @@ int fips_drbg_hmac_init(DRBG_CTX *dctx)
+ 
+     return 1;
+ }
++#endif
+diff --git a/crypto/fips/fips_drbg_lib.c b/crypto/fips/fips_drbg_lib.c
+index 1a71322..d8c7407 100644
+--- a/crypto/fips/fips_drbg_lib.c
++++ b/crypto/fips/fips_drbg_lib.c
+@@ -53,6 +53,8 @@
+ #include <string.h>
+ #include <openssl/crypto.h>
+ #include <openssl/err.h>
++
++#ifdef OPENSSL_FIPS
+ #include <openssl/fips_rand.h>
+ #include "fips_locl.h"
+ #include "fips_rand_lcl.h"
+@@ -551,3 +553,4 @@ int fips_drbg_cprng_test(DRBG_CTX *dctx, const unsigned char *out)
+     memcpy(dctx->lb, out, dctx->blocklength);
+     return 1;
+ }
++#endif
+diff --git a/crypto/fips/fips_drbg_rand.c b/crypto/fips/fips_drbg_rand.c
+index 43600dd..bb523c8 100644
+--- a/crypto/fips/fips_drbg_rand.c
++++ b/crypto/fips/fips_drbg_rand.c
+@@ -55,6 +55,8 @@
+ #include <openssl/crypto.h>
+ #include <openssl/err.h>
+ #include <openssl/rand.h>
++
++#ifdef OPENSSL_FIPS
+ #include <openssl/fips_rand.h>
+ #include "fips_rand_lcl.h"
+ 
+@@ -164,3 +166,4 @@ const RAND_METHOD *FIPS_drbg_method(void)
+ {
+     return &rand_drbg_meth;
+ }
++#endif
+diff --git a/crypto/fips/fips_drbg_selftest.c b/crypto/fips/fips_drbg_selftest.c
+index 1397202..7a5b1a0 100644
+--- a/crypto/fips/fips_drbg_selftest.c
++++ b/crypto/fips/fips_drbg_selftest.c
+@@ -10,7 +10,7 @@
+  * are met:
+  *
+  * 1. Redistributions of source code must retain the above copyright
+- *    notice, this list of conditions and the following disclaimer. 
++ *    notice, this list of conditions and the following disclaimer.
+  *
+  * 2. Redistributions in binary form must reproduce the above copyright
+  *    notice, this list of conditions and the following disclaimer in
+@@ -54,6 +54,8 @@
+ #include <string.h>
+ #include <openssl/crypto.h>
+ #include <openssl/err.h>
++
++#ifdef OPENSSL_FIPS
+ #include <openssl/fips_rand.h>
+ #include "fips_rand_lcl.h"
+ #include "fips_locl.h"
+@@ -756,16 +758,11 @@ int FIPS_drbg_health_check(DRBG_CTX *dctx)
+     int rv;
+     DRBG_CTX *tctx = NULL;
+     tctx = FIPS_drbg_new(0, 0);
+-    fips_post_started(FIPS_TEST_DRBG, dctx->type, &dctx->xflags);
+     if (!tctx)
+         return 0;
+     rv = fips_drbg_kat(tctx, dctx->type, dctx->xflags);
+     if (tctx)
+         FIPS_drbg_free(tctx);
+-    if (rv)
+-        fips_post_success(FIPS_TEST_DRBG, dctx->type, &dctx->xflags);
+-    else
+-        fips_post_failed(FIPS_TEST_DRBG, dctx->type, &dctx->xflags);
+     if (!rv)
+         dctx->status = DRBG_STATUS_ERROR;
+     else
+@@ -784,15 +781,10 @@ int FIPS_selftest_drbg(void)
+     for (td = drbg_test; td->nid != 0; td++) {
+         if (td->post != 1)
+             continue;
+-        if (!fips_post_started(FIPS_TEST_DRBG, td->nid, &td->flags))
+-            return 1;
+         if (!fips_drbg_single_kat(dctx, td, 1)) {
+-            fips_post_failed(FIPS_TEST_DRBG, td->nid, &td->flags);
+             rv = 0;
+             continue;
+         }
+-        if (!fips_post_success(FIPS_TEST_DRBG, td->nid, &td->flags))
+-            return 0;
+     }
+     FIPS_drbg_free(dctx);
+     return rv;
+@@ -807,21 +799,16 @@ int FIPS_selftest_drbg_all(void)
+     if (!dctx)
+         return 0;
+     for (td = drbg_test; td->nid != 0; td++) {
+-        if (!fips_post_started(FIPS_TEST_DRBG, td->nid, &td->flags))
+-            return 1;
+         if (!fips_drbg_single_kat(dctx, td, 0)) {
+-            fips_post_failed(FIPS_TEST_DRBG, td->nid, &td->flags);
+             rv = 0;
+             continue;
+         }
+         if (!fips_drbg_error_check(dctx, td)) {
+-            fips_post_failed(FIPS_TEST_DRBG, td->nid, &td->flags);
+             rv = 0;
+             continue;
+         }
+-        if (!fips_post_success(FIPS_TEST_DRBG, td->nid, &td->flags))
+-            return 0;
+     }
+     FIPS_drbg_free(dctx);
+     return rv;
+ }
++#endif
+diff --git a/crypto/fips/fips_dsa_selftest.c b/crypto/fips/fips_dsa_selftest.c
+index 4c0da82..521c346 100644
+--- a/crypto/fips/fips_dsa_selftest.c
++++ b/crypto/fips/fips_dsa_selftest.c
+@@ -50,13 +50,13 @@
+ #include <string.h>
+ #include <openssl/crypto.h>
+ #include <openssl/dsa.h>
+-#include <openssl/fips.h>
+ #include <openssl/err.h>
+ #include <openssl/evp.h>
+ #include <openssl/bn.h>
+-#include "fips_locl.h"
+ 
+ #ifdef OPENSSL_FIPS
++#include <openssl/fips.h>
++#include "fips_locl.h"
+ 
+ static const unsigned char dsa_test_2048_p[] = {
+     0xa8, 0x53, 0x78, 0xd8, 0xfd, 0x3f, 0x8d, 0x72, 0xec, 0x74, 0x18, 0x08,
+diff --git a/crypto/fips/fips_ecdh_selftest.c b/crypto/fips/fips_ecdh_selftest.c
+index 8cad5ad..2b7341e 100644
+--- a/crypto/fips/fips_ecdh_selftest.c
++++ b/crypto/fips/fips_ecdh_selftest.c
+@@ -58,13 +58,13 @@
+ #include <openssl/crypto.h>
+ #include <openssl/ec.h>
+ #include <openssl/ecdh.h>
+-#include <openssl/fips.h>
+ #include <openssl/err.h>
+ #include <openssl/evp.h>
+ #include <openssl/bn.h>
+ 
+ #ifdef OPENSSL_FIPS
+ 
++#include <openssl/fips.h>
+ # include "fips_locl.h"
+ 
+ static const unsigned char p256_qcavsx[] = {
+@@ -207,7 +207,6 @@ int FIPS_selftest_ecdh(void)
+             ztmp[0] ^= 0x1;
+ 
+         if (memcmp(ztmp, ecd->z, ecd->zlen)) {
+-            fips_post_failed(FIPS_TEST_ECDH, ecd->curve, 0);
+             rv = 0;
+         } else if (!fips_post_success(FIPS_TEST_ECDH, ecd->curve, 0))
+             goto err;
+diff --git a/crypto/fips/fips_ecdsa_selftest.c b/crypto/fips/fips_ecdsa_selftest.c
+index 4ce6e81..a654582 100644
+--- a/crypto/fips/fips_ecdsa_selftest.c
++++ b/crypto/fips/fips_ecdsa_selftest.c
+@@ -58,12 +58,12 @@
+ #include <openssl/crypto.h>
+ #include <openssl/ec.h>
+ #include <openssl/ecdsa.h>
+-#include <openssl/fips.h>
+ #include <openssl/err.h>
+ #include <openssl/evp.h>
+ #include <openssl/bn.h>
+ 
+ #ifdef OPENSSL_FIPS
++#include <openssl/fips.h>
+ 
+ static const char P_256_name[] = "ECDSA P-256";
+ 
+diff --git a/crypto/fips/fips_post.c b/crypto/fips/fips_post.c
+index 2b19651..9ca4b20 100644
+--- a/crypto/fips/fips_post.c
++++ b/crypto/fips/fips_post.c
+@@ -72,9 +72,7 @@ int FIPS_selftest(void)
+ {
+     int rv = 1;
+     if (!FIPS_selftest_drbg())
+-        rv = 0;
+-    if (!FIPS_selftest_x931())
+-        rv = 0;
++	rv = 0;
+     if (!FIPS_selftest_sha1())
+         rv = 0;
+     if (!FIPS_selftest_sha2())
+diff --git a/crypto/fips/fips_rand.c b/crypto/fips/fips_rand.c
+index c5060a2..cc2254a 100644
+--- a/crypto/fips/fips_rand.c
++++ b/crypto/fips/fips_rand.c
+@@ -60,10 +60,6 @@
+ # define _XOPEN_SOURCE_EXTENDED 1
+ #endif
+ 
+-#include <openssl/rand.h>
+-#include <openssl/aes.h>
+-#include <openssl/err.h>
+-#include <openssl/fips_rand.h>
+ #if !(defined(OPENSSL_SYS_WIN32) || defined(OPENSSL_SYS_VXWORKS))
+ # include <sys/time.h>
+ #endif
+@@ -83,154 +79,8 @@
+ #include "fips_locl.h"
+ 
+ #ifdef OPENSSL_FIPS
+-
+-void *OPENSSL_stderr(void);
+-
+-# define AES_BLOCK_LENGTH        16
+-
+-/* AES FIPS PRNG implementation */
+-
+-typedef struct {
+-    int seeded;
+-    int keyed;
+-    int test_mode;
+-    int second;
+-    int error;
+-    unsigned long counter;
+-    AES_KEY ks;
+-    int vpos;
+-    /* Temporary storage for key if it equals seed length */
+-    unsigned char tmp_key[AES_BLOCK_LENGTH];
+-    unsigned char V[AES_BLOCK_LENGTH];
+-    unsigned char DT[AES_BLOCK_LENGTH];
+-    unsigned char last[AES_BLOCK_LENGTH];
+-} FIPS_PRNG_CTX;
+-
+-static FIPS_PRNG_CTX sctx;
+-
+-static int fips_prng_fail = 0;
+-
+-void FIPS_x931_stick(int onoff)
+-{
+-    fips_prng_fail = onoff;
+-}
+-
+-void FIPS_rng_stick(void)
+-{
+-    FIPS_x931_stick(1);
+-}
+-
+-static void fips_rand_prng_reset(FIPS_PRNG_CTX * ctx)
+-{
+-    ctx->seeded = 0;
+-    ctx->keyed = 0;
+-    ctx->test_mode = 0;
+-    ctx->counter = 0;
+-    ctx->second = 0;
+-    ctx->error = 0;
+-    ctx->vpos = 0;
+-    OPENSSL_cleanse(ctx->V, AES_BLOCK_LENGTH);
+-    OPENSSL_cleanse(&ctx->ks, sizeof(AES_KEY));
+-}
+-
+-static int fips_set_prng_key(FIPS_PRNG_CTX * ctx,
+-                             const unsigned char *key, unsigned int keylen)
+-{
+-    if (FIPS_selftest_failed()) {
+-        FIPSerr(FIPS_F_FIPS_SET_PRNG_KEY, FIPS_R_SELFTEST_FAILED);
+-        return 0;
+-    }
+-    if (keylen != 16 && keylen != 24 && keylen != 32) {
+-        /* error: invalid key size */
+-        return 0;
+-    }
+-    AES_set_encrypt_key(key, keylen << 3, &ctx->ks);
+-    if (keylen == 16) {
+-        memcpy(ctx->tmp_key, key, 16);
+-        ctx->keyed = 2;
+-    } else
+-        ctx->keyed = 1;
+-    ctx->seeded = 0;
+-    ctx->second = 0;
+-    return 1;
+-}
+-
+-static int fips_set_prng_seed(FIPS_PRNG_CTX * ctx,
+-                              const unsigned char *seed, unsigned int seedlen)
+-{
+-    unsigned int i;
+-    if (!ctx->keyed)
+-        return 0;
+-    /* In test mode seed is just supplied data */
+-    if (ctx->test_mode) {
+-        if (seedlen != AES_BLOCK_LENGTH)
+-            return 0;
+-        memcpy(ctx->V, seed, AES_BLOCK_LENGTH);
+-        ctx->seeded = 1;
+-        return 1;
+-    }
+-    /* Outside test mode XOR supplied data with existing seed */
+-    for (i = 0; i < seedlen; i++) {
+-        ctx->V[ctx->vpos++] ^= seed[i];
+-        if (ctx->vpos == AES_BLOCK_LENGTH) {
+-            ctx->vpos = 0;
+-            /* Special case if first seed and key length equals
+-             * block size check key and seed do not match.
+-             */
+-            if (ctx->keyed == 2) {
+-                if (!memcmp(ctx->tmp_key, ctx->V, 16)) {
+-                    RANDerr(RAND_F_FIPS_SET_PRNG_SEED,
+-                            RAND_R_PRNG_SEED_MUST_NOT_MATCH_KEY);
+-                    return 0;
+-                }
+-                OPENSSL_cleanse(ctx->tmp_key, 16);
+-                ctx->keyed = 1;
+-            }
+-            ctx->seeded = 1;
+-        }
+-    }
+-    return 1;
+-}
+-
+-static int fips_set_test_mode(FIPS_PRNG_CTX * ctx)
+-{
+-    if (ctx->keyed) {
+-        RANDerr(RAND_F_FIPS_SET_TEST_MODE, RAND_R_PRNG_KEYED);
+-        return 0;
+-    }
+-    ctx->test_mode = 1;
+-    return 1;
+-}
+-
+-int FIPS_x931_test_mode(void)
+-{
+-    return fips_set_test_mode(&sctx);
+-}
+-
+-int FIPS_rand_test_mode(void)
+-{
+-    return fips_set_test_mode(&sctx);
+-}
+-
+-int FIPS_x931_set_dt(unsigned char *dt)
+-{
+-    if (!sctx.test_mode) {
+-        RANDerr(RAND_F_FIPS_X931_SET_DT, RAND_R_NOT_IN_TEST_MODE);
+-        return 0;
+-    }
+-    memcpy(sctx.DT, dt, AES_BLOCK_LENGTH);
+-    return 1;
+-}
+-
+-int FIPS_rand_set_dt(unsigned char *dt)
+-{
+-    if (!sctx.test_mode) {
+-        RANDerr(RAND_F_FIPS_RAND_SET_DT, RAND_R_NOT_IN_TEST_MODE);
+-        return 0;
+-    }
+-    memcpy(sctx.DT, dt, AES_BLOCK_LENGTH);
+-    return 1;
+-}
++#include <openssl/fips.h>
++#include "fips_locl.h"
+ 
+ void FIPS_get_timevec(unsigned char *buf, unsigned long *pctr)
+ {
+@@ -292,137 +142,4 @@ void FIPS_get_timevec(unsigned char *buf, unsigned long *pctr)
+     buf[15] = (unsigned char)((pid >> 24) & 0xff);
+ # endif
+ }
+-
+-static int fips_rand(FIPS_PRNG_CTX * ctx,
+-                     unsigned char *out, unsigned int outlen)
+-{
+-    unsigned char R[AES_BLOCK_LENGTH], I[AES_BLOCK_LENGTH];
+-    unsigned char tmp[AES_BLOCK_LENGTH];
+-    int i;
+-    if (ctx->error) {
+-        RANDerr(RAND_F_FIPS_RAND, RAND_R_PRNG_ERROR);
+-        return 0;
+-    }
+-    if (!ctx->keyed) {
+-        RANDerr(RAND_F_FIPS_RAND, RAND_R_NO_KEY_SET);
+-        return 0;
+-    }
+-    if (!ctx->seeded) {
+-        RANDerr(RAND_F_FIPS_RAND, RAND_R_PRNG_NOT_SEEDED);
+-        return 0;
+-    }
+-    for (;;) {
+-        if (!ctx->test_mode)
+-            FIPS_get_timevec(ctx->DT, &ctx->counter);
+-        AES_encrypt(ctx->DT, I, &ctx->ks);
+-        for (i = 0; i < AES_BLOCK_LENGTH; i++)
+-            tmp[i] = I[i] ^ ctx->V[i];
+-        AES_encrypt(tmp, R, &ctx->ks);
+-        for (i = 0; i < AES_BLOCK_LENGTH; i++)
+-            tmp[i] = R[i] ^ I[i];
+-        AES_encrypt(tmp, ctx->V, &ctx->ks);
+-        /* Continuous PRNG test */
+-        if (ctx->second) {
+-            if (fips_prng_fail)
+-                memcpy(ctx->last, R, AES_BLOCK_LENGTH);
+-            if (!memcmp(R, ctx->last, AES_BLOCK_LENGTH)) {
+-                RANDerr(RAND_F_FIPS_RAND, RAND_R_PRNG_STUCK);
+-                ctx->error = 1;
+-                fips_set_selftest_fail();
+-                return 0;
+-            }
+-        }
+-        memcpy(ctx->last, R, AES_BLOCK_LENGTH);
+-        if (!ctx->second) {
+-            ctx->second = 1;
+-            if (!ctx->test_mode)
+-                continue;
+-        }
+-
+-        if (outlen <= AES_BLOCK_LENGTH) {
+-            memcpy(out, R, outlen);
+-            break;
+-        }
+-
+-        memcpy(out, R, AES_BLOCK_LENGTH);
+-        out += AES_BLOCK_LENGTH;
+-        outlen -= AES_BLOCK_LENGTH;
+-    }
+-    return 1;
+-}
+-
+-int FIPS_x931_set_key(const unsigned char *key, int keylen)
+-{
+-    int ret;
+-    CRYPTO_w_lock(CRYPTO_LOCK_RAND);
+-    ret = fips_set_prng_key(&sctx, key, keylen);
+-    CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
+-    return ret;
+-}
+-
+-int FIPS_rand_set_key(const unsigned char *key, FIPS_RAND_SIZE_T keylen)
+-{
+-    return FIPS_x931_set_key(key, keylen);
+-}
+-
+-int FIPS_x931_seed(const void *seed, int seedlen)
+-{
+-    int ret;
+-    CRYPTO_w_lock(CRYPTO_LOCK_RAND);
+-    ret = fips_set_prng_seed(&sctx, seed, seedlen);
+-    CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
+-    return ret;
+-}
+-
+-int FIPS_x931_bytes(unsigned char *out, int count)
+-{
+-    int ret;
+-    CRYPTO_w_lock(CRYPTO_LOCK_RAND);
+-    ret = fips_rand(&sctx, out, count);
+-    CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
+-    return ret;
+-}
+-
+-int FIPS_x931_status(void)
+-{
+-    int ret;
+-    CRYPTO_r_lock(CRYPTO_LOCK_RAND);
+-    ret = sctx.seeded;
+-    CRYPTO_r_unlock(CRYPTO_LOCK_RAND);
+-    return ret;
+-}
+-
+-void FIPS_x931_reset(void)
+-{
+-    CRYPTO_w_lock(CRYPTO_LOCK_RAND);
+-    fips_rand_prng_reset(&sctx);
+-    CRYPTO_w_unlock(CRYPTO_LOCK_RAND);
+-}
+-
+-static int fips_do_rand_seed(const void *seed, int seedlen)
+-{
+-    FIPS_x931_seed(seed, seedlen);
+-    return 1;
+-}
+-
+-static int fips_do_rand_add(const void *seed, int seedlen, double add_entropy)
+-{
+-    FIPS_x931_seed(seed, seedlen);
+-    return 1;
+-}
+-
+-static const RAND_METHOD rand_x931_meth = {
+-    fips_do_rand_seed,
+-    FIPS_x931_bytes,
+-    FIPS_x931_reset,
+-    fips_do_rand_add,
+-    FIPS_x931_bytes,
+-    FIPS_x931_status
+-};
+-
+-const RAND_METHOD *FIPS_x931_method(void)
+-{
+-    return &rand_x931_meth;
+-}
+-
+ #endif
+diff --git a/crypto/fips/fips_rand.h b/crypto/fips/fips_rand.h
+index e78eb35..e25e57c 100644
+--- a/crypto/fips/fips_rand.h
++++ b/crypto/fips/fips_rand.h
+@@ -61,19 +61,7 @@
+ extern "C" {
+ #  endif
+ 
+-    int FIPS_x931_set_key(const unsigned char *key, int keylen);
+-    int FIPS_x931_seed(const void *buf, int num);
+-    int FIPS_x931_bytes(unsigned char *out, int outlen);
+-
+-    int FIPS_x931_test_mode(void);
+-    void FIPS_x931_reset(void);
+-    int FIPS_x931_set_dt(unsigned char *dt);
+-
+-    int FIPS_x931_status(void);
+-
+-    const RAND_METHOD *FIPS_x931_method(void);
+-
+-    typedef struct drbg_ctx_st DRBG_CTX;
++typedef struct drbg_ctx_st DRBG_CTX;
+ /* DRBG external flags */
+ /* Flag for CTR mode only: use derivation function ctr_df */
+ #  define DRBG_FLAG_CTR_USE_DF            0x1
+@@ -147,14 +135,8 @@ extern "C" {
+     int FIPS_rand_strength(void);
+ 
+ /* 1.0.0 compat functions */
+-    int FIPS_rand_set_key(const unsigned char *key, FIPS_RAND_SIZE_T keylen);
+-    int FIPS_rand_seed(const void *buf, FIPS_RAND_SIZE_T num);
+-    int FIPS_rand_bytes(unsigned char *out, FIPS_RAND_SIZE_T outlen);
+-    int FIPS_rand_test_mode(void);
+-    void FIPS_rand_reset(void);
+-    int FIPS_rand_set_dt(unsigned char *dt);
+-    int FIPS_rand_status(void);
+     const RAND_METHOD *FIPS_rand_method(void);
++    int FIPS_rand_status(void);
+ 
+ #  ifdef  __cplusplus
+ }
+diff --git a/crypto/fips/fips_rand_lcl.h b/crypto/fips/fips_rand_lcl.h
+index 0a1d251..5aff0bb 100644
+--- a/crypto/fips/fips_rand_lcl.h
++++ b/crypto/fips/fips_rand_lcl.h
+@@ -205,8 +205,6 @@ int fips_drbg_cprng_test(DRBG_CTX *dctx, const unsigned char *out);
+ 
+ const struct env_md_st *FIPS_get_digestbynid(int nid);
+ 
+-const struct evp_cipher_st *FIPS_get_cipherbynid(int nid);
+-
+ #define FIPS_digestinit EVP_DigestInit
+ #define FIPS_digestupdate EVP_DigestUpdate
+ #define FIPS_digestfinal EVP_DigestFinal
+diff --git a/crypto/fips/fips_rand_lib.c b/crypto/fips/fips_rand_lib.c
+index 6f2ccc6..ab35ee0 100644
+--- a/crypto/fips/fips_rand_lib.c
++++ b/crypto/fips/fips_rand_lib.c
+@@ -50,6 +50,7 @@
+ #include <openssl/crypto.h>
+ #include <openssl/rand.h>
+ #include <openssl/err.h>
++#ifdef OPENSSL_FIPS
+ #include <openssl/fips.h>
+ #include <openssl/fips_rand.h>
+ #include "e_os.h"
+@@ -73,8 +74,6 @@ int FIPS_rand_set_method(const RAND_METHOD *meth)
+     if (!fips_rand_bits) {
+         if (meth == FIPS_drbg_method())
+             fips_approved_rand_meth = 1;
+-        else if (meth == FIPS_x931_method())
+-            fips_approved_rand_meth = 2;
+         else {
+             fips_approved_rand_meth = 0;
+             if (FIPS_module_mode()) {
+@@ -169,8 +168,6 @@ int FIPS_rand_strength(void)
+         return fips_rand_bits;
+     if (fips_approved_rand_meth == 1)
+         return FIPS_drbg_get_strength(FIPS_get_default_drbg());
+-    else if (fips_approved_rand_meth == 2)
+-        return 80;
+     else if (fips_approved_rand_meth == 0) {
+         if (FIPS_module_mode())
+             return 0;
+@@ -179,3 +176,4 @@ int FIPS_rand_strength(void)
+     }
+     return 0;
+ }
++#endif
+diff --git a/crypto/fips/fips_sha_selftest.c b/crypto/fips/fips_sha_selftest.c
+index 446ddd9..3f4ca12 100644
+--- a/crypto/fips/fips_sha_selftest.c
++++ b/crypto/fips/fips_sha_selftest.c
+@@ -129,13 +129,13 @@ int FIPS_selftest_sha2(void)
+ 
+     EVP_Digest(msg_sha256, sizeof(msg_sha256), md, NULL, EVP_sha256(), NULL);
+     if (memcmp(dig_sha256, md, sizeof(dig_sha256))) {
+-        FIPSerr(FIPS_F_FIPS_MODE_SET, FIPS_R_SELFTEST_FAILED);
++        FIPSerr(FIPS_F_FIPS_SELFTEST_SHA2, FIPS_R_SELFTEST_FAILED);
+         return 0;
+     }
+ 
+     EVP_Digest(msg_sha512, sizeof(msg_sha512), md, NULL, EVP_sha512(), NULL);
+     if (memcmp(dig_sha512, md, sizeof(dig_sha512))) {
+-        FIPSerr(FIPS_F_FIPS_MODE_SET, FIPS_R_SELFTEST_FAILED);
++        FIPSerr(FIPS_F_FIPS_SELFTEST_SHA2, FIPS_R_SELFTEST_FAILED);
+         return 0;
+     }
+ 
+diff --git a/crypto/fips/fips_test_suite.c b/crypto/fips/fips_test_suite.c
+index 1e4b69c..5ab0458 100644
+--- a/crypto/fips/fips_test_suite.c
++++ b/crypto/fips/fips_test_suite.c
+@@ -27,6 +27,8 @@
+ #include <openssl/bn.h>
+ #include <openssl/rand.h>
+ #include <openssl/sha.h>
++#include <openssl/cmac.h>
++#include <openssl/fips_rand.h>
+ 
+ #ifndef OPENSSL_FIPS
+ int main(int argc, char *argv[])
+@@ -65,6 +67,48 @@ static int FIPS_aes_test(void)
+     return ret;
+ }
+ 
++static int FIPS_aes_gcm_test(void)
++{
++	int ret = 0;
++	unsigned char pltmp[16];
++	unsigned char citmp[16];
++	unsigned char tagtmp[16];
++	unsigned char key[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
++	unsigned char iv[16] = {21,22,23,24,25,26,27,28,29,30,31,32};
++	unsigned char aad[] = "Some text AAD";
++	unsigned char plaintext[16] = "etaonrishdlcu";
++	EVP_CIPHER_CTX ctx;
++
++	EVP_CIPHER_CTX_init(&ctx);
++	if (EVP_CipherInit_ex(&ctx, EVP_aes_128_gcm(), NULL, key, iv, 1) <= 0)
++		goto err;
++	EVP_Cipher(&ctx, NULL, aad, sizeof(aad));
++	EVP_Cipher(&ctx, citmp, plaintext, 16);
++	EVP_Cipher(&ctx, NULL, NULL, 0);
++	if (!EVP_CIPHER_CTX_ctrl(&ctx, EVP_CTRL_GCM_GET_TAG, 16, tagtmp))
++		goto err;
++
++	if (EVP_CipherInit_ex(&ctx, EVP_aes_128_gcm(), NULL, key, iv, 0) <= 0)
++		goto err;
++	if (!EVP_CIPHER_CTX_ctrl(&ctx, EVP_CTRL_GCM_SET_TAG, 16, tagtmp))
++		goto err;
++
++	EVP_Cipher(&ctx, NULL, aad, sizeof(aad));
++
++	EVP_Cipher(&ctx, pltmp, citmp, 16);
++
++	if (EVP_Cipher(&ctx, NULL, NULL, 0) < 0)
++		goto err;
++
++	if (memcmp(pltmp, plaintext, 16))
++		goto err;
++
++	ret = 1;
++err:
++	EVP_CIPHER_CTX_cleanup(&ctx);
++	return ret;
++}
++
+ static int FIPS_des3_test(void)
+ {
+     int ret = 0;
+@@ -97,7 +141,7 @@ static int FIPS_des3_test(void)
+ static int FIPS_dsa_test(int bad)
+ {
+     DSA *dsa = NULL;
+-    EVP_PKEY pk;
++    EVP_PKEY *pk = NULL;
+     unsigned char dgst[] = "etaonrishdlc";
+     unsigned char buf[60];
+     unsigned int slen;
+@@ -116,24 +160,27 @@ static int FIPS_dsa_test(int bad)
+     if (bad)
+         BN_add_word(dsa->pub_key, 1);
+ 
+-    pk.type = EVP_PKEY_DSA;
+-    pk.pkey.dsa = dsa;
++    if ((pk=EVP_PKEY_new()) == NULL)
++        goto end;
++    EVP_PKEY_assign_DSA(pk, dsa);
+ 
+     if (!EVP_SignInit_ex(&mctx, EVP_dss1(), NULL))
+         goto end;
+     if (!EVP_SignUpdate(&mctx, dgst, sizeof(dgst) - 1))
+         goto end;
+-    if (!EVP_SignFinal(&mctx, buf, &slen, &pk))
++    if (!EVP_SignFinal(&mctx, buf, &slen, pk))
+         goto end;
+ 
+     if (!EVP_VerifyInit_ex(&mctx, EVP_dss1(), NULL))
+         goto end;
+     if (!EVP_VerifyUpdate(&mctx, dgst, sizeof(dgst) - 1))
+         goto end;
+-    r = EVP_VerifyFinal(&mctx, buf, slen, &pk);
++    r = EVP_VerifyFinal(&mctx, buf, slen, pk);
+  end:
+     EVP_MD_CTX_cleanup(&mctx);
+-    if (dsa)
++    if (pk)
++	EVP_PKEY_free(pk);
++    else if (dsa)
+         DSA_free(dsa);
+     if (r != 1)
+         return 0;
+@@ -145,13 +192,13 @@ static int FIPS_dsa_test(int bad)
+  */
+ static int FIPS_rsa_test(int bad)
+ {
+-    RSA *key;
++    RSA *key = NULL;
+     unsigned char input_ptext[] = "etaonrishdlc";
+     unsigned char buf[256];
+     unsigned int slen;
+     BIGNUM *bn;
+     EVP_MD_CTX mctx;
+-    EVP_PKEY pk;
++    EVP_PKEY *pk = NULL;
+     int r = 0;
+ 
+     ERR_clear_error();
+@@ -167,23 +214,26 @@ static int FIPS_rsa_test(int bad)
+     if (bad)
+         BN_add_word(key->n, 1);
+ 
+-    pk.type = EVP_PKEY_RSA;
+-    pk.pkey.rsa = key;
++    if ((pk = EVP_PKEY_new()) == NULL)
++        goto end;
++    EVP_PKEY_set1_RSA(pk, key);
+ 
+     if (!EVP_SignInit_ex(&mctx, EVP_sha1(), NULL))
+         goto end;
+     if (!EVP_SignUpdate(&mctx, input_ptext, sizeof(input_ptext) - 1))
+         goto end;
+-    if (!EVP_SignFinal(&mctx, buf, &slen, &pk))
++    if (!EVP_SignFinal(&mctx, buf, &slen, pk))
+         goto end;
+ 
+     if (!EVP_VerifyInit_ex(&mctx, EVP_sha1(), NULL))
+         goto end;
+     if (!EVP_VerifyUpdate(&mctx, input_ptext, sizeof(input_ptext) - 1))
+         goto end;
+-    r = EVP_VerifyFinal(&mctx, buf, slen, &pk);
++    r = EVP_VerifyFinal(&mctx, buf, slen, pk);
+  end:
+     EVP_MD_CTX_cleanup(&mctx);
++    if (pk)
++	EVP_PKEY_free(pk);
+     if (key)
+         RSA_free(key);
+     if (r != 1)
+@@ -399,18 +449,217 @@ static int FIPS_hmac_sha512_test()
+     return 1;
+ }
+ 
++
++/* CMAC-AES128: generate hash of known digest value and compare to known
++ *  precomputed correct hash
++ */
++static int FIPS_cmac_aes128_test()
++{
++	unsigned char key[16] = { 0x2b,0x7e,0x15,0x16, 0x28,0xae,0xd2,0xa6,
++				  0xab,0xf7,0x15,0x88, 0x09,0xcf,0x4f,0x3c };
++	unsigned char data[] = "Sample text";
++	unsigned char kaval[EVP_MAX_MD_SIZE] = { 0x16,0x83,0xfe,0xac, 0x52,0x9b,0xae,0x23,
++						 0xd7,0xd5,0x66,0xf5, 0xd2,0x8d,0xbd,0x2a };
++	unsigned char *out = NULL;
++	size_t outlen;
++	CMAC_CTX *ctx = CMAC_CTX_new();
++	int r = 0;
++
++	ERR_clear_error();
++	if (!ctx)
++		goto end;
++	if (!CMAC_Init(ctx,key,sizeof(key),EVP_aes_128_cbc(),NULL))
++		goto end;
++	if (!CMAC_Update(ctx,data,sizeof(data)-1))
++		goto end;
++	/* This should return 1.  If not, there's a programming error... */
++	if (!CMAC_Final(ctx, out, &outlen))
++
++               goto end;
++        out = OPENSSL_malloc(outlen);
++        if (!CMAC_Final(ctx, out, &outlen))
++		goto end;
++#if 0
++	{
++	char *hexout = OPENSSL_malloc(outlen * 2 + 1);
++	bin2hex(out, outlen, hexout);
++	printf("CMAC-AES128: res = %s\n", hexout);
++	OPENSSL_free(hexout);
++	}
++	r = 1;
++#else
++	if (!memcmp(out,kaval,outlen))
++		r = 1;
++#endif
++
++end:
++	CMAC_CTX_free(ctx);
++	if (out)
++		OPENSSL_free(out);
++	return r;
++}
++
++/* CMAC-AES192: generate hash of known digest value and compare to known
++ *  precomputed correct hash
++ */
++static int FIPS_cmac_aes192_test()
++{
++        unsigned char key[] = { 0x8e,0x73,0xb0,0xf7, 0xda,0x0e,0x64,0x52,
++                                0xc8,0x10,0xf3,0x2b, 0x80,0x90,0x79,0xe5,
++                                0x62,0xf8,0xea,0xd2, 0x52,0x2c,0x6b,0x7b, };
++        unsigned char data[] = "Sample text";
++        unsigned char kaval[] = { 0xd6,0x99,0x19,0x25, 0xe5,0x1d,0x95,0x48,
++                                  0xb1,0x4a,0x0b,0xf2, 0xc6,0x3c,0x47,0x1f, };
++        unsigned char *out = NULL;
++        size_t outlen;
++        CMAC_CTX *ctx = CMAC_CTX_new();
++        int r = 0;
++
++        ERR_clear_error();
++        if (!ctx)
++                goto end;
++        if (!CMAC_Init(ctx,key,sizeof(key),EVP_aes_192_cbc(),NULL))
++                goto end;
++        if (!CMAC_Update(ctx,data,sizeof(data)-1))
++                goto end;
++        /* This should return 1.  If not, there's a programming error... */
++        if (!CMAC_Final(ctx, out, &outlen))
++                goto end;
++       out = OPENSSL_malloc(outlen);
++        if (!CMAC_Final(ctx, out, &outlen))
++                goto end;
++#if 0
++        {
++        char *hexout = OPENSSL_malloc(outlen * 2 + 1);
++        bin2hex(out, outlen, hexout);
++        printf("CMAC-AES192: res = %s\n", hexout);
++        OPENSSL_free(hexout);
++        }
++        r = 1;
++#else
++        if (!memcmp(out,kaval,outlen))
++                r = 1;
++#endif
++
++end:
++        CMAC_CTX_free(ctx);
++        if (out)
++                OPENSSL_free(out);
++        return r;
++}
++
++/* CMAC-AES256: generate hash of known digest value and compare to known
++ *  precomputed correct hash
++ */
++static int FIPS_cmac_aes256_test()
++{
++        unsigned char key[] = { 0x60,0x3d,0xeb,0x10, 0x15,0xca,0x71,0xbe,
++                                0x2b,0x73,0xae,0xf0, 0x85,0x7d,0x77,0x81,
++                                0x1f,0x35,0x2c,0x07, 0x3b,0x61,0x08,0xd7,
++                                0x2d,0x98,0x10,0xa3, 0x09,0x14,0xdf,0xf4, };
++        unsigned char data[] = "Sample text";
++        unsigned char kaval[] = { 0xec,0xc2,0xcf,0x63,0xc7,0xce,0xfc,0xa4,
++                                  0xb0,0x86,0x37,0x5f,0x15,0x60,0xba,0x1f };
++        unsigned char *out = NULL;
++        size_t outlen;
++        CMAC_CTX *ctx = CMAC_CTX_new();
++        int r = 0;
++
++        ERR_clear_error();
++
++        if (!ctx)
++                goto end;
++        if (!CMAC_Init(ctx,key,sizeof(key),EVP_aes_256_cbc(),NULL))
++                goto end;
++        if (!CMAC_Update(ctx,data,sizeof(data)-1))
++                goto end;
++        /* This should return 1.  If not, there's a programming error... */
++        if (!CMAC_Final(ctx, out, &outlen))
++                goto end;
++        out = OPENSSL_malloc(outlen);
++        if (!CMAC_Final(ctx, out, &outlen))
++                goto end;
++#if 0
++        {
++        char *hexout = OPENSSL_malloc(outlen * 2 + 1);
++        bin2hex(out, outlen, hexout);
++        printf("CMAC-AES256: res = %s\n", hexout);
++        OPENSSL_free(hexout);
++        }
++        r = 1;
++#else
++        if (!memcmp(out,kaval,outlen))
++                r = 1;
++#endif
++
++end:
++        CMAC_CTX_free(ctx);
++        if (out)
++                OPENSSL_free(out);
++        return r;
++}
++
++/* CMAC-TDEA3: generate hash of known digest value and compare to known
++ * precomputed correct hash
++ */
++static int FIPS_cmac_tdea3_test()
++{
++        unsigned char key[] = { 0x8a,0xa8,0x3b,0xf8, 0xcb,0xda,0x10,0x62,
++                                0x0b,0xc1,0xbf,0x19, 0xfb,0xb6,0xcd,0x58,
++                                0xbc,0x31,0x3d,0x4a, 0x37,0x1c,0xa8,0xb5, };
++        unsigned char data[] = "Sample text";
++        unsigned char kaval[EVP_MAX_MD_SIZE] =
++                                { 0xb4,0x06,0x4e,0xbf,0x59,0x89,0xba,0x68, };
++        unsigned char *out = NULL;
++        size_t outlen;
++        CMAC_CTX *ctx = CMAC_CTX_new();
++        int r = 0;
++
++        ERR_clear_error();
++        if (!ctx)
++                goto end;
++        if (!CMAC_Init(ctx,key,sizeof(key),EVP_des_ede3_cbc(),NULL))
++                goto end;
++        if (!CMAC_Update(ctx,data,sizeof(data)-1))
++                goto end;
++        /* This should return 1.  If not, there's a programming error... */
++        if (!CMAC_Final(ctx, out, &outlen))
++                goto end;
++        out = OPENSSL_malloc(outlen);
++       if (!CMAC_Final(ctx, out, &outlen))
++                goto end;
++#if 0
++        {
++        char *hexout = OPENSSL_malloc(outlen * 2 + 1);
++        bin2hex(out, outlen, hexout);
++        printf("CMAC-TDEA3: res = %s\n", hexout);
++        OPENSSL_free(hexout);
++        }
++        r = 1;
++#else
++        if (!memcmp(out,kaval,outlen))
++                r = 1;
++#endif
++
++end:
++        CMAC_CTX_free(ctx);
++        if (out)
++                OPENSSL_free(out);
++        return r;
++}
++
+ /* DH: generate shared parameters
+ */
+ static int dh_test()
+ {
+     DH *dh;
+     ERR_clear_error();
+-    dh = FIPS_dh_new();
++    dh = DH_new();
+     if (!dh)
+         return 0;
+-    if (!DH_generate_parameters_ex(dh, 1024, 2, NULL))
++    if (!DH_generate_parameters_ex(dh, 2048, 2, NULL))
+         return 0;
+-    FIPS_dh_free(dh);
++    DH_free(dh);
+     return 1;
+ }
+ 
+@@ -425,7 +674,7 @@ static int Zeroize()
+ 0x83, 0x02, 0xb1, 0x09, 0x68 };
+     int i, n;
+ 
+-    key = FIPS_rsa_new();
++    key = RSA_new();
+     bn = BN_new();
+     if (!key || !bn)
+         return 0;
+@@ -452,9 +701,91 @@ static int Zeroize()
+         printf("%02x", userkey[i]);
+     printf("\n");
+ 
++    RSA_free(key);
+     return 1;
+ }
+ 
++/* Dummy Entropy for DRBG tests. WARNING: THIS IS TOTALLY BOGUS
++ * HAS ZERO SECURITY AND MUST NOT BE USED IN REAL APPLICATIONS.
++ */
++static unsigned char dummy_drbg_entropy[1024];
++static size_t drbg_test_cb(DRBG_CTX *ctx, unsigned char **pout,
++                           int entropy, size_t min_len, size_t max_len)
++{
++        *pout = dummy_drbg_entropy;
++        /* Round up to multiple of block size */
++        return (min_len + 0xf) & ~0xf;
++}
++
++/* DRBG test: just generate lots of data and trigger health checks */
++static int do_drbg_test(int type, int flags)
++{
++        DRBG_CTX *dctx;
++        int rv = 0;
++        size_t i;
++        unsigned char randout[1024];
++
++        dctx = FIPS_drbg_new(type, flags);
++        if (!dctx)
++                return 0;
++        FIPS_drbg_set_callbacks(dctx, drbg_test_cb, 0, 0x10, drbg_test_cb, 0);
++        for (i = 0; i < sizeof(dummy_drbg_entropy); i++) {
++                dummy_drbg_entropy[i] = i & 0xff;
++        }
++        if (!FIPS_drbg_instantiate(dctx, dummy_drbg_entropy, 10))
++                goto err;
++        FIPS_drbg_set_check_interval(dctx, 10);
++        for (i = 0; i < 32; i++) {
++                if (!FIPS_drbg_generate(dctx, randout, sizeof(randout),
++                                        0, NULL, 0))
++                        goto err;
++                if (!FIPS_drbg_generate(dctx, randout, sizeof(randout),
++                                        0, dummy_drbg_entropy, 1))
++                        goto err;
++        }
++        rv = 1;
++err:
++        FIPS_drbg_free(dctx);
++        return rv;
++}
++
++typedef struct
++{
++        int type, flags;
++} DRBG_LIST;
++
++static int do_drbg_all(void)
++{
++        static DRBG_LIST drbg_types[] = {
++                {NID_sha1, 0},
++                {NID_sha224, 0},
++                {NID_sha256, 0},
++                {NID_sha384, 0},
++                {NID_sha512, 0},
++                {NID_hmacWithSHA1, 0},
++                {NID_hmacWithSHA224, 0},
++                {NID_hmacWithSHA256, 0},
++                {NID_hmacWithSHA384, 0},
++                {NID_hmacWithSHA512, 0},
++                {NID_aes_128_ctr, 0},
++                {NID_aes_192_ctr, 0},
++                {NID_aes_256_ctr, 0},
++                {NID_aes_128_ctr, DRBG_FLAG_CTR_USE_DF},
++                {NID_aes_192_ctr, DRBG_FLAG_CTR_USE_DF},
++                {NID_aes_256_ctr, DRBG_FLAG_CTR_USE_DF},
++                {0, 0}
++        };
++        DRBG_LIST *lst;
++        int rv = 1;
++        for (lst = drbg_types;; lst++) {
++                if (lst->type == 0)
++                        break;
++                if (!do_drbg_test(lst->type, lst->flags))
++                        rv = 0;
++        }
++        return rv;
++}
++
+ static int Error;
+ const char *Fail(const char *msg)
+ {
+@@ -463,13 +794,19 @@ const char *Fail(const char *msg)
+     return msg;
+ }
+ 
++static void test_msg(const char *msg, int result)
++{
++    printf("%s...%s\n", msg, result ? "successful" : Fail("Failed!"));
++}
++
+ int main(int argc, char **argv)
+ {
+ 
+-    int do_corrupt_rsa_keygen = 0, do_corrupt_dsa_keygen = 0;
++    int do_corrupt_rsa_keygen = 0;
+     int bad_rsa = 0, bad_dsa = 0;
+-    int do_rng_stick = 0;
+     int no_exit = 0;
++    int do_drbg = 0;
++    int do_drbg_stick = 0;
+ 
+     printf("\tFIPS-mode test application\n\n");
+ 
+@@ -507,20 +844,16 @@ int main(int argc, char **argv)
+                 ("DSA key generation and signature validation with corrupted key...\n");
+             bad_dsa = 1;
+             no_exit = 1;
+-        } else if (!strcmp(argv[1], "dsakeygen")) {
+-            do_corrupt_dsa_keygen = 1;
+-            no_exit = 1;
+-            printf
+-                ("DSA key generation and signature validation with corrupted keygen...\n");
+         } else if (!strcmp(argv[1], "sha1")) {
+             FIPS_corrupt_sha1();
+             printf("SHA-1 hash with corrupted KAT...\n");
+-        } else if (!strcmp(argv[1], "rng")) {
+-            FIPS_corrupt_rng();
+-        } else if (!strcmp(argv[1], "rngstick")) {
+-            do_rng_stick = 1;
++        } else if (!strcmp(argv[1], "drbg")) {
++            do_drbg = 1;
+             no_exit = 1;
+-            printf("RNG test with stuck continuous test...\n");
++        } else if (!strcmp(argv[1], "drbgstick")) {
++            do_drbg_stick = 1;
++            no_exit = 1;
++            printf("DRBG test with stuck continuous test...\n");
+         } else {
+             printf("Bad argument \"%s\"\n", argv[1]);
+             exit(1);
+@@ -539,8 +872,7 @@ int main(int argc, char **argv)
+     /* Non-Approved cryptographic operation
+      */
+     printf("1. Non-Approved cryptographic operation test...\n");
+-    printf("\ta. Included algorithm (D-H)...");
+-    printf(dh_test()? "successful\n" : Fail("FAILED!\n"));
++    test_msg("\ta. Included algorithm (D-H)...", dh_test());
+ 
+     /* Power-up self test
+      */
+@@ -548,90 +880,109 @@ int main(int argc, char **argv)
+     printf("2. Automatic power-up self test...");
+     if (!FIPS_mode_set(1)) {
+         do_print_errors();
+-        printf(Fail("FAILED!\n"));
++	printf("%s\n", Fail("FAILED!"));
+         exit(1);
+     }
+     printf("successful\n");
+-    if (do_corrupt_dsa_keygen)
+-        FIPS_corrupt_dsa_keygen();
+     if (do_corrupt_rsa_keygen)
+         FIPS_corrupt_rsa_keygen();
+-    if (do_rng_stick)
+-        FIPS_rng_stick();
++    if (do_drbg_stick)
++        FIPS_drbg_stick(1);
+ 
+     /* AES encryption/decryption
+      */
+-    printf("3. AES encryption/decryption...");
+-    printf(FIPS_aes_test()? "successful\n" : Fail("FAILED!\n"));
++    test_msg("3. AES encryption/decryption", FIPS_aes_test());
++
++     /* AES GCM encryption/decryption
++      */
++     test_msg("3b. AES-GCM encryption/decryption", FIPS_aes_gcm_test());
+ 
+     /* RSA key generation and encryption/decryption
+      */
+-    printf("4. RSA key generation and encryption/decryption...");
+-    printf(FIPS_rsa_test(bad_rsa) ? "successful\n" : Fail("FAILED!\n"));
++    test_msg("4. RSA key generation and encryption/decryption",
++             FIPS_rsa_test(bad_rsa));
+ 
+     /* DES-CBC encryption/decryption
+      */
+-    printf("5. DES-ECB encryption/decryption...");
+-    printf(FIPS_des3_test()? "successful\n" : Fail("FAILED!\n"));
++    test_msg("5. DES-ECB encryption/decryption", FIPS_des3_test());
+ 
+     /* DSA key generation and signature validation
+      */
+-    printf("6. DSA key generation and signature validation...");
+-    printf(FIPS_dsa_test(bad_dsa) ? "successful\n" : Fail("FAILED!\n"));
++    test_msg("6. DSA key generation and signature validation",
++             FIPS_dsa_test(bad_dsa));
+ 
+     /* SHA-1 hash
+      */
+-    printf("7a. SHA-1 hash...");
+-    printf(FIPS_sha1_test()? "successful\n" : Fail("FAILED!\n"));
++    test_msg("7a. SHA-1 hash", FIPS_sha1_test());
+ 
+     /* SHA-256 hash
+      */
+-    printf("7b. SHA-256 hash...");
+-    printf(FIPS_sha256_test()? "successful\n" : Fail("FAILED!\n"));
++    test_msg("7b. SHA-256 hash", FIPS_sha256_test());
+ 
+     /* SHA-512 hash
+      */
+-    printf("7c. SHA-512 hash...");
+-    printf(FIPS_sha512_test()? "successful\n" : Fail("FAILED!\n"));
++    test_msg("7c. SHA-512 hash", FIPS_sha512_test());
+ 
+     /* HMAC-SHA-1 hash
+      */
+-    printf("7d. HMAC-SHA-1 hash...");
+-    printf(FIPS_hmac_sha1_test()? "successful\n" : Fail("FAILED!\n"));
++    test_msg("7d. HMAC-SHA-1 hash", FIPS_hmac_sha1_test());
+ 
+     /* HMAC-SHA-224 hash
+      */
+-    printf("7e. HMAC-SHA-224 hash...");
+-    printf(FIPS_hmac_sha224_test()? "successful\n" : Fail("FAILED!\n"));
++    test_msg("7e. HMAC-SHA-224 hash", FIPS_hmac_sha224_test());
+ 
+     /* HMAC-SHA-256 hash
+      */
+-    printf("7f. HMAC-SHA-256 hash...");
+-    printf(FIPS_hmac_sha256_test()? "successful\n" : Fail("FAILED!\n"));
++    test_msg("7f. HMAC-SHA-256 hash", FIPS_hmac_sha256_test());
+ 
+     /* HMAC-SHA-384 hash
+      */
+-    printf("7g. HMAC-SHA-384 hash...");
+-    printf(FIPS_hmac_sha384_test()? "successful\n" : Fail("FAILED!\n"));
++    test_msg("7g. HMAC-SHA-384 hash", FIPS_hmac_sha384_test());
+ 
+     /* HMAC-SHA-512 hash
+      */
+-    printf("7h. HMAC-SHA-512 hash...");
+-    printf(FIPS_hmac_sha512_test()? "successful\n" : Fail("FAILED!\n"));
++    test_msg("7h. HMAC-SHA-512 hash", FIPS_hmac_sha512_test());
++
++    /* CMAC-AES-128 hash
++     */
++    test_msg("8a. CMAC-AES-128 hash", FIPS_cmac_aes128_test());
++
++    /* CMAC-AES-192 hash
++     */
++    test_msg("8b. CMAC-AES-192 hash", FIPS_cmac_aes192_test());
++
++    /* CMAC-AES-256 hash
++     */
++    test_msg("8c. CMAC-AES-256 hash", FIPS_cmac_aes256_test());
++
++    /* CMAC-TDEA-3 hash
++     */
++    test_msg("8d. CMAC-TDEA-3 hash", FIPS_cmac_tdea3_test());
+ 
+     /* Non-Approved cryptographic operation
+      */
+-    printf("8. Non-Approved cryptographic operation test...\n");
+-    printf("\ta. Included algorithm (D-H)...");
+-    printf(dh_test()? "successful as expected\n"
++    printf("9. Non-Approved cryptographic operation test...\n");
++    printf("\ta. Included algorithm (D-H)...%s\n",
++           dh_test()? "successful as expected\n"
+            : Fail("failed INCORRECTLY!\n"));
+ 
+     /* Zeroization
+      */
+-    printf("9. Zero-ization...\n");
+-    printf(Zeroize()? "\tsuccessful as expected\n"
++    printf("10. Zero-ization...\n\t%s\n",
++           Zeroize()? "\tsuccessful as expected"
+            : Fail("\tfailed INCORRECTLY!\n"));
+ 
++    printf("11. Complete DRBG health check...\n");
++    printf("\t%s\n", FIPS_selftest_drbg_all() ? "successful as expected"
++                                              : Fail("failed INCORRECTLY!"));
++
++    printf("12. DRBG generation check...\n");
++    if (!do_drbg)
++        printf("\tskipped\n");
++    else
++        printf("\t%s\n", do_drbg_all() ? "successful as expected"
++                                        : Fail("failed INCORRECTLY!") );
++
+     printf("\nAll tests completed with %d errors\n", Error);
+     return Error ? 1 : 0;
+ }
+diff --git a/crypto/fips/fips_utl.h b/crypto/fips/fips_utl.h
+new file mode 100644
+index 0000000..0b289bf
+--- /dev/null
++++ b/crypto/fips/fips_utl.h
+@@ -0,0 +1,342 @@
++/* ====================================================================
++ * Copyright (c) 2007 The OpenSSL Project.  All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ *
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ *
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in
++ *    the documentation and/or other materials provided with the
++ *    distribution.
++ *
++ * 3. All advertising materials mentioning features or use of this
++ *    software must display the following acknowledgment:
++ *    "This product includes software developed by the OpenSSL Project
++ *    for use in the OpenSSL Toolkit. (http://www.openssl.org/)"
++ *
++ * 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
++ *    endorse or promote products derived from this software without
++ *    prior written permission. For written permission, please contact
++ *    openssl-core@openssl.org.
++ *
++ * 5. Products derived from this software may not be called "OpenSSL"
++ *    nor may "OpenSSL" appear in their names without prior written
++ *    permission of the OpenSSL Project.
++ *
++ * 6. Redistributions of any form whatsoever must retain the following
++ *    acknowledgment:
++ *    "This product includes software developed by the OpenSSL Project
++ *    for use in the OpenSSL Toolkit (http://www.openssl.org/)"
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
++ * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
++ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
++ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
++ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
++ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
++ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
++ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
++ * OF THE POSSIBILITY OF SUCH DAMAGE.
++ *
++ */
++
++void do_print_errors(void)
++	{
++	const char *file, *data;
++	int line, flags;
++	unsigned long l;
++	while ((l = ERR_get_error_line_data(&file, &line, &data, &flags)))
++		{
++		fprintf(stderr, "ERROR:%lx:lib=%d,func=%d,reason=%d"
++				":file=%s:line=%d:%s\n",
++			l, ERR_GET_LIB(l), ERR_GET_FUNC(l), ERR_GET_REASON(l),
++			file, line, flags & ERR_TXT_STRING ? data : "");
++		}
++	}
++
++int hex2bin(const char *in, unsigned char *out)
++    {
++    int n1, n2;
++    unsigned char ch;
++
++    for (n1=0,n2=0 ; in[n1] && in[n1] != '\n' ; )
++	{ /* first byte */
++	if ((in[n1] >= '0') && (in[n1] <= '9'))
++	    ch = in[n1++] - '0';
++	else if ((in[n1] >= 'A') && (in[n1] <= 'F'))
++	    ch = in[n1++] - 'A' + 10;
++	else if ((in[n1] >= 'a') && (in[n1] <= 'f'))
++	    ch = in[n1++] - 'a' + 10;
++	else
++	    return -1;
++	if(!in[n1])
++	    {
++	    out[n2++]=ch;
++	    break;
++	    }
++	out[n2] = ch << 4;
++	/* second byte */
++	if ((in[n1] >= '0') && (in[n1] <= '9'))
++	    ch = in[n1++] - '0';
++	else if ((in[n1] >= 'A') && (in[n1] <= 'F'))
++	    ch = in[n1++] - 'A' + 10;
++	else if ((in[n1] >= 'a') && (in[n1] <= 'f'))
++	    ch = in[n1++] - 'a' + 10;
++	else
++	    return -1;
++	out[n2++] |= ch;
++	}
++    return n2;
++    }
++
++unsigned char *hex2bin_m(const char *in, long *plen)
++	{
++	unsigned char *p;
++	p = OPENSSL_malloc((strlen(in) + 1)/2);
++	*plen = hex2bin(in, p);
++	return p;
++	}
++
++int do_hex2bn(BIGNUM **pr, const char *in)
++	{
++	unsigned char *p;
++	long plen;
++	int r = 0;
++	p = hex2bin_m(in, &plen);
++	if (!p)
++		return 0;
++	if (!*pr)
++		*pr = BN_new();
++	if (!*pr)
++		return 0;
++	if (BN_bin2bn(p, plen, *pr))
++		r = 1;
++	OPENSSL_free(p);
++	return r;
++	}
++
++int do_bn_print(FILE *out, BIGNUM *bn)
++	{
++	int len, i;
++	unsigned char *tmp;
++	len = BN_num_bytes(bn);
++	if (len == 0)
++		{
++		fputs("00", out);
++		return 1;
++		}
++
++	tmp = OPENSSL_malloc(len);
++	if (!tmp)
++		{
++		fprintf(stderr, "Memory allocation error\n");
++		return 0;
++		}
++	BN_bn2bin(bn, tmp);
++	for (i = 0; i < len; i++)
++		fprintf(out, "%02x", tmp[i]);
++	OPENSSL_free(tmp);
++	return 1;
++	}
++
++int do_bn_print_name(FILE *out, const char *name, BIGNUM *bn)
++	{
++	int r;
++	fprintf(out, "%s = ", name);
++	r = do_bn_print(out, bn);
++	if (!r)
++		return 0;
++	fputs("\n", out);
++	return 1;
++	}
++
++int parse_line(char **pkw, char **pval, char *linebuf, char *olinebuf)
++	{
++	char *keyword, *value, *p, *q;
++	strcpy(linebuf, olinebuf);
++	keyword = linebuf;
++	/* Skip leading space */
++	while (isspace((unsigned char)*keyword))
++		keyword++;
++
++	/* Look for = sign */
++	p = strchr(linebuf, '=');
++
++	/* If no '=' exit */
++	if (!p)
++		return 0;
++
++	q = p - 1;
++
++	/* Remove trailing space */
++	while (isspace((unsigned char)*q))
++		*q-- = 0;
++
++	*p = 0;
++	value = p + 1;
++
++	/* Remove leading space from value */
++	while (isspace((unsigned char)*value))
++		value++;
++
++	/* Remove trailing space from value */
++	p = value + strlen(value) - 1;
++
++	while (*p == '\n' || isspace((unsigned char)*p))
++		*p-- = 0;
++
++	*pkw = keyword;
++	*pval = value;
++	return 1;
++	}
++
++BIGNUM *hex2bn(const char *in)
++    {
++    BIGNUM *p=NULL;
++
++    if (!do_hex2bn(&p, in))
++	return NULL;
++
++    return p;
++    }
++
++int bin2hex(const unsigned char *in,int len,char *out)
++    {
++    int n1, n2;
++    unsigned char ch;
++
++    for (n1=0,n2=0 ; n1 < len ; ++n1)
++	{
++	ch=in[n1] >> 4;
++	if (ch <= 0x09)
++	    out[n2++]=ch+'0';
++	else
++	    out[n2++]=ch-10+'a';
++	ch=in[n1] & 0x0f;
++	if(ch <= 0x09)
++	    out[n2++]=ch+'0';
++	else
++	    out[n2++]=ch-10+'a';
++	}
++    out[n2]='\0';
++    return n2;
++    }
++
++void pv(const char *tag,const unsigned char *val,int len)
++    {
++    char obuf[2048];
++
++    bin2hex(val,len,obuf);
++    printf("%s = %s\n",tag,obuf);
++    }
++
++/* To avoid extensive changes to test program at this stage just convert
++ * the input line into an acceptable form. Keyword lines converted to form
++ * "keyword = value\n" no matter what white space present, all other lines
++ * just have leading and trailing space removed.
++ */
++
++int tidy_line(char *linebuf, char *olinebuf)
++	{
++	char *keyword, *value, *p, *q;
++	strcpy(linebuf, olinebuf);
++	keyword = linebuf;
++	/* Skip leading space */
++	while (isspace((unsigned char)*keyword))
++		keyword++;
++	/* Look for = sign */
++	p = strchr(linebuf, '=');
++
++	/* If no '=' just chop leading, trailing ws */
++	if (!p)
++		{
++		p = keyword + strlen(keyword) - 1;
++		while (*p == '\n' || isspace((unsigned char)*p))
++			*p-- = 0;
++		strcpy(olinebuf, keyword);
++		strcat(olinebuf, "\n");
++		return 1;
++		}
++
++	q = p - 1;
++
++	/* Remove trailing space */
++	while (isspace((unsigned char)*q))
++		*q-- = 0;
++
++	*p = 0;
++	value = p + 1;
++
++	/* Remove leading space from value */
++	while (isspace((unsigned char)*value))
++		value++;
++
++	/* Remove trailing space from value */
++	p = value + strlen(value) - 1;
++
++	while (*p == '\n' || isspace((unsigned char)*p))
++		*p-- = 0;
++
++	strcpy(olinebuf, keyword);
++	strcat(olinebuf, " = ");
++	strcat(olinebuf, value);
++	strcat(olinebuf, "\n");
++
++	return 1;
++	}
++
++/* NB: this return the number of _bits_ read */
++int bint2bin(const char *in, int len, unsigned char *out)
++    {
++    int n;
++
++    memset(out,0,len);
++    for(n=0 ; n < len ; ++n)
++	if(in[n] == '1')
++	    out[n/8]|=(0x80 >> (n%8));
++    return len;
++    }
++
++int bin2bint(const unsigned char *in,int len,char *out)
++    {
++    int n;
++
++    for(n=0 ; n < len ; ++n)
++	out[n]=(in[n/8]&(0x80 >> (n%8))) ? '1' : '0';
++    return n;
++    }
++
++/*-----------------------------------------------*/
++
++void PrintValue(char *tag, unsigned char *val, int len)
++{
++#if VERBOSE
++  char obuf[2048];
++  int olen;
++  olen = bin2hex(val, len, obuf);
++  printf("%s = %.*s\n", tag, olen, obuf);
++#endif
++}
++
++void OutputValue(char *tag, unsigned char *val, int len, FILE *rfp,int bitmode)
++    {
++    char obuf[2048];
++    int olen;
++
++    if(bitmode)
++	olen=bin2bint(val,len,obuf);
++    else
++	olen=bin2hex(val,len,obuf);
++
++    fprintf(rfp, "%s = %.*s\n", tag, olen, obuf);
++#if VERBOSE
++    printf("%s = %.*s\n", tag, olen, obuf);
++#endif
++    }
+diff --git a/crypto/o_init.c b/crypto/o_init.c
+index a235755..ffcf39b 100644
+--- a/crypto/o_init.c
++++ b/crypto/o_init.c
+@@ -75,9 +75,12 @@ static void init_fips_mode(void)
+     /* Ensure the selftests always run */
+     FIPS_mode_set(1);
+ 
++    /* For now, do not enforce fips mode via env var
+     if (getenv("OPENSSL_FORCE_FIPS_MODE") != NULL) {
+         buf[0] = '1';
+     } else if ((fd = open(FIPS_MODE_SWITCH_FILE, O_RDONLY)) >= 0) {
++    */
++    if ((fd = open(FIPS_MODE_SWITCH_FILE, O_RDONLY)) >= 0) {
+         while (read(fd, buf, sizeof(buf)) < 0 && errno == EINTR) ;
+         close(fd);
+     }
+@@ -108,9 +111,11 @@ void __attribute__ ((constructor)) OPENSSL_init_library(void)
+         return;
+     done = 1;
+ #ifdef OPENSSL_FIPS
++    /* For now, do not check for /etc/system-fips to see if fips installed
+     if (!FIPS_module_installed()) {
+         return;
+     }
++   */
+     RAND_init_fips();
+     init_fips_mode();
+     if (!FIPS_mode()) {
+diff --git a/crypto/rand/rand.h b/crypto/rand/rand.h
+index 09dc4cc..2553afd 100644
+--- a/crypto/rand/rand.h
++++ b/crypto/rand/rand.h
+@@ -133,34 +133,16 @@ void ERR_load_RAND_strings(void);
+ /* Error codes for the RAND functions. */
+ 
+ /* Function codes. */
+-# define RAND_F_ENG_RAND_GET_RAND_METHOD                  108
+-# define RAND_F_FIPS_RAND                                 103
+-# define RAND_F_FIPS_RAND_BYTES                           102
+-# define RAND_F_FIPS_RAND_SET_DT                          106
+-# define RAND_F_FIPS_X931_SET_DT                          106
+-# define RAND_F_FIPS_SET_DT                               104
+-# define RAND_F_FIPS_SET_PRNG_SEED                        107
+-# define RAND_F_FIPS_SET_TEST_MODE                        105
+ # define RAND_F_RAND_GET_RAND_METHOD                      101
+-# define RAND_F_RAND_INIT_FIPS                            109
++# define RAND_F_RAND_INIT_FIPS                            102
+ # define RAND_F_SSLEAY_RAND_BYTES                         100
+ 
+ /* Reason codes. */
+-# define RAND_R_DUAL_EC_DRBG_DISABLED                     114
+-# define RAND_R_ERROR_INITIALISING_DRBG                   112
+-# define RAND_R_ERROR_INSTANTIATING_DRBG                  113
+-# define RAND_R_NON_FIPS_METHOD                           105
+-# define RAND_R_NOT_IN_TEST_MODE                          106
+-# define RAND_R_NO_FIPS_RANDOM_METHOD_SET                 111
+-# define RAND_R_NO_KEY_SET                                107
+-# define RAND_R_PRNG_ASKING_FOR_TOO_MUCH                  101
+-# define RAND_R_PRNG_ERROR                                108
+-# define RAND_R_PRNG_KEYED                                109
+-# define RAND_R_PRNG_NOT_REKEYED                          102
+-# define RAND_R_PRNG_NOT_RESEEDED                         103
++# define RAND_R_DUAL_EC_DRBG_DISABLED                     104
++# define RAND_R_ERROR_INITIALISING_DRBG                   102
++# define RAND_R_ERROR_INSTANTIATING_DRBG                  103
++# define RAND_R_NO_FIPS_RANDOM_METHOD_SET                 101
+ # define RAND_R_PRNG_NOT_SEEDED                           100
+-# define RAND_R_PRNG_SEED_MUST_NOT_MATCH_KEY              110
+-# define RAND_R_PRNG_STUCK                                104
+ 
+ #ifdef  __cplusplus
+ }
+diff --git a/crypto/rsa/rsa.h b/crypto/rsa/rsa.h
+index d2e93dd..1317acd 100644
+--- a/crypto/rsa/rsa.h
++++ b/crypto/rsa/rsa.h
+@@ -547,7 +547,7 @@ void ERR_load_RSA_strings(void);
+ # define RSA_F_RSA_ALGOR_TO_MD                            157
+ # define RSA_F_RSA_BUILTIN_KEYGEN                         129
+ # define RSA_F_RSA_CHECK_KEY                              123
+-# define RSA_F_RSA_CMS_DECRYPT                            258
++# define RSA_F_RSA_CMS_DECRYPT                            158
+ # define RSA_F_RSA_EAY_PRIVATE_DECRYPT                    101
+ # define RSA_F_RSA_EAY_PRIVATE_ENCRYPT                    102
+ # define RSA_F_RSA_EAY_PUBLIC_DECRYPT                     103
+@@ -568,7 +568,7 @@ void ERR_load_RSA_strings(void);
+ # define RSA_F_RSA_PADDING_ADD_PKCS1_OAEP                 121
+ # define RSA_F_RSA_PADDING_ADD_PKCS1_OAEP_MGF1            160
+ # define RSA_F_RSA_PADDING_ADD_PKCS1_PSS                  125
+-# define RSA_F_RSA_PADDING_ADD_PKCS1_PSS_MGF1             158
++# define RSA_F_RSA_PADDING_ADD_PKCS1_PSS_MGF1             148
+ # define RSA_F_RSA_PADDING_ADD_PKCS1_TYPE_1               108
+ # define RSA_F_RSA_PADDING_ADD_PKCS1_TYPE_2               109
+ # define RSA_F_RSA_PADDING_ADD_SSLV23                     110
+@@ -582,23 +582,23 @@ void ERR_load_RSA_strings(void);
+ # define RSA_F_RSA_PADDING_CHECK_X931                     128
+ # define RSA_F_RSA_PRINT                                  115
+ # define RSA_F_RSA_PRINT_FP                               116
+-# define RSA_F_RSA_PRIVATE_DECRYPT                        157
+-# define RSA_F_RSA_PRIVATE_ENCRYPT                        148
++# define RSA_F_RSA_PRIVATE_DECRYPT                        150
++# define RSA_F_RSA_PRIVATE_ENCRYPT                        151
+ # define RSA_F_RSA_PRIV_DECODE                            137
+ # define RSA_F_RSA_PRIV_ENCODE                            138
+ # define RSA_F_RSA_PSS_TO_CTX                             162
+-# define RSA_F_RSA_PUBLIC_DECRYPT                         149
++# define RSA_F_RSA_PUBLIC_DECRYPT                         152
+ # define RSA_F_RSA_PUBLIC_ENCRYPT                         153
+ # define RSA_F_RSA_PUB_DECODE                             139
+ # define RSA_F_RSA_SETUP_BLINDING                         136
+-# define RSA_F_RSA_SET_DEFAULT_METHOD                     150
+-# define RSA_F_RSA_SET_METHOD                             151
+ # define RSA_F_RSA_SIGN                                   117
+ # define RSA_F_RSA_SIGN_ASN1_OCTET_STRING                 118
+ # define RSA_F_RSA_VERIFY                                 119
+ # define RSA_F_RSA_VERIFY_ASN1_OCTET_STRING               120
+ # define RSA_F_RSA_VERIFY_PKCS1_PSS                       126
+-# define RSA_F_RSA_VERIFY_PKCS1_PSS_MGF1                  152
++# define RSA_F_RSA_VERIFY_PKCS1_PSS_MGF1                  149
++# define RSA_F_RSA_SET_DEFAULT_METHOD                     200
++# define RSA_F_RSA_SET_METHOD                             201
+ 
+ /* Reason codes. */
+ # define RSA_R_ALGORITHM_MISMATCH                         100
+@@ -631,22 +631,21 @@ void ERR_load_RSA_strings(void);
+ # define RSA_R_INVALID_OAEP_PARAMETERS                    162
+ # define RSA_R_INVALID_PADDING                            138
+ # define RSA_R_INVALID_PADDING_MODE                       141
+-# define RSA_R_INVALID_PSS_PARAMETERS                     157
++# define RSA_R_INVALID_PSS_PARAMETERS                     149
+ # define RSA_R_INVALID_PSS_SALTLEN                        146
+-# define RSA_R_INVALID_SALT_LENGTH                        158
++# define RSA_R_INVALID_SALT_LENGTH                        150
+ # define RSA_R_INVALID_TRAILER                            139
+ # define RSA_R_INVALID_X931_DIGEST                        142
+ # define RSA_R_IQMP_NOT_INVERSE_OF_Q                      126
+ # define RSA_R_KEY_SIZE_TOO_SMALL                         120
+ # define RSA_R_LAST_OCTET_INVALID                         134
+ # define RSA_R_MODULUS_TOO_LARGE                          105
+-# define RSA_R_NON_FIPS_RSA_METHOD                        149
+-# define RSA_R_NON_FIPS_METHOD                            149
++# define RSA_R_NON_FIPS_RSA_METHOD                        157
+ # define RSA_R_NO_PUBLIC_EXPONENT                         140
+ # define RSA_R_NULL_BEFORE_BLOCK_MISSING                  113
+ # define RSA_R_N_DOES_NOT_EQUAL_P_Q                       127
+ # define RSA_R_OAEP_DECODING_ERROR                        121
+-# define RSA_R_OPERATION_NOT_ALLOWED_IN_FIPS_MODE         150
++# define RSA_R_OPERATION_NOT_ALLOWED_IN_FIPS_MODE         158
+ # define RSA_R_OPERATION_NOT_SUPPORTED_FOR_THIS_KEYTYPE   148
+ # define RSA_R_PADDING_CHECK_FAILED                       114
+ # define RSA_R_PKCS_DECODING_ERROR                        159
+@@ -669,6 +668,7 @@ void ERR_load_RSA_strings(void);
+ # define RSA_R_UNSUPPORTED_SIGNATURE_TYPE                 155
+ # define RSA_R_VALUE_MISSING                              147
+ # define RSA_R_WRONG_SIGNATURE_LENGTH                     119
++# define RSA_R_NON_FIPS_METHOD                            200
+ 
+ #ifdef  __cplusplus
+ }
+diff --git a/crypto/rsa/rsa_err.c b/crypto/rsa/rsa_err.c
+index 9557e1d..ea092dd 100644
+--- a/crypto/rsa/rsa_err.c
++++ b/crypto/rsa/rsa_err.c
+@@ -1,6 +1,6 @@
+ /* crypto/rsa/rsa_err.c */
+ /* ====================================================================
+- * Copyright (c) 1999-2014 The OpenSSL Project.  All rights reserved.
++ * Copyright (c) 1999-2016 The OpenSSL Project.  All rights reserved.
+  *
+  * Redistribution and use in source and binary forms, with or without
+  * modification, are permitted provided that the following conditions
+@@ -136,8 +136,6 @@ static ERR_STRING_DATA RSA_str_functs[] = {
+     {ERR_FUNC(RSA_F_RSA_PUBLIC_ENCRYPT), "RSA_public_encrypt"},
+     {ERR_FUNC(RSA_F_RSA_PUB_DECODE), "RSA_PUB_DECODE"},
+     {ERR_FUNC(RSA_F_RSA_SETUP_BLINDING), "RSA_setup_blinding"},
+-    {ERR_FUNC(RSA_F_RSA_SET_DEFAULT_METHOD), "RSA_set_default_method"},
+-    {ERR_FUNC(RSA_F_RSA_SET_METHOD), "RSA_set_method"},
+     {ERR_FUNC(RSA_F_RSA_SIGN), "RSA_sign"},
+     {ERR_FUNC(RSA_F_RSA_SIGN_ASN1_OCTET_STRING),
+      "RSA_sign_ASN1_OCTET_STRING"},
+@@ -146,6 +144,8 @@ static ERR_STRING_DATA RSA_str_functs[] = {
+      "RSA_verify_ASN1_OCTET_STRING"},
+     {ERR_FUNC(RSA_F_RSA_VERIFY_PKCS1_PSS), "RSA_verify_PKCS1_PSS"},
+     {ERR_FUNC(RSA_F_RSA_VERIFY_PKCS1_PSS_MGF1), "RSA_verify_PKCS1_PSS_mgf1"},
++    {ERR_FUNC(RSA_F_RSA_SET_DEFAULT_METHOD), "RSA_set_default_method"},
++    {ERR_FUNC(RSA_F_RSA_SET_METHOD), "RSA_set_method"},
+     {0, NULL}
+ };
+ 
+@@ -232,6 +232,7 @@ static ERR_STRING_DATA RSA_str_reasons[] = {
+      "unsupported signature type"},
+     {ERR_REASON(RSA_R_VALUE_MISSING), "value missing"},
+     {ERR_REASON(RSA_R_WRONG_SIGNATURE_LENGTH), "wrong signature length"},
++    {ERR_REASON(RSA_R_NON_FIPS_METHOD), "non fips method"},
+     {0, NULL}
+ };
+ 
+diff --git a/crypto/sha/sha.h b/crypto/sha/sha.h
+index ccec037..cb52fc8 100644
+--- a/crypto/sha/sha.h
++++ b/crypto/sha/sha.h
+@@ -105,6 +105,9 @@ typedef struct SHAstate_st {
+ } SHA_CTX;
+ 
+ # ifndef OPENSSL_NO_SHA0
++#ifdef OPENSSL_FIPS
++int private_SHA_Init(SHA_CTX *c);
++#endif
+ int SHA_Init(SHA_CTX *c);
+ int SHA_Update(SHA_CTX *c, const void *data, size_t len);
+ int SHA_Final(unsigned char *md, SHA_CTX *c);
+diff --git a/openssl.ld b/openssl.ld
+index 8d40f31..dcbfdac 100644
+--- a/openssl.ld
++++ b/openssl.ld
+@@ -4617,5 +4617,15 @@ OPENSSL_1.0.2g {
+        global:
+                SRP_VBASE_get1_by_user;
+                SRP_user_pwd_free;
++               OPENSSL_init_library;
++               private_BF_set_key;
++               private_CAST_set_key;
++               private_idea_set_encrypt_key;
++               private_SEED_set_key;
++               private_RC2_set_key;
++               private_RC4_set_key;
++               private_AES_set_encrypt_key;
++               private_AES_set_decrypt_key;
++               private_Camellia_set_key;
+ } OPENSSL_1.0.2;
+ 

@@ -57,6 +57,8 @@ filerc() {
 if [ "$1" = "configure" ]
 then
     if [ ! -z "$2" ]; then
+	# This triggers services restarting, so limit this to major upgrades
+	# only. Security updates should not restart services automatically.
 	if dpkg --compare-versions "$2" lt 1.0.1g-2; then
             echo -n "Checking for services that may need to be restarted..."
             check="amanda-server anon-proxy apache2 apache-ssl"
@@ -150,11 +152,15 @@ then
 		db_go || true
 		db_get libraries/restart-without-asking
 		if [ "x$RET" != xtrue ]; then
-			db_reset libssl1.0.2/restart-services
-			db_set libssl1.0.2/restart-services "$services"
-			db_input critical libssl1.0.2/restart-services || true
+			db_reset libssl1.0.0/restart-services
+			db_set libssl1.0.0/restart-services "$services"
+		if [ "$RELEASE_UPGRADE_MODE" = desktop ]; then
+			db_input medium libssl1.0.0/restart-services || true
+		else
+			db_input critical libssl1.0.0/restart-services || true
+		fi
 			db_go || true
-			db_get libssl1.0.2/restart-services
+			db_get libssl1.0.0/restart-services
 
 			if [ "x$RET" != "x" ]
 			then
@@ -186,8 +192,8 @@ then
 		    done
 		    echo
 		    if [ -n "$failed" ]; then
-			db_subst libssl1.0.2/restart-failed services "$failed"
-			db_input critical libssl1.0.2/restart-failed || true
+			db_subst libssl1.0.0/restart-failed services "$failed"
+			db_input critical libssl1.0.0/restart-failed || true
 			db_go || true
 		    else
 			echo "Services restarted successfully."
@@ -200,7 +206,20 @@ then
 	    # Shut down the frontend, to make sure none of the
 	    # restarted services keep a connection open to it
 	    db_stop
+
 	fi # end upgrading and $2 lt 0.9.8c-2
+
+	# Here we issue the reboot notification for upgrades and
+	# security updates. We do want services to be restarted when we
+	# update for a security issue, but planned by the sysadmin, not
+	# automatically.
+
+	# Only issue the reboot notification for servers; we proxy this by
+	# testing that the X server is not running (LP: #244250)
+	if ! pidof /usr/bin/X > /dev/null && [ -x /usr/share/update-notifier/notify-reboot-required ]; then
+		/usr/share/update-notifier/notify-reboot-required
+	fi
+
     fi # Upgrading
 fi
 

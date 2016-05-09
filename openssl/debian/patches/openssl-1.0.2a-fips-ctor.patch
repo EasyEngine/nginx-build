@@ -1,0 +1,187 @@
+commit ebd8bb4303c805a4c8c20d39ac73af8d51dc2818
+Author: Joy Latten <joy.latten@canonical.com>
+Date:   Wed Apr 13 22:38:57 2016 -0500
+
+    From: Joy Latten <joy.latten@canonical.com>
+    Description: [PATCH 4/6] Additional fips 140-2 compliance changes
+    Bug-Ubuntu: http://bugs.launchpad.net/bugs/1553309
+    Forwarded: not needed
+    Origin: vendor, http://pkgs.fedoraproject.org/cgit/rpms/openssl.git
+
+diff --git a/crypto/fips/fips.c b/crypto/fips/fips.c
+index 29621c9..e5de012 100644
+--- a/crypto/fips/fips.c
++++ b/crypto/fips/fips.c
+@@ -60,6 +60,8 @@
+ #include <dlfcn.h>
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <unistd.h>
++#include <errno.h>
+ #include "fips_locl.h"
+ 
+ #ifdef OPENSSL_FIPS
+@@ -201,7 +203,9 @@ static char *bin2hex(void *buf, size_t len)
+ }
+ 
+ # define HMAC_PREFIX "."
+-# define HMAC_SUFFIX ".hmac"
++# ifndef HMAC_SUFFIX
++#  define HMAC_SUFFIX ".hmac"
++# endif
+ # define READ_BUFFER_LENGTH 16384
+ 
+ static char *make_hmac_path(const char *origpath)
+@@ -279,20 +283,14 @@ static int compute_file_hmac(const char *path, void **buf, size_t *hmaclen)
+     return rv;
+ }
+ 
+-static int FIPSCHECK_verify(const char *libname, const char *symbolname)
++static int FIPSCHECK_verify(const char *path)
+ {
+-    char path[PATH_MAX + 1];
+-    int rv;
++    int rv = 0;
+     FILE *hf;
+     char *hmacpath, *p;
+     char *hmac = NULL;
+     size_t n;
+ 
+-    rv = get_library_path(libname, symbolname, path, sizeof(path));
+-
+-    if (rv < 0)
+-        return 0;
+-
+     hmacpath = make_hmac_path(path);
+     if (hmacpath == NULL)
+         return 0;
+@@ -343,6 +341,51 @@ static int FIPSCHECK_verify(const char *libname, const char *symbolname)
+     return 1;
+ }
+ 
++static int verify_checksums(void)
++{
++    int rv;
++    char path[PATH_MAX + 1];
++    char *p;
++
++    /* we need to avoid dlopening libssl, assume both libcrypto and libssl
++       are in the same directory */
++
++    rv = get_library_path("libcrypto.so." SHLIB_VERSION_NUMBER,
++                          "FIPS_mode_set", path, sizeof(path));
++    if (rv < 0)
++        return 0;
++
++    rv = FIPSCHECK_verify(path);
++    if (!rv)
++        return 0;
++
++    /* replace libcrypto with libssl */
++    while ((p = strstr(path, "libcrypto.so")) != NULL) {
++        p = stpcpy(p, "libssl");
++        memmove(p, p + 3, strlen(p + 2));
++    }
++
++    rv = FIPSCHECK_verify(path);
++    if (!rv)
++        return 0;
++    return 1;
++}
++
++# ifndef FIPS_MODULE_PATH
++#  define FIPS_MODULE_PATH "/etc/system-fips"
++# endif
++
++int FIPS_module_installed(void)
++{
++    int rv;
++    rv = access(FIPS_MODULE_PATH, F_OK);
++    if (rv < 0 && errno != ENOENT)
++        rv = 0;
++
++    /* Installed == true */
++    return !rv;
++}
++
+ int FIPS_module_mode_set(int onoff, const char *auth)
+ {
+     int ret = 0;
+@@ -380,17 +423,7 @@ int FIPS_module_mode_set(int onoff, const char *auth)
+         }
+ # endif
+ 
+-        if (!FIPSCHECK_verify
+-            ("libcrypto.so." SHLIB_VERSION_NUMBER, "FIPS_mode_set")) {
+-            FIPSerr(FIPS_F_FIPS_MODULE_MODE_SET,
+-                    FIPS_R_FINGERPRINT_DOES_NOT_MATCH);
+-            fips_selftest_fail = 1;
+-            ret = 0;
+-            goto end;
+-        }
+-
+-        if (!FIPSCHECK_verify
+-            ("libssl.so." SHLIB_VERSION_NUMBER, "SSL_CTX_new")) {
++        if (!verify_checksums()) {
+             FIPSerr(FIPS_F_FIPS_MODULE_MODE_SET,
+                     FIPS_R_FINGERPRINT_DOES_NOT_MATCH);
+             fips_selftest_fail = 1;
+diff --git a/crypto/fips/fips.h b/crypto/fips/fips.h
+index 30668c1..9777a73 100644
+--- a/crypto/fips/fips.h
++++ b/crypto/fips/fips.h
+@@ -74,6 +74,7 @@ extern "C" {
+ 
+     int FIPS_module_mode_set(int onoff, const char *auth);
+     int FIPS_module_mode(void);
++    int FIPS_module_installed(void);
+     const void *FIPS_rand_check(void);
+     int FIPS_selftest(void);
+     int FIPS_selftest_failed(void);
+diff --git a/crypto/o_init.c b/crypto/o_init.c
+index 2f754ef..a235755 100644
+--- a/crypto/o_init.c
++++ b/crypto/o_init.c
+@@ -72,6 +72,9 @@ static void init_fips_mode(void)
+     char buf[2] = "0";
+     int fd;
+ 
++    /* Ensure the selftests always run */
++    FIPS_mode_set(1);
++
+     if (getenv("OPENSSL_FORCE_FIPS_MODE") != NULL) {
+         buf[0] = '1';
+     } else if ((fd = open(FIPS_MODE_SWITCH_FILE, O_RDONLY)) >= 0) {
+@@ -83,8 +86,12 @@ static void init_fips_mode(void)
+      * otherwise..
+      */
+ 
+-    if (buf[0] == '1') {
+-        FIPS_mode_set(1);
++    if (buf[0] != '1') {
++        /* drop down to non-FIPS mode if it is not requested */
++        FIPS_mode_set(0);
++    } else {
++        /* abort if selftest failed */
++        FIPS_selftest_check();
+     }
+ }
+ #endif
+@@ -94,13 +101,16 @@ static void init_fips_mode(void)
+  * sets FIPS callbacks
+  */
+ 
+-void OPENSSL_init_library(void)
++void __attribute__ ((constructor)) OPENSSL_init_library(void)
+ {
+     static int done = 0;
+     if (done)
+         return;
+     done = 1;
+ #ifdef OPENSSL_FIPS
++    if (!FIPS_module_installed()) {
++        return;
++    }
+     RAND_init_fips();
+     init_fips_mode();
+     if (!FIPS_mode()) {

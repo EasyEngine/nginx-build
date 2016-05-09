@@ -15,5 +15,13 @@ block_diginotar.patch
 block_digicert_malaysia.patch
 #padlock_conf.patch
 disable_freelist.patch
-soname.patch
 disable_sslv3_test.patch
+perlpath-quilt.patch
+no-sslv3.patch
+arm64-aarch64_asm.patch
+openssl-1.0.2g-fips.patch
+openssl-1.0.2a-fips-ec.patch
+openssl-1.0.2a-fips-md5-allow.patch
+openssl-1.0.2a-fips-ctor.patch
+openssl-1.0.2f-new-fips-reqs.patch
+openssl-1.0.2g-ubuntu-fips-cleanup.patch

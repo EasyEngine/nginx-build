@@ -1,14 +1,127 @@
-openssl (1.0.2f-1ppa) stable; urgency=medium
+openssl (1.0.2g-1ubuntu4) xenial; urgency=medium
 
-  * Backport for EasyEngine
+  * Rename Fedora-imported FIPS patches to the names they have in Fedora, add
+    correct "Origin:" tags, and move Ubuntu modifications in them into
+    openssl-1.0.2g-ubuntu-fips-cleanup.patch.
 
- -- Gaurav Ashtikar <gau1991@gmail.com>  Thu, 29 Jan 2016 17:27:58 +0530
+ -- Joy Latten <joy.latten@canonical.com>  Fri, 15 Apr 2016 06:58:01 +0200
 
-openssl (1.0.2f-2+deb.sury.org~trusty+1) trusty; urgency=medium
+openssl (1.0.2g-1ubuntu3) xenial; urgency=medium
 
-  * Backport for Trusty Tahr (14.04 LTS)
+  * Add fips support to openssl, LP: #1553309
+    - debian/patches/openssl-1.0.2g-fips.patch: [PATCH 1/6] Add selftest, fips
+      support, crypto compliance and define OPENSSL_FIPS.
+    - debian/patches/openssl-1.0.2g-fips-ec.patch: [PATCH 2/6] Add fips compliance
+      for EC curves.
+    - debian/patches/openssl-1.0.2g-fips-md5-allow.patch: [PATCH 3/6] Allow md5 in
+      fips mode.
+    - debian/patches/openssl-1.0.2g-fips-ctor.patch: [PATCH 4/6] Re-factor integrity
+      check for fips mode.
+    - debian/patches/openssl-1.0.2g-new-fips-reqs.patch: [PATCH 5/6] New fips
+      requirements.
+    - debian/patches/openssl-1.0.2g-ubuntu-fips-cleanup.patch: [PATCH 6/6] Cleanup
+      compiler warnings, use upstream error codes, DSA, DSA2, fips_utl.h; add
+      additional upstream tests to fips_test_suite; allow all EC curves.
 
- -- Ondřej Surý <ondrej@debian.org>  Thu, 28 Jan 2016 21:56:58 +0100
+ -- Joy Latten <joy.latten@canonical.com>  Tue, 12 Apr 2016 15:33:50 -0500
+
+openssl (1.0.2g-1ubuntu2) xenial; urgency=medium
+
+  * debian/patches/arm64-aarch64_asm.patch: Enable aarch64 asm routines
+    (LP: #1552939).
+
+ -- dann frazier <dannf@ubuntu.com>  Mon, 07 Mar 2016 10:03:26 -0700
+
+openssl (1.0.2g-1ubuntu1) xenial; urgency=medium
+
+  * Merge with Debian, remaining changes.
+    - Disable SSLv3 without changing ABI:
+      + debian/patches/no-sslv3.patch: Disable SSLv3 without using the
+        no-ssl3-method option
+      + debian/rules: don't use no-ssl3-method, don't bump soname
+      + debian/patches/engines-path.patch: don't bump soname
+      + debian/patches/version-script.patch: don't bump soname
+      + debian/patches/soname.patch: removed
+      + debian/lib*: don't bump soname
+    - debian/control: don't enable rfc3779 and cms support for now as it
+      changes ABI.
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification on libssl1.0.0
+        upgrade on servers.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i586 (on i386)
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+    - debian/control: Mark Debian Vcs-* as XS-Debian-Vcs-*
+    - debian/rules: Enable optimized 64bit elliptic curve code contributed
+      by Google.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 01 Mar 2016 14:09:30 -0500
+
+openssl (1.0.2g-1) unstable; urgency=high
+
+  * New upstream version
+  * Fix CVE-2016-0797
+  * Fix CVE-2016-0798
+  * Fix CVE-2016-0799
+  * Fix CVE-2016-0702
+  * Fix CVE-2016-0705
+  * Disable EXPORT and LOW ciphers: The DROWN attack (CVE-2016-0800)
+    makes use of those, and SLOTH attack (CVE-2015-7575) can make use of them
+    too.
+
+ -- Kurt Roeckx <kurt@roeckx.be>  Tue, 01 Mar 2016 18:31:09 +0100
+
+openssl (1.0.2f-2ubuntu1) xenial; urgency=medium
+
+  * Merge with Debian, remaining changes.
+    - Disable SSLv3 without changing ABI:
+      + debian/patches/no-sslv3.patch: Disable SSLv3 without using the
+        no-ssl3-method option
+      + debian/rules: don't use no-ssl3-method, don't bump soname
+      + debian/patches/engines-path.patch: don't bump soname
+      + debian/patches/version-script.patch: don't bump soname
+      + debian/patches/soname.patch: removed
+      + debian/lib*: don't bump soname
+    - debian/control: don't enable rfc3779 and cms support for now as it
+      changes ABI.
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification on libssl1.0.0
+        upgrade on servers.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i586 (on i386)
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+    - debian/control: Mark Debian Vcs-* as XS-Debian-Vcs-*
+    - debian/rules: Enable optimized 64bit elliptic curve code contributed
+      by Google.
+  * debian/patches/CVE-2016-0701.patch: dropped, upstream.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 02 Feb 2016 13:37:21 -0500
 
 openssl (1.0.2f-2) unstable; urgency=high
 
@@ -17,6 +130,56 @@ openssl (1.0.2f-2) unstable; urgency=high
     - Not affected by CVE-2015-3197 because SSLv2 is disabled.
 
  -- Kurt Roeckx <kurt@roeckx.be>  Thu, 28 Jan 2016 19:32:02 +0100
+
+openssl (1.0.2e-1ubuntu2) xenial; urgency=medium
+
+  * SECURITY UPDATE: DH small subgroups issue
+    - debian/patches/CVE-2016-0701.patch: add a test for small subgroup
+      attacks in crypto/dh/dhtest.c, always generate DH keys for ephemeral
+      DH cipher suites in doc/ssl/SSL_CTX_set_tmp_dh_callback.pod,
+      ssl/s3_lib.c, ssl/s3_srvr.c, ssl/ssl.h, prevent small subgroup
+      attacks on DH/DHE in crypto/dh/dh.h, crypto/dh/dh_check.c.
+    - CVE-2016-0701
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 25 Jan 2016 13:39:46 -0500
+
+openssl (1.0.2e-1ubuntu1) xenial; urgency=medium
+
+  * Merge with Debian, remaining changes.
+    - Disable SSLv3 without changing ABI:
+      + debian/patches/no-sslv3.patch: Disable SSLv3 without using the
+        no-ssl3-method option
+      + debian/rules: don't use no-ssl3-method, don't bump soname
+      + debian/patches/engines-path.patch: don't bump soname
+      + debian/patches/version-script.patch: don't bump soname
+      + debian/patches/soname.patch: removed
+      + debian/lib*: don't bump soname
+    - debian/control: don't enable rfc3779 and cms support for now as it
+      changes ABI.
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification on libssl1.0.0
+        upgrade on servers.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i586 (on i386)
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+    - debian/control: Mark Debian Vcs-* as XS-Debian-Vcs-*
+    - debian/rules: Enable optimized 64bit elliptic curve code contributed
+      by Google.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Fri, 04 Dec 2015 08:24:39 -0500
 
 openssl (1.0.2e-1) unstable; urgency=high
 
@@ -56,6 +219,51 @@ openssl (1.0.2d-1) unstable; urgency=high
 
  -- Kurt Roeckx <kurt@roeckx.be>  Thu, 09 Jul 2015 18:22:26 +0200
 
+openssl (1.0.2d-0ubuntu2) xenial; urgency=medium
+
+  * debian/patches/no-sslv3.patch: Disable SSLv3 without using the
+    no-ssl3-method option, as that changes ABI and we don't want to break
+    compatibility with third party applications and applications built for
+    older versions of Ubuntu, especially for an LTS release.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 09 Nov 2015 17:37:38 -0500
+
+openssl (1.0.2d-0ubuntu1) wily; urgency=medium
+
+  * SECURITY UPDATE: alternative chains certificate forgery
+    - Updated to new upstream version
+    - CVE-2015-1793
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 09 Jul 2015 09:27:48 -0400
+
+openssl (1.0.2c-1ubuntu1) wily; urgency=medium
+
+  * Merge with Debian, remaining changes.
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification on libssl1.0.0
+        upgrade on servers.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i586 (on i386)
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+    - debian/control: Mark Debian Vcs-* as XS-Debian-Vcs-*
+    - debian/rules: Enable optimized 64bit elliptic curve code contributed
+      by Google.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 15 Jun 2015 08:17:16 -0400
+
 openssl (1.0.2c-1) unstable; urgency=medium
 
   * New upstream version
@@ -76,6 +284,51 @@ openssl (1.0.2b-1) unstable; urgency=high
   * Remove openssl-pod-misspell.patch applied upstream
 
  -- Kurt Roeckx <kurt@roeckx.be>  Thu, 11 Jun 2015 18:20:38 +0200
+
+openssl (1.0.2a-1ubuntu1) wily; urgency=medium
+
+  * Merge with Debian, remaining changes.
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification on libssl1.0.0
+        upgrade on servers.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i586 (on i386)
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+    - debian/control: Mark Debian Vcs-* as XS-Debian-Vcs-*
+    - debian/rules: Enable optimized 64bit elliptic curve code contributed
+      by Google.
+  * Dropped patches included in new version:
+    - ppc64-support.patch, CVE-2014-0076.patch, CVE-2014-0160.patch,
+      CVE-2010-5298.patch, CVE-2014-0198.patch, CVE-2014-0195.patch,
+      CVE-2014-0221.patch, CVE-2014-0224-1.patch, CVE-2014-0224-2.patch,
+      CVE-2014-3470.patch, CVE-2014-0224-3.patch,
+      CVE-2014-0224-regression.patch, CVE-2014-0224-regression2.patch,
+      CVE-2014-3505.patch, CVE-2014-3506.patch, CVE-2014-3507.patch,
+      CVE-2014-3508.patch, CVE-2014-3509.patch, CVE-2014-3510.patch,
+      CVE-2014-3511.patch, CVE-2014-3512.patch, CVE-2014-5139.patch,
+      power8-optimisations.patch, tls_fallback_scsv_support.patch,
+      CVE-2014-3513.patch, CVE-2014-3567.patch, CVE-2014-3568.patch,
+      CVE-2014-3569.patch, CVE-2014-3570.patch, CVE-2014-3571-1.patch,
+      CVE-2014-3571-2.patch, CVE-2014-3572.patch, CVE-2014-8275.patch,
+      CVE-2015-0204.patch, CVE-2015-0205.patch, CVE-2015-0206.patch,
+      CVE-2015-0209.patch, CVE-2015-0286.patch, CVE-2015-0287.patch,
+      CVE-2015-0288.patch, CVE-2015-0289.patch, CVE-2015-0292.patch,
+      CVE-2015-0293.patch, CVE-2015-0209-2.patch, CVE-2015-0293-2.patch
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 12 May 2015 11:36:12 -0400
 
 openssl (1.0.2a-1) unstable; urgency=medium
 
@@ -181,6 +434,270 @@ openssl (1.0.2~beta1-1) experimental; urgency=medium
 
  -- Kurt Roeckx <kurt@roeckx.be>  Tue, 25 Feb 2014 00:36:51 +0100
 
+openssl (1.0.1f-1ubuntu11) vivid; urgency=medium
+
+  * SECURITY UPDATE: denial of service and possible memory corruption via
+    malformed EC private key
+    - debian/patches/CVE-2015-0209.patch: fix use after free in
+      crypto/ec/ec_asn1.c.
+    - debian/patches/CVE-2015-0209-2.patch: fix a failure to NULL a pointer
+      freed on error in crypto/asn1/x_x509.c, crypto/ec/ec_asn1.c.
+    - CVE-2015-0209
+  * SECURITY UPDATE: denial of service via cert verification
+    - debian/patches/CVE-2015-0286.patch: handle boolean types in
+      crypto/asn1/a_type.c.
+    - CVE-2015-0286
+  * SECURITY UPDATE: ASN.1 structure reuse memory corruption
+    - debian/patches/CVE-2015-0287.patch: free up structures in
+      crypto/asn1/tasn_dec.c.
+    - CVE-2015-0287
+  * SECURITY UPDATE: denial of service via invalid certificate key
+    - debian/patches/CVE-2015-0288.patch: check public key isn't NULL in
+      crypto/x509/x509_req.c.
+    - CVE-2015-0288
+  * SECURITY UPDATE: denial of service and possible code execution via
+    PKCS#7 parsing
+    - debian/patches/CVE-2015-0289.patch: handle missing content in
+      crypto/pkcs7/pk7_doit.c, crypto/pkcs7/pk7_lib.c.
+    - CVE-2015-0289
+  * SECURITY UPDATE: denial of service or memory corruption via base64
+    decoding
+    - debian/patches/CVE-2015-0292.patch: prevent underflow in
+      crypto/evp/encode.c.
+    - CVE-2015-0292
+  * SECURITY UPDATE: denial of service via assert in SSLv2 servers
+    - debian/patches/CVE-2015-0293.patch: check key lengths in
+      ssl/s2_lib.c, ssl/s2_srvr.c.
+    - debian/patches/CVE-2015-0293-2.patch: fix unsigned/signed warnings in
+      ssl/s2_srvr.c.
+    - CVE-2015-0293
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 19 Mar 2015 10:07:13 -0400
+
+openssl (1.0.1f-1ubuntu10) vivid; urgency=medium
+
+  * SECURITY UPDATE: denial of service via unexpected handshake when
+    no-ssl3 build option is used (not the default)
+    - debian/patches/CVE-2014-3569.patch: keep the old method for now in
+      ssl/s23_srvr.c.
+    - CVE-2014-3569
+  * SECURITY UPDATE: bignum squaring may produce incorrect results
+    - debian/patches/CVE-2014-3570.patch: fix bignum logic in
+      crypto/bn/asm/mips.pl, crypto/bn/asm/x86_64-gcc.c,
+      crypto/bn/bn_asm.c, removed crypto/bn/asm/mips3.s, added test to
+      crypto/bn/bntest.c.
+    - CVE-2014-3570
+  * SECURITY UPDATE: DTLS segmentation fault in dtls1_get_record
+    - debian/patches/CVE-2014-3571-1.patch: fix crash in ssl/d1_pkt.c,
+      ssl/s3_pkt.c.
+    - debian/patches/CVE-2014-3571-2.patch: make code more obvious in
+      ssl/d1_pkt.c.
+    - CVE-2014-3571
+  * SECURITY UPDATE: ECDHE silently downgrades to ECDH [Client]
+    - debian/patches/CVE-2014-3572.patch: don't skip server key exchange in
+      ssl/s3_clnt.c.
+    - CVE-2014-3572
+  * SECURITY UPDATE: certificate fingerprints can be modified
+    - debian/patches/CVE-2014-8275.patch: fix various fingerprint issues in
+      crypto/asn1/a_bitstr.c, crypto/asn1/a_type.c, crypto/asn1/a_verify.c,
+      crypto/asn1/asn1.h, crypto/asn1/asn1_err.c, crypto/asn1/x_algor.c,
+      crypto/dsa/dsa_asn1.c, crypto/ecdsa/ecs_vrf.c, crypto/x509/x509.h,
+      crypto/x509/x_all.c.
+    - CVE-2014-8275
+  * SECURITY UPDATE: RSA silently downgrades to EXPORT_RSA [Client]
+    - debian/patches/CVE-2015-0204.patch: only allow ephemeral RSA keys in
+      export ciphersuites in ssl/d1_srvr.c, ssl/s3_clnt.c, ssl/s3_srvr.c,
+      ssl/ssl.h, adjust documentation in doc/ssl/SSL_CTX_set_options.pod,
+      doc/ssl/SSL_CTX_set_tmp_rsa_callback.pod.
+    - CVE-2015-0204
+  * SECURITY UPDATE: DH client certificates accepted without verification
+    - debian/patches/CVE-2015-0205.patch: prevent use of DH client
+      certificates without sending certificate verify message in
+      ssl/s3_srvr.c.
+    - CVE-2015-0205
+  * SECURITY UPDATE: DTLS memory leak in dtls1_buffer_record
+    - debian/patches/CVE-2015-0206.patch: properly handle failures in
+      ssl/d1_pkt.c.
+    - CVE-2015-0206
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Fri, 09 Jan 2015 08:04:57 -0500
+
+openssl (1.0.1f-1ubuntu9) utopic; urgency=medium
+
+  * SECURITY UPDATE: denial of service via DTLS SRTP memory leak
+    - debian/patches/CVE-2014-3513.patch: fix logic in ssl/d1_srtp.c,
+      ssl/srtp.h, ssl/t1_lib.c, util/mk1mf.pl, util/mkdef.pl,
+      util/ssleay.num.
+    - CVE-2014-3513
+  * SECURITY UPDATE: denial of service via session ticket integrity check
+    memory leak
+    - debian/patches/CVE-2014-3567.patch: perform cleanup in ssl/t1_lib.c.
+    - CVE-2014-3567
+  * SECURITY UPDATE: fix the no-ssl3 build option
+    - debian/patches/CVE-2014-3568.patch: fix conditional code in
+      ssl/s23_clnt.c, ssl/s23_srvr.c.
+    - CVE-2014-3568
+  * SECURITY IMPROVEMENT: Added TLS_FALLBACK_SCSV support to mitigate a
+    protocol downgrade attack to SSLv3 that exposes the POODLE attack.
+    - debian/patches/tls_fallback_scsv_support.patch: added support for
+      TLS_FALLBACK_SCSV in apps/s_client.c, crypto/err/openssl.ec,
+      ssl/d1_lib.c, ssl/dtls1.h, ssl/s23_clnt.c, ssl/s23_srvr.c,
+      ssl/s2_lib.c, ssl/s3_enc.c, ssl/s3_lib.c, ssl/ssl.h, ssl/ssl3.h,
+      ssl/ssl_err.c, ssl/ssl_lib.c, ssl/t1_enc.c, ssl/tls1.h, 
+      doc/apps/s_client.pod, doc/ssl/SSL_CTX_set_mode.pod.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 16 Oct 2014 10:56:10 -0400
+
+openssl (1.0.1f-1ubuntu8) utopic; urgency=medium
+
+  * Backport collected POWER8 optimisations from upstream (LP: #1290579).
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Fri, 26 Sep 2014 11:32:32 +0100
+
+openssl (1.0.1f-1ubuntu7) utopic; urgency=medium
+
+  * SECURITY UPDATE: double free when processing DTLS packets
+    - debian/patches/CVE-2014-3505.patch: fix double free in ssl/d1_both.c.
+    - CVE-2014-3505
+  * SECURITY UPDATE: DTLS memory exhaustion
+    - debian/patches/CVE-2014-3506.patch: fix DTLS handshake message size
+      checks in ssl/d1_both.c.
+    - CVE-2014-3506
+  * SECURITY UPDATE: DTLS memory leak from zero-length fragments
+    - debian/patches/CVE-2014-3507.patch: fix memory leak and return codes
+      in ssl/d1_both.c.
+    - CVE-2014-3507
+  * SECURITY UPDATE: information leak in pretty printing functions
+    - debian/patches/CVE-2014-3508.patch: fix OID handling in
+      crypto/asn1/a_object.c, crypto/objects/obj_dat.c.
+    - CVE-2014-3508
+  * SECURITY UPDATE: race condition in ssl_parse_serverhello_tlsext
+    - debian/patches/CVE-2014-3509.patch: fix race in ssl/t1_lib.c.
+    - CVE-2014-3509
+  * SECURITY UPDATE: DTLS anonymous EC(DH) denial of service
+    - debian/patches/CVE-2014-3510.patch: check for server certs in
+      ssl/d1_clnt.c, ssl/s3_clnt.c.
+    - CVE-2014-3510
+  * SECURITY UPDATE: TLS protocol downgrade attack
+    - debian/patches/CVE-2014-3511.patch: properly handle fragments in
+      ssl/s23_srvr.c.
+    - CVE-2014-3511
+  * SECURITY UPDATE: SRP buffer overrun
+    - debian/patches/CVE-2014-3512.patch: check parameters in
+      crypto/srp/srp_lib.c.
+    - CVE-2014-3512
+  * SECURITY UPDATE: crash with SRP ciphersuite in Server Hello message
+    - debian/patches/CVE-2014-5139.patch: fix SRP authentication and make
+      sure ciphersuite is set up correctly in ssl/s3_clnt.c, ssl/ssl_lib.c,
+      ssl/s3_lib.c, ssl/ssl.h, ssl/ssl_ciph.c, ssl/ssl_locl.h.
+    - CVE-2014-5139
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 07 Aug 2014 09:34:54 -0400
+
+openssl (1.0.1f-1ubuntu6) utopic; urgency=medium
+
+  * SECURITY UPDATE: regression with certain renegotiations (LP: #1332643)
+    - debian/patches/CVE-2014-0224-regression2.patch: accept CCS after
+      sending finished ssl/s3_clnt.c.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Fri, 20 Jun 2014 13:51:23 -0400
+
+openssl (1.0.1f-1ubuntu5) utopic; urgency=medium
+
+  * SECURITY UPDATE: regression with tls_session_secret_cb (LP: #1329297)
+    - debian/patches/CVE-2014-0224.patch: set the CCS_OK flag when using
+      tls_session_secret_cb for session resumption in ssl/s3_clnt.c.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 12 Jun 2014 08:23:12 -0400
+
+openssl (1.0.1f-1ubuntu4) utopic; urgency=medium
+
+  * SECURITY UPDATE: arbitrary code execution via DTLS invalid fragment
+    - debian/patches/CVE-2014-0195.patch: add consistency check for DTLS
+      fragments in ssl/d1_both.c.
+    - CVE-2014-0195
+  * SECURITY UPDATE: denial of service via DTLS recursion flaw
+    - debian/patches/CVE-2014-0221.patch: handle DTLS hello request without
+      recursion in ssl/d1_both.c.
+    - CVE-2014-0221
+  * SECURITY UPDATE: MITM via change cipher spec
+    - debian/patches/CVE-2014-0224-1.patch: only accept change cipher spec
+      when it is expected in ssl/s3_clnt.c, ssl/s3_pkt.c, ssl/s3_srvr.c,
+      ssl/ssl3.h.
+    - debian/patches/CVE-2014-0224-2.patch: don't accept zero length master
+      secrets in ssl/s3_pkt.c.
+    - debian/patches/CVE-2014-0224-3.patch: allow CCS after resumption in
+      ssl/s3_clnt.c.
+    - CVE-2014-0224
+  * SECURITY UPDATE: denial of service via ECDH null session cert
+    - debian/patches/CVE-2014-3470.patch: check session_cert is not NULL
+      before dereferencing it in ssl/s3_clnt.c.
+    - CVE-2014-3470
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 05 Jun 2014 08:39:17 -0400
+
+openssl (1.0.1f-1ubuntu3) utopic; urgency=medium
+
+  * SECURITY UPDATE: denial of service via use after free
+    - debian/patches/CVE-2010-5298.patch: check s->s3->rbuf.left before
+      releasing buffers in ssl/s3_pkt.c.
+    - CVE-2010-5298
+  * SECURITY UPDATE: denial of service via null pointer dereference
+    - debian/patches/CVE-2014-0198.patch: if buffer was released, get a new
+      one in ssl/s3_pkt.c.
+    - CVE-2014-0198
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Fri, 02 May 2014 15:18:26 -0400
+
+openssl (1.0.1f-1ubuntu2) trusty; urgency=medium
+
+  * SECURITY UPDATE: side-channel attack on Montgomery ladder implementation
+    - debian/patches/CVE-2014-0076.patch: add and use constant time swap in
+      crypto/bn/bn.h, crypto/bn/bn_lib.c, crypto/ec/ec2_mult.c,
+      util/libeay.num.
+    - CVE-2014-0076
+  * SECURITY UPDATE: memory disclosure in TLS heartbeat extension
+    - debian/patches/CVE-2014-0160.patch: use correct lengths in
+      ssl/d1_both.c, ssl/t1_lib.c.
+    - CVE-2014-0160
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 07 Apr 2014 15:37:53 -0400
+
+openssl (1.0.1f-1ubuntu1) trusty; urgency=low
+
+  * Merge with Debian, remaining changes.
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification on libssl1.0.0
+        upgrade on servers.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i586 (on i386)
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+    - debian/control: Mark Debian Vcs-* as XS-Debian-Vcs-*
+    - debian/patches/ubuntu_deb676533_arm_asm.patch: Enable arm assembly
+      code.
+    - debian/rules: Enable optimized 64bit elliptic curve code contributed
+      by Google.
+  * Dropped changes:
+    - debian/patches/arm64-support: included in debian-targets.patch
+    - debian/patches/no_default_rdrand.patch: upstream
+    - debian/patches/openssl-1.0.1e-env-zlib.patch: zlib is now completely
+      disabled in debian/rules
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 08 Jan 2014 15:57:24 -0500
+
 openssl (1.0.1f-1) unstable; urgency=high
 
   * New upstream version
@@ -222,6 +739,34 @@ openssl (1.0.1e-5) unstable; urgency=low
 
  -- Kurt Roeckx <kurt@roeckx.be>  Sun, 22 Dec 2013 19:25:35 +0100
 
+openssl (1.0.1e-4ubuntu4) trusty; urgency=low
+
+  * debian/patches/no_default_rdrand.patch: Don't use rdrand engine as
+    default unless explicitly requested.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 19 Dec 2013 15:39:22 -0500
+
+openssl (1.0.1e-4ubuntu3) trusty; urgency=medium
+
+  * Update debian configuration.
+
+ -- Matthias Klose <doko@ubuntu.com>  Thu, 05 Dec 2013 14:34:48 +0100
+
+openssl (1.0.1e-4ubuntu2) trusty; urgency=low
+
+  * Re-enable full TLSv1.2 support (LP: #1257877)
+    - debian/patches/tls12_workarounds.patch: disable patch to re-enable
+      full TLSv1.2 support. Most problematic sites have been fixed now, and
+      we really want proper TLSv1.2 support in an LTS.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 04 Dec 2013 12:33:44 -0500
+
+openssl (1.0.1e-4ubuntu1) trusty; urgency=low
+
+  * Merge with Debian; remaining changes same as in 1.0.1e-3ubuntu1.
+
+ -- Matthias Klose <doko@ubuntu.com>  Wed, 04 Dec 2013 11:28:00 +0100
+
 openssl (1.0.1e-4) unstable; urgency=low
 
   [ Peter Michael Green ]
@@ -244,6 +789,50 @@ openssl (1.0.1e-4) unstable; urgency=low
 
  -- Kurt Roeckx <kurt@roeckx.be>  Fri, 01 Nov 2013 17:11:53 +0100
 
+openssl (1.0.1e-3ubuntu1) saucy; urgency=low
+
+  * Merge with Debian, remaining changes.
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification on libssl1.0.0
+        upgrade on servers.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i586 (on i386)
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+    - Unapply patch c_rehash-multi and comment it out in the series as it
+      breaks parsing of certificates with CRLF line endings and other cases
+      (see Debian #642314 for discussion), it also changes the semantics of
+      c_rehash directories by requiring applications to parse hash link
+      targets as files containing potentially *multiple* certificates rather
+      than exactly one.
+    - debian/patches/tls12_workarounds.patch: Workaround large client hello
+      issues when TLS 1.1 and lower is in use
+    - debian/control: Mark Debian Vcs-* as XS-Debian-Vcs-*
+    - debian/patches/ubuntu_deb676533_arm_asm.patch: Enable arm assembly
+      code.
+    - debian/patches/arm64-support: Add basic arm64 support (no assembler)
+    - debian/rules: Enable optimized 64bit elliptic curve code contributed
+      by Google.
+  * debian/patches/tls12_workarounds.patch: updated to also disable TLS 1.2
+    in test suite since we disable it in the client.
+  * Disable compression to avoid CRIME systemwide (CVE-2012-4929).
+  * Dropped changes:
+    - debian/patches/ubuntu_deb676533_arm_asm.patch, applied in Debian.
+
+ -- Matthias Klose <doko@ubuntu.com>  Mon, 15 Jul 2013 14:07:52 +0200
+
 openssl (1.0.1e-3) unstable; urgency=low
 
   * Move <openssl/opensslconf.h> to /usr/include/$(DEB_HOST_MULTIARCH), and
@@ -257,6 +846,66 @@ openssl (1.0.1e-3) unstable; urgency=low
   * enable ec_nistp_64_gcc_128 on *-amd64 (Closes: #698447)
 
  -- Kurt Roeckx <kurt@roeckx.be>  Mon, 20 May 2013 16:56:06 +0200
+
+openssl (1.0.1e-2ubuntu1.1) saucy-security; urgency=low
+
+  * SECURITY UPDATE: Disable compression to avoid CRIME systemwide
+    (LP: #1187195)
+    - CVE-2012-4929
+    - debian/patches/openssl-1.0.1e-env-zlib.patch: disable default use of
+      zlib to compress SSL/TLS unless the environment variable
+      OPENSSL_DEFAULT_ZLIB is set in the environment during library
+      initialization.
+    - Introduced to assist with programs not yet updated to provide their own
+      controls on compression, such as Postfix
+    - http://pkgs.fedoraproject.org/cgit/openssl.git/plain/openssl-1.0.1e-env-zlib.patch
+
+ -- Seth Arnold <seth.arnold@canonical.com>  Mon, 03 Jun 2013 18:14:05 -0700
+
+openssl (1.0.1e-2ubuntu1) saucy; urgency=low
+
+  * Resynchronise with Debian unstable.  Remaining changes:
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification on libssl1.0.0
+        upgrade on servers.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i586 (on i386)
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+    - Unapply patch c_rehash-multi and comment it out in the series as it
+      breaks parsing of certificates with CRLF line endings and other cases
+      (see Debian #642314 for discussion), it also changes the semantics of
+      c_rehash directories by requiring applications to parse hash link
+      targets as files containing potentially *multiple* certificates rather
+      than exactly one.
+    - debian/patches/tls12_workarounds.patch: Workaround large client hello
+      issues when TLS 1.1 and lower is in use
+    - debian/control: Mark Debian Vcs-* as XS-Debian-Vcs-*
+    - debian/patches/ubuntu_deb676533_arm_asm.patch: Enable arm assembly
+      code.
+    - debian/patches/arm64-support: Add basic arm64 support (no assembler)
+    - debian/rules: Enable optimized 64bit elliptic curve code contributed
+      by Google.
+  * debian/patches/tls12_workarounds.patch: updated to also disable TLS 1.2
+    in test suite since we disable it in the client.
+  * Dropped changes:
+    - debian/patches/CVE-2013-0169.patch: upstream.
+    - debian/patches/fix_key_decoding_deadlock.patch: upstream.
+    - debian/patches/CVE-2013-0166.patch: upstream.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 21 May 2013 16:31:47 -0400
 
 openssl (1.0.1e-2) unstable; urgency=high
 
@@ -285,6 +934,104 @@ openssl (1.0.1c-5) unstable; urgency=low
 
  -- Kurt Roeckx <kurt@roeckx.be>  Sun, 09 Sep 2012 08:43:40 +0200
 
+openssl (1.0.1c-4ubuntu8) raring; urgency=low
+
+  * SECURITY UPDATE: "Lucky Thirteen" timing side-channel TLS attack
+    - debian/patches/CVE-2013-0169.patch: re-enabled patch and added extra
+      commit from upstream to fix regression.
+    - CVE-2013-0169
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 19 Mar 2013 14:33:14 -0400
+
+openssl (1.0.1c-4ubuntu7) raring; urgency=low
+
+  * Enable optimized 64bit elliptic curve code contributed by Google. (LP: #1018522)
+
+ -- Dmitrijs Ledkovs <dmitrij.ledkov@ubuntu.com>  Thu, 07 Mar 2013 15:36:16 +0000
+
+openssl (1.0.1c-4ubuntu6) raring; urgency=low
+
+  * debian/patches/fix_key_decoding_deadlock.patch: Fix possible deadlock
+    when decoding public keys. (LP: #1066032)
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 06 Mar 2013 08:11:19 -0500
+
+openssl (1.0.1c-4ubuntu5) raring; urgency=low
+
+  * REGRESSION FIX: decryption errors on AES-NI hardware (LP: #1134873,
+    LP: #1133333)
+    - debian/patches/CVE-2013-0169.patch: disabled for now until fix is
+      available from upstream.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 28 Feb 2013 11:01:29 -0500
+
+openssl (1.0.1c-4ubuntu4) raring; urgency=low
+
+  * SECURITY UPDATE: denial of service via invalid OCSP key
+    - debian/patches/CVE-2013-0166.patch: properly handle NULL key in
+      crypto/asn1/a_verify.c, crypto/ocsp/ocsp_vfy.c.
+    - CVE-2013-0166
+  * SECURITY UPDATE: "Lucky Thirteen" timing side-channel TLS attack
+    - debian/patches/CVE-2013-0169.patch: massive code changes
+    - CVE-2013-0169
+  * SECURITY UPDATE: denial of service via AES-NI and crafted CBC data
+    - Fix included in CVE-2013-0169 patch
+    - CVE-2012-2686
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 19 Feb 2013 13:25:24 -0500
+
+openssl (1.0.1c-4ubuntu3) raring; urgency=low
+
+  * Add basic arm64 support (no assembler) (LP: #1102107)
+
+ -- Wookey <wookey@wookware.org>  Sun, 20 Jan 2013 17:30:15 +0000
+
+openssl (1.0.1c-4ubuntu2) raring; urgency=low
+
+  * Enable arm assembly code. (LP: #1083498) (Closes: #676533)
+
+ -- Dmitrijs Ledkovs <dmitrij.ledkov@ubuntu.com>  Wed, 28 Nov 2012 00:08:45 +0000
+
+openssl (1.0.1c-4ubuntu1) raring; urgency=low
+
+  * Resynchronise with Debian (LP: #1077228).  Remaining changes:
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification on libssl1.0.0
+        upgrade on servers.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i586 (on i386)
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+    - Unapply patch c_rehash-multi and comment it out in the series as it
+      breaks parsing of certificates with CRLF line endings and other cases
+      (see Debian #642314 for discussion), it also changes the semantics of
+      c_rehash directories by requiring applications to parse hash link
+      targets as files containing potentially *multiple* certificates rather
+      than exactly one.
+    - Bump version passed to dh_makeshlibs to 1.0.1 for new symbols.
+    - debian/patches/tls12_workarounds.patch: Workaround large client hello
+      issues when TLS 1.1 and lower is in use
+    - debian/control: Mark Debian Vcs-* as XS-Debian-Vcs-*
+  * Dropped changes:
+    - Drop openssl-doc in favour of the libssl-doc package introduced by
+      Debian.  Add Conflicts/Replaces until the next LTS release.
+      + Drop the Conflicts/Replaces because 12.04 LTS was 'the next LTS
+        release'
+
+ -- Tyler Hicks <tyhicks@canonical.com>  Fri, 09 Nov 2012 14:49:13 -0800
+
 openssl (1.0.1c-4) unstable; urgency=low
 
   * Fix the configure rules for alpha (Closes: #672710)
@@ -298,6 +1045,61 @@ openssl (1.0.1c-4) unstable; urgency=low
     (Closes: #668600)
 
  -- Kurt Roeckx <kurt@roeckx.be>  Tue, 17 Jul 2012 11:49:19 +0200
+
+openssl (1.0.1c-3ubuntu2) quantal; urgency=low
+
+  [ Tyler Hicks <tyhicks@canonical.com> ]
+  * debian/patches/tls12_workarounds.patch: Readd the change to check
+    TLS1_get_client_version rather than TLS1_get_version to fix incorrect
+    client hello cipher list truncation when TLS 1.1 and lower is in use.
+    (LP: #1051892)
+
+  [ Micah Gersten <micahg@ubuntu.com> ]
+  * Mark Debian Vcs-* as XS-Debian-Vcs-*
+    - update debian/control
+
+ -- Tyler Hicks <tyhicks@canonical.com>  Thu, 04 Oct 2012 10:34:57 -0700
+
+openssl (1.0.1c-3ubuntu1) quantal; urgency=low
+
+  * Resynchronise with Debian. Remaining changes:
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification on libssl1.0.0
+        upgrade on servers.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i586 (on i386)
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+    - Unapply patch c_rehash-multi and comment it out in the series as it
+      breaks parsing of certificates with CRLF line endings and other cases
+      (see Debian #642314 for discussion), it also changes the semantics of
+      c_rehash directories by requiring applications to parse hash link
+      targets as files containing potentially *multiple* certificates rather
+      than exactly one.
+    - Bump version passed to dh_makeshlibs to 1.0.1 for new symbols.
+    - debian/patches/tls12_workarounds.patch: workaround large client hello
+      issue: Compile with -DOPENSSL_MAX_TLS1_2_CIPHER_LENGTH=50 and
+      with -DOPENSSL_NO_TLS1_2_CLIENT.
+  * Dropped upstreamed patches:
+    - debian/patches/CVE-2012-2110.patch
+    - debian/patches/CVE-2012-2110b.patch
+    - debian/patches/CVE-2012-2333.patch
+    - debian/patches/CVE-2012-0884-extra.patch
+    - most of debian/patches/tls12_workarounds.patch
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Fri, 29 Jun 2012 13:01:30 -0400
 
 openssl (1.0.1c-3) unstable; urgency=low
 
@@ -354,6 +1156,93 @@ openssl (1.0.1a-1) unstable; urgency=high
 
  -- Kurt Roeckx <kurt@roeckx.be>  Thu, 19 Apr 2012 19:54:12 +0200
 
+openssl (1.0.1-4ubuntu6) quantal; urgency=low
+
+  * SECURITY UPDATE: denial of service attack in DTLS, TLS v1.1 and
+    TLS v1.2 implementation
+    - debian/patches/CVE_2012-2333.patch: guard for integer overflow
+      before skipping explicit IV
+    - CVE-2012-2333
+  * debian/patches/CVE-2012-0884-extra.patch: initialize tkeylen
+    properly when encrypting CMS messages.
+
+ -- Steve Beattie <sbeattie@ubuntu.com>  Thu, 24 May 2012 16:05:04 -0700
+
+openssl (1.0.1-4ubuntu5) precise-proposed; urgency=low
+
+  * debian/patches/CVE-2012-2110b.patch: Use correct error code in
+    BUF_MEM_grow_clean()
+
+ -- Jamie Strandboge <jamie@ubuntu.com>  Tue, 24 Apr 2012 08:29:32 -0500
+
+openssl (1.0.1-4ubuntu4) precise-proposed; urgency=low
+
+  * Check TLS1_get_client_version rather than TLS1_get_version for client
+    hello cipher list truncation, in a further attempt to get things working
+    again for everyone (LP: #986147).
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Tue, 24 Apr 2012 14:05:50 +0100
+
+openssl (1.0.1-4ubuntu3) precise-proposed; urgency=low
+
+  * SECURITY UPDATE: fix various overflows
+    - debian/patches/CVE-2012-2110.patch: adjust crypto/a_d2i_fp.c,
+      crypto/buffer.c and crypto/mem.c to verify size of lengths
+    - CVE-2012-2110
+
+ -- Jamie Strandboge <jamie@ubuntu.com>  Thu, 19 Apr 2012 10:31:06 -0500
+
+openssl (1.0.1-4ubuntu2) precise-proposed; urgency=low
+
+  * Backport more upstream patches to work around TLS 1.2 failures
+    (LP #965371):
+    - Do not use record version number > TLS 1.0 in initial client hello:
+      some (but not all) hanging servers will now work.
+    - Truncate the number of ciphers sent in the client hello to 50.  Most
+      broken servers should now work.
+    - Don't allow TLS 1.2 SHA-256 ciphersuites in TLS 1.0, 1.1 connections.
+  * Don't re-enable TLS 1.2 client support by default yet, since more of the
+    sites listed in the above bug and its duplicates still fail if I do that
+    versus leaving it disabled.
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Wed, 18 Apr 2012 15:03:56 +0100
+
+openssl (1.0.1-4ubuntu1) precise; urgency=low
+
+  * Resynchronise with Debian (LP: #968753).  Remaining changes:
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification on libssl1.0.0
+        upgrade on servers.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i586 (on i386)
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+    - Unapply patch c_rehash-multi and comment it out in the series as it
+      breaks parsing of certificates with CRLF line endings and other cases
+      (see Debian #642314 for discussion), it also changes the semantics of
+      c_rehash directories by requiring applications to parse hash link
+      targets as files containing potentially *multiple* certificates rather
+      than exactly one.
+    - Bump version passed to dh_makeshlibs to 1.0.1 for new symbols.
+    - Experimental workaround to large client hello issue: if
+      OPENSSL_NO_TLS1_2_CLIENT is set then TLS v1.2 is disabled for clients
+      only.
+    - Compile with -DOPENSSL_NO_TLS1_2_CLIENT.
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Tue, 10 Apr 2012 20:50:52 +0100
+
 openssl (1.0.1-4) unstable; urgency=low
 
   * Use official patch for the vpaes problem, also covering amd64.
@@ -367,6 +1256,70 @@ openssl (1.0.1-3) unstable; urgency=high
     algorithms extension
 
  -- Kurt Roeckx <kurt@roeckx.be>  Sat, 31 Mar 2012 18:35:59 +0200
+
+openssl (1.0.1-2ubuntu4) precise; urgency=low
+
+  * Pass cross-compiling options to 'make install' as well, since apparently
+    it likes to rebuild fips_premain_dso.
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Sat, 31 Mar 2012 00:48:38 +0100
+
+openssl (1.0.1-2ubuntu3) precise; urgency=low
+
+  * Temporarily work around TLS 1.2 failures as suggested by upstream
+    (LP #965371):
+    - Use client version when deciding whether to send supported signature
+      algorithms extension.
+    - Experimental workaround to large client hello issue: if
+      OPENSSL_NO_TLS1_2_CLIENT is set then TLS v1.2 is disabled for clients
+      only.
+    - Compile with -DOPENSSL_NO_TLS1_2_CLIENT.
+    This fixes most of the reported problems, but does not fix the case of
+    servers that reject version numbers they don't support rather than
+    trying to negotiate a lower version (e.g. www.mediafire.com).
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Fri, 30 Mar 2012 17:11:45 +0100
+
+openssl (1.0.1-2ubuntu2) precise; urgency=low
+
+  * Remove compat symlinks from /usr/lib to /lib, as they cause
+    some serious issued with symbol generation, and are not needed.
+  * Bump version passed to dh_makeshlibs to 1.0.1 for new symbols.
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Fri, 23 Mar 2012 21:39:39 -0600
+
+openssl (1.0.1-2ubuntu1) precise; urgency=low
+
+  * Resynchronise with Debian (LP: #958430).  Remaining changes:
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification on libssl1.0.0
+        upgrade on servers.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i586 (on i386)
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+    - Unapply patch c_rehash-multi and comment it out in the series as it
+      breaks parsing of certificates with CRLF line endings and other cases
+      (see Debian #642314 for discussion), it also changes the semantics of
+      c_rehash directories by requiring applications to parse hash link
+      targets as files containing potentially *multiple* certificates rather
+      than exactly one.
+  * Drop aesni.patch, applied upstream.
+  * Drop Bsymbolic-functions.patch, now handled using dpkg-buildflags.
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Thu, 22 Mar 2012 17:54:09 +0000
 
 openssl (1.0.1-2) unstable; urgency=low
 
@@ -407,6 +1360,42 @@ openssl (1.0.0h-1) unstable; urgency=high
 
  -- Kurt Roeckx <kurt@roeckx.be>  Tue, 13 Mar 2012 21:08:17 +0100
 
+openssl (1.0.0g-1ubuntu1) precise; urgency=low
+
+  * Resynchronise with Debian. Remaining changes:
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification on libssl1.0.0
+        upgrade on servers.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/aesni.patch: Backport Intel AES-NI support, now from
+      http://rt.openssl.org/Ticket/Display.html?id=2065 rather than the
+      0.9.8 variant.
+    - debian/patches/Bsymbolic-functions.patch: Link using
+      -Bsymbolic-functions.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i586 (on i386)
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+    - Unapply patch c_rehash-multi and comment it out in the series as it
+      breaks parsing of certificates with CRLF line endings and other cases
+      (see Debian #642314 for discussion), it also changes the semantics of
+      c_rehash directories by requiring applications to parse hash link
+      targets as files containing potentially *multiple* certificates
+      rather than exactly one.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Sat, 11 Feb 2012 13:27:31 -0500
+
 openssl (1.0.0g-1) unstable; urgency=high
 
   * New upstream version
@@ -421,6 +1410,42 @@ openssl (1.0.0f-1) unstable; urgency=high
       CVE-2011-4577
 
  -- Kurt Roeckx <kurt@roeckx.be>  Thu, 12 Jan 2012 19:02:43 +0100
+
+openssl (1.0.0e-3ubuntu1) precise; urgency=low
+
+  * Resynchronise with Debian. Remaining changes:
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification on libssl1.0.0
+        upgrade on servers.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/aesni.patch: Backport Intel AES-NI support, now from
+      http://rt.openssl.org/Ticket/Display.html?id=2065 rather than the
+      0.9.8 variant.
+    - debian/patches/Bsymbolic-functions.patch: Link using
+      -Bsymbolic-functions.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i586 (on i386)
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+    - Unapply patch c_rehash-multi and comment it out in the series as it
+      breaks parsing of certificates with CRLF line endings and other cases
+      (see Debian #642314 for discussion), it also changes the semantics of
+      c_rehash directories by requiring applications to parse hash link
+      targets as files containing potentially *multiple* certificates
+      rather than exactly one.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 12 Jan 2012 11:30:17 +0100
 
 openssl (1.0.0e-3) unstable; urgency=low
 
@@ -438,6 +1463,68 @@ openssl (1.0.0e-2.1) unstable; urgency=high
     as revoked.
 
  -- Raphael Geissert <geissert@debian.org>  Sun, 06 Nov 2011 01:39:30 -0600
+
+openssl (1.0.0e-2ubuntu4) oneiric; urgency=low
+
+  * The previous change moved the notification to major upgrades only, but
+    in fact, we do want the sysadmin to be notified when security updates
+    are installed, without having services automatically restarted.
+    (LP: #244250)
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 04 Oct 2011 09:31:22 -0400
+
+openssl (1.0.0e-2ubuntu3) oneiric; urgency=low
+
+  * Only issue a restart required notification on important upgrades, and
+    not other actions such as reconfiguration or initial installation.
+    (LP: #244250)
+
+ -- Anders Kaseorg <andersk@mit.edu>  Tue, 04 Oct 2011 13:33:35 +0100
+
+openssl (1.0.0e-2ubuntu2) oneiric; urgency=low
+
+  * Unapply patch c_rehash-multi and comment it out in the series as it breaks
+    parsing of certificates with CRLF line endings and other cases (see
+    Debian #642314 for discussion), it also changes the semantics of c_rehash
+    directories by requiring applications to parse hash link targets as files
+    containing potentially *multiple* certificates rather than exactly one.
+    LP: #855454.
+
+ -- Loïc Minier <loic.minier@ubuntu.com>  Tue, 27 Sep 2011 18:13:07 +0200
+
+openssl (1.0.0e-2ubuntu1) oneiric; urgency=low
+
+  * Resynchronise with Debian, fixes CVE-2011-1945, CVE-2011-3207 and
+    CVE-2011-3210 (LP: #850608). Remaining changes:
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification bubble on libssl1.0.0
+        upgrade.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/aesni.patch: Backport Intel AES-NI support, now from
+      http://rt.openssl.org/Ticket/Display.html?id=2065 rather than the
+      0.9.8 variant.
+    - debian/patches/Bsymbolic-functions.patch: Link using
+      -Bsymbolic-functions.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i486, i586 (on
+        i386), v8 (on sparc).
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+  * debian/libssl1.0.0.postinst: only display restart notification on
+    servers (LP: #244250)
+
+ -- Steve Beattie <sbeattie@ubuntu.com>  Wed, 14 Sep 2011 22:06:03 -0700
 
 openssl (1.0.0e-2) unstable; urgency=low
 
@@ -481,6 +1568,49 @@ openssl (1.0.0d-3) unstable; urgency=low
     (Closes: #529586)
 
  -- Kurt Roeckx <kurt@roeckx.be>  Mon, 13 Jun 2011 12:39:54 +0200
+
+openssl (1.0.0d-2ubuntu2) oneiric; urgency=low
+
+  * Build for multiarch.  LP: #826601.
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Mon, 15 Aug 2011 01:58:35 -0700
+
+openssl (1.0.0d-2ubuntu1) oneiric; urgency=low
+
+  * Resynchronise with Debian (LP: #675566).  Remaining changes:
+    - debian/libssl1.0.0.postinst:
+      + Display a system restart required notification bubble on libssl1.0.0
+        upgrade.
+      + Use a different priority for libssl1.0.0/restart-services depending
+        on whether a desktop, or server dist-upgrade is being performed.
+    - debian/{libssl1.0.0-udeb.dirs, control, rules}: Create
+      libssl1.0.0-udeb, for the benefit of wget-udeb (no wget-udeb package
+      in Debian).
+    - debian/{libcrypto1.0.0-udeb.dirs, libssl1.0.0.dirs, libssl1.0.0.files,
+      rules}: Move runtime libraries to /lib, for the benefit of
+      wpasupplicant.
+    - debian/patches/aesni.patch: Backport Intel AES-NI support, now from
+      http://rt.openssl.org/Ticket/Display.html?id=2065 rather than the
+      0.9.8 variant.
+    - debian/patches/Bsymbolic-functions.patch: Link using
+      -Bsymbolic-functions.
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths under
+      .pc.
+    - debian/rules:
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building.  Patch from Neil Williams.
+      + Don't build for processors no longer supported: i486, i586 (on
+        i386), v8 (on sparc).
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+      + Replace duplicate files in the doc directory with symlinks.
+  * Update architectures affected by Bsymbolic-functions.patch.
+  * Drop debian/patches/no-sslv2.patch; Debian now adds the 'no-ssl2'
+    configure option, which compiles out SSLv2 support entirely, so this is
+    no longer needed.
+  * Drop openssl-doc in favour of the libssl-doc package introduced by
+    Debian.  Add Conflicts/Replaces until the next LTS release.
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Sun, 01 May 2011 23:51:53 +0100
 
 openssl (1.0.0d-2) unstable; urgency=high
 
@@ -532,11 +1662,127 @@ openssl (1.0.0c-1) experimental; urgency=low
 
  -- Kurt Roeckx <kurt@roeckx.be>  Sun, 12 Dec 2010 15:37:21 +0100
 
+openssl (0.9.8o-5ubuntu1) natty; urgency=low
+
+  * Merge from debian unstable.  Remaining changes: (LP: #718205)
+    - d/libssl0.9.8.postinst:
+      + Display a system restart required notification bubble
+        on libssl0.9.8 upgrade.
+      + Use a different priority for libssl0.9.8/restart-services
+        depending on whether a desktop, or server dist-upgrade
+        is being performed.
+    - d/{libssl0.9.8-udeb.dirs, control, rules}: Create
+      libssl0.9.8-udeb, for the benefit of wget-udeb (no wget-udeb
+      package in Debian).
+    - d/{libcrypto0.9.8-udeb.dirs, libssl0.9.8.dirs, libssl0.9.8.files,
+      rules}: Move runtime libraries to /lib, for the benefit of wpasupplicant.
+    - d/{control, openssl-doc.docs, openssl.docs, openssl.dirs}:
+      + Ship documentation in openssl-doc, suggested by the package.
+       (Closes: #470594)
+    - d/p/aesni.patch: Backport Intel AES-NI support from
+      http://rt.openssl.org/Ticket/Display.html?id=2067 (refreshed)
+    - d/p/Bsymbolic-functions.patch: Link using -Bsymbolic-functions.
+    - d/p/perlpath-quilt.patch: Don't change perl #! paths under .pc.
+    - d/p/no-sslv2.patch: Disable SSLv2 to match NSS and GnuTLS.
+      The protocol is unsafe and extremely deprecated. (Closes: #589706)
+    - d/rules:
+      + Disable SSLv2 during compile. (Closes: #589706)
+      + Don't run 'make test' when cross-building.
+      + Use host compiler when cross-building. Patch from Neil Williams.
+        (Closes: #465248)
+      + Don't build for processors no longer supported: i486, i586
+        (on i386), v8 (on sparc).
+      + Fix Makefile to properly clean up libs/ dirs in clean target.
+        (Closes: #611667)
+      + Replace duplicate files in the doc directory with symlinks.
+  * This upload fixed CVE: (LP: #718208)
+    - CVE-2011-0014
+
+ -- Artur Rona <ari-tczew@ubuntu.com>  Sun, 13 Feb 2011 16:10:24 +0100
+
+openssl (0.9.8o-5) unstable; urgency=low
+
+  * Fix OCSP stapling parse error (CVE-2011-0014)
+
+ -- Kurt Roeckx <kurt@roeckx.be>  Thu, 10 Feb 2011 20:43:43 +0100
+
+openssl (0.9.8o-4ubuntu2) natty; urgency=low
+
+  [ Peter Pearse ]
+  * Fix Makefile to properly clean up libs/ dirs in clean target
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Mon, 31 Jan 2011 10:47:30 -0800
+
+openssl (0.9.8o-4ubuntu1) natty; urgency=low
+
+  * Merge from debian unstable.  Remaining changes: (LP: #693902)
+    - debian/patches/Bsymbolic-functions.patch: Link using
+      -Bsymbolic-functions.
+    - Use a different priority for libssl0.9.8/restart-services
+      depending on whether a desktop, or server dist-upgrade is being
+      performed.
+    - Display a system restart required notification bubble on libssl0.9.8
+      upgrade.
+    - Don't build for processors no longer supported: i486, i586
+      (on i386), v8 (on sparc).
+    - Create libssl0.9.8-udeb, for the benefit of wget-udeb (no
+      wget-udeb package in Debian).
+    - Replace duplicate files in the doc directory with symlinks.
+    - Move runtime libraries to /lib, for the benefit of wpasupplicant.
+    - Ship documentation in openssl-doc, suggested by the package.
+      (Closes: #470594)
+    - Use host compiler when cross-building. Patch from Neil Williams.
+      (Closes: #465248).
+    - Don't run 'make test' when cross-building.
+    - debian/patches/aesni.patch: Backport Intel AES-NI support from
+      http://rt.openssl.org/Ticket/Display.html?id=2067 (refreshed)
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths
+      under .pc.
+    - debian/patches/no-sslv2.patch: disable SSLv2 to match NSS
+      and GnuTLS. The protocol is unsafe and extremely deprecated.
+      (Closes: #589706)
+
+ -- Artur Rona <ari-tczew@ubuntu.com>  Thu, 23 Dec 2010 20:20:03 +0100
+
 openssl (0.9.8o-4) unstable; urgency=low
 
   * Fix CVE-2010-4180 (Closes: #529221)
 
  -- Kurt Roeckx <kurt@roeckx.be>  Mon, 06 Dec 2010 20:33:21 +0100
+
+openssl (0.9.8o-3ubuntu1) natty; urgency=low
+
+  * Merge from debian unstable (LP: #677756).  Remaining changes:
+    - debian/patches/Bsymbolic-functions.patch: Link using
+      -Bsymbolic-functions (refreshed)
+    - Use a different priority for libssl0.9.8/restart-services
+      depending on whether a desktop, or server dist-upgrade is being
+      performed.
+    - Display a system restart required notification bubble on libssl0.9.8
+      upgrade.
+    - Don't build for processors no longer supported: i486, i586
+      (on i386), v8 (on sparc).
+    - Create libssl0.9.8-udeb, for the benefit of wget-udeb (no
+      wget-udeb package in Debian)
+    - Replace duplicate files in the doc directory with symlinks.
+    - Move runtime libraries to /lib, for the benefit of wpasupplicant
+    - Ship documentation in openssl-doc, suggested by the package.
+      (Debian bug 470594)
+    - Use host compiler when cross-building (patch from Neil Williams in
+      Debian bug 465248).
+    - Don't run 'make test' when cross-building.
+    - debian/patches/aesni.patch: Backport Intel AES-NI support from
+      http://rt.openssl.org/Ticket/Display.html?id=2067 (refreshed)
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths
+      under .pc.
+    - debian/patches/no-sslv2.patch: disable SSLv2 to match NSS
+      and GnuTLS. The protocol is unsafe and extremely deprecated.
+      (Debian bug 589706)
+  * Dropped patches, now upstream:
+    - debian/patches/CVE-2010-2939.patch (Debian patch is identically
+      named)
+
+ -- Steve Beattie <sbeattie@ubuntu.com>  Thu, 18 Nov 2010 12:54:37 -0800
 
 openssl (0.9.8o-3) unstable; urgency=high
 
@@ -560,6 +1806,72 @@ openssl (0.9.8o-2) unstable; urgency=high
   * Fix CVE-2010-2939: Double free using ECDH. (Closes: #594415)
 
  -- Kurt Roeckx <kurt@roeckx.be>  Thu, 26 Aug 2010 18:25:29 +0200
+
+openssl (0.9.8o-1ubuntu4.1) maverick-security; urgency=low
+
+  * SECURITY UPDATE: denial of service and possible code execution via
+    crafted private key with an invalid prime.
+    - debian/patches/CVE-2010-2939.patch: set bn_ctx to NULL after freeing
+      it in ssl/s3_clnt.c.
+    - CVE-2010-2939
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 06 Oct 2010 16:46:36 -0400
+
+openssl (0.9.8o-1ubuntu4) maverick; urgency=low
+
+  * Update AES-NI patch to openssl-0.9.8-aesni-modes-perlasm-win32-v4.patch
+    from http://rt.openssl.org/Ticket/Display.html?id=2067, fixing segfault
+    on engine initialisation (LP: #590639).
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Fri, 24 Sep 2010 12:20:49 +0100
+
+openssl (0.9.8o-1ubuntu3) maverick; urgency=low
+
+  * debian/patches/no-sslv2.patch: disable SSLv2 to match NSS and GnuTLS.
+    The protocol is unsafe and extremely deprecated. (Debian bug 589706)
+
+ -- Kees Cook <kees@ubuntu.com>  Tue, 20 Jul 2010 08:24:13 -0700
+
+openssl (0.9.8o-1ubuntu2) maverick; urgency=low
+
+  * Don't build anymore for processors not supported anymore in maverick:
+    - i486, i586 (on i386).
+    - v8 (on sparc).
+
+ -- Matthias Klose <doko@ubuntu.com>  Mon, 19 Jul 2010 16:44:10 +0200
+
+openssl (0.9.8o-1ubuntu1) maverick; urgency=low
+
+  * Merge from debian unstable, remaining changes (LP: #581167):
+    - debian/patches/Bsymbolic-functions.patch: Link using
+      -Bsymbolic-functions
+    - Ship documentation in openssl-doc, suggested by the package.
+    - Use a different priority for libssl0.9.8/restart-services
+      depending on whether a desktop, or server dist-upgrade is being
+      performed.
+    - Display a system restart required notification bubble on libssl0.9.8
+      upgrade.
+    - Replace duplicate files in the doc directory with symlinks.
+    - Move runtime libraries to /lib, for the benefit of wpasupplicant
+    - Use host compiler when cross-building (patch from Neil Williams in
+      Debian #465248).
+    - Don't run 'make test' when cross-building.
+    - Create libssl0.9.8-udeb, for the benefit of wget-udeb (LP: #503339).
+    - debian/patches/aesni.patch: Backport Intel AES-NI support from
+      http://rt.openssl.org/Ticket/Display.html?id=2067 (LP: #485518).
+    - debian/patches/perlpath-quilt.patch: Don't change perl #! paths
+      under .pc.
+  * Dropped patches, now upstream:
+    - debian/patches/CVE-2009-3245.patch
+    - debian/patches/CVE-2010-0740.patch
+    - debian/patches/dtls-compatibility.patch
+    - debian/patches/CVE-2009-4355.patch
+  * Dropped "Add support for lpia".
+  * Dropped "Disable SSLv2 during compile" as this had never actually
+    disabled SSLv2.
+  * Don't disable CVE-2009-3555.patch for Maverick.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 14 Jun 2010 09:08:29 -0400
 
 openssl (0.9.8o-1) unstable; urgency=low
 
@@ -612,6 +1924,87 @@ openssl (0.9.8k-8) unstable; urgency=high
     not cause a memory leak.  (CVE-2009-4355, CVE-2008-1678)
 
  -- Kurt Roeckx <kurt@roeckx.be>  Wed, 13 Jan 2010 21:26:49 +0100
+
+openssl (0.9.8k-7ubuntu8) lucid; urgency=low
+
+  * SECURITY UPDATE: denial of service and possible arbitrary code
+    execution via unchecked return values
+    - debian/patches/CVE-2009-3245.patch: check bn_wexpand return value in
+      crypto/bn/{bn_div.c,bn_gf2m.c,bn_mul.c}, crypto/ec/ec2_smpl.c,
+      engines/e_ubsec.c.
+    - CVE-2009-3245
+  * SECURITY UPDATE: denial of service via "record of death"
+    - debian/patches/CVE-2010-0740.patch: only send back minor version
+      number in ssl/s3_pkt.c.
+    - CVE-2010-0740
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 30 Mar 2010 08:57:51 -0400
+
+openssl (0.9.8k-7ubuntu7) lucid; urgency=low
+
+  * debian/patches/dtls-compatibility.patch: backport dtls compatibility
+    code from 0.9.8m to fix interopability. (LP: #516318)
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Fri, 26 Mar 2010 08:31:09 -0400
+
+openssl (0.9.8k-7ubuntu6) lucid; urgency=low
+
+  * Backport Intel AES-NI support from
+    http://rt.openssl.org/Ticket/Display.html?id=2067 (LP: #485518).
+  * Don't change perl #! paths under .pc.
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Mon, 01 Feb 2010 15:40:27 -0800
+
+openssl (0.9.8k-7ubuntu5) lucid; urgency=low
+
+  * SECURITY UPDATE: memory leak possible during state clean-up.
+    - Add CVE-2009-4355.patch, upstream fixes thanks to Debian.
+
+ -- Kees Cook <kees@ubuntu.com>  Fri, 22 Jan 2010 09:50:01 -0800
+
+openssl (0.9.8k-7ubuntu4) lucid; urgency=low
+
+  * Use host compiler when cross-building (patch from Neil Williams in
+    Debian #465248).
+  * Don't run 'make test' when cross-building.
+  * Create libssl0.9.8-udeb, for the benefit of wget-udeb (LP: #503339).
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Tue, 05 Jan 2010 16:09:38 +0000
+
+openssl (0.9.8k-7ubuntu3) lucid; urgency=low
+
+  * debian/patches/disable-sslv2.patch: remove and apply inline to fix
+    FTBFS when patch won't revert during the build process.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 07 Dec 2009 21:00:47 -0500
+
+openssl (0.9.8k-7ubuntu2) lucid; urgency=low
+
+  * debian/patches/{disable-sslv2,Bsymbolic-functions}.patch: apply
+    Makefile sections inline as once the package is configured during the
+    build process, the patches wouldn't revert anymore, causing a FTBFS on
+    anything other than amd64.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 07 Dec 2009 19:52:15 -0500
+
+openssl (0.9.8k-7ubuntu1) lucid; urgency=low
+
+  * Merge from debian unstable, remaining changes (LP: #493392):
+    - Link using -Bsymbolic-functions
+    - Add support for lpia
+    - Disable SSLv2 during compile
+    - Ship documentation in openssl-doc, suggested by the package.
+    - Use a different priority for libssl0.9.8/restart-services
+      depending on whether a desktop, or server dist-upgrade is being
+      performed.
+    - Display a system restart required notification bubble on libssl0.9.8
+      upgrade.
+    - Replace duplicate files in the doc directory with symlinks.
+    - Move runtime libraries to /lib, for the benefit of wpasupplicant
+  * Strip the patches out of the source into quilt patches
+  * Disable CVE-2009-3555.patch
+
+ -- Nicolas Valcárcel Scerpella (Canonical) <nvalcarcel@canonical.com>  Sun, 06 Dec 2009 20:16:24 -0500
 
 openssl (0.9.8k-7) unstable; urgency=low
 
@@ -690,12 +2083,115 @@ openssl (0.9.8k-1) unstable; urgency=low
 
  -- Kurt Roeckx <kurt@roeckx.be>  Sat, 16 May 2009 17:33:55 +0200
 
+openssl (0.9.8g-16ubuntu3) karmic; urgency=low
+
+  * SECURITY UPDATE: certificate spoofing via hash collisions from MD2
+    design flaws.
+    - crypto/evp/c_alld.c, ssl/ssl_algs.c: disable MD2 digest.
+    - crypto/x509/x509_vfy.c: skip signature check for self signed
+      certificates
+    - http://marc.info/?l=openssl-cvs&m=124508133203041&w=2
+    - http://marc.info/?l=openssl-cvs&m=124704528713852&w=2
+    - CVE-2009-2409
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 08 Sep 2009 14:59:05 -0400
+
+openssl (0.9.8g-16ubuntu2) karmic; urgency=low
+
+  * Patches forward ported from http://www.ubuntu.com/usn/USN-792-1 (by
+    Marc Deslauriers)
+  * SECURITY UPDATE: denial of service via memory consumption from large
+    number of future epoch DTLS records.
+    - crypto/pqueue.*: add new pqueue_size counter function.
+    - ssl/d1_pkt.c: use pqueue_size to limit size of queue to 100.
+    - http://cvs.openssl.org/chngview?cn=18187
+    - CVE-2009-1377
+  * SECURITY UPDATE: denial of service via memory consumption from
+    duplicate or invalid sequence numbers in DTLS records.
+    - ssl/d1_both.c: discard message if it's a duplicate or too far in the
+      future.
+    - http://marc.info/?l=openssl-dev&m=124263491424212&w=2
+    - CVE-2009-1378
+  * SECURITY UPDATE: denial of service or other impact via use-after-free
+    in dtls1_retrieve_buffered_fragment.
+    - ssl/d1_both.c: use temp frag_len instead of freed frag.
+    - http://rt.openssl.org/Ticket/Display.html?id=1923&user=guest&pass=guest
+    - CVE-2009-1379
+  * SECURITY UPDATE: denial of service via DTLS ChangeCipherSpec packet
+    that occurs before ClientHello.
+    - ssl/s3_pkt.c: abort if s->session is NULL.
+    - ssl/{ssl.h,ssl_err.c}: add new error codes.
+    - http://cvs.openssl.org/chngview?cn=17369
+    - CVE-2009-1386
+  * SECURITY UPDATE: denial of service via an out-of-sequence DTLS
+    handshake message.
+    - ssl/d1_both.c: don't buffer fragments with no data.
+    - http://cvs.openssl.org/chngview?cn=17958
+    - CVE-2009-1387
+
+ -- Jamie Strandboge <jamie@ubuntu.com>  Fri, 10 Jul 2009 14:44:47 -0500
+
+openssl (0.9.8g-16ubuntu1) karmic; urgency=low
+
+  * Merge from debian unstable, remaining changes:
+    - Link using -Bsymbolic-functions
+    - Add support for lpia
+    - Disable SSLv2 during compile
+    - Ship documentation in openssl-doc, suggested by the package.
+    - Use a different priority for libssl0.9.8/restart-services
+      depending on whether a desktop, or server dist-upgrade is being
+      performed.
+    - Display a system restart required notification bubble on libssl0.9.8
+      upgrade.
+    - Replace duplicate files in the doc directory with symlinks.
+
+ -- Jamie Strandboge <jamie@ubuntu.com>  Thu, 14 May 2009 14:11:05 -0500
+
 openssl (0.9.8g-16) unstable; urgency=high
 
   * Properly validate the length of an encoded BMPString and UniversalString
     (CVE-2009-0590)  (Closes: #522002)
 
  -- Kurt Roeckx <kurt@roeckx.be>  Wed, 01 Apr 2009 22:04:53 +0200
+
+openssl (0.9.8g-15ubuntu3) jaunty; urgency=low
+
+  * SECURITY UPDATE: crash via invalid memory access when printing BMPString
+    or UniversalString with invalid length
+    - crypto/asn1/tasn_dec.c, crypto/asn1/asn1_err.c and crypto/asn1/asn1.h:
+      return error if invalid length
+    - CVE-2009-0590
+    - http://www.openssl.org/news/secadv_20090325.txt
+    - patch from upstream CVS:
+      crypto/asn1/asn1.h:1.128.2.11->1.128.2.12
+      crypto/asn1/asn1_err.c:1.54.2.4->1.54.2.5
+      crypto/asn1/tasn_dec.c:1.26.2.10->1.26.2.11
+
+ -- Jamie Strandboge <jamie@ubuntu.com>  Fri, 27 Mar 2009 08:23:35 -0500
+
+openssl (0.9.8g-15ubuntu2) jaunty; urgency=low
+
+  * Move runtime libraries to /lib, for the benefit of wpasupplicant
+    (LP: #44194). Leave symlinks behind in /usr/lib (except on the Hurd)
+    since we used to set an rpath there.
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Fri, 06 Mar 2009 12:48:52 +0000
+
+openssl (0.9.8g-15ubuntu1) jaunty; urgency=low
+
+  * Merge from debian unstable, remaining changes: LP: #314984
+    - Link using -Bsymbolic-functions
+    - Add support for lpia
+    - Disable SSLv2 during compile
+    - Ship documentation in openssl-doc, suggested by the package.
+    - Use a different priority for libssl0.9.8/restart-services
+      depending on whether a desktop, or server dist-upgrade is being
+      performed.
+    - Display a system restart required notification bubble on libssl0.9.8
+      upgrade.
+    - Replace duplicate files in the doc directory with symlinks.
+
+ -- Bhavani Shankar <right2bhavi@gmail.com>  Thu, 08 Jan 2009 12:38:06 +0530
 
 openssl (0.9.8g-15) unstable; urgency=low
 
@@ -706,6 +2202,34 @@ openssl (0.9.8g-15) unstable; urgency=low
     the ipv6 address didn't have "::" part.  (Closes: #506111)
 
  -- Kurt Roeckx <kurt@roeckx.be>  Mon, 05 Jan 2009 21:14:31 +0100
+
+openssl (0.9.8g-14ubuntu2) jaunty; urgency=low
+
+  * SECURITY UPDATE: clients treat malformed signatures as good when verifying
+    server DSA and ECDSA certificates
+    - update apps/speed.c, apps/spkac.c, apps/verify.c, apps/x509.c,
+      ssl/s2_clnt.c, ssl/s2_srvr.c, ssl/s3_clnt.c, s3_srvr.c, and
+      ssl/ssltest.c to properly check the return code of EVP_VerifyFinal()
+    - patch based on upstream patch for #2008-016
+    - CVE-2008-5077
+
+ -- Jamie Strandboge <jamie@ubuntu.com>  Tue, 06 Jan 2009 00:44:19 -0600
+
+openssl (0.9.8g-14ubuntu1) jaunty; urgency=low
+
+  * Merge from debian unstable, remaining changes:
+    - Link using -Bsymbolic-functions
+    - Add support for lpia
+    - Disable SSLv2 during compile
+    - Ship documentation in openssl-doc, suggested by the package.
+    - Use a different priority for libssl0.9.8/restart-services
+      depending on whether a desktop, or server dist-upgrade is being
+      performed.
+    - Display a system restart required notification bubble on libssl0.9.8
+      upgrade.
+    - Replace duplicate files in the doc directory with symlinks.
+
+ -- Scott James Remnant <scott@ubuntu.com>  Tue, 11 Nov 2008 17:24:44 +0000
 
 openssl (0.9.8g-14) unstable; urgency=low
 
@@ -751,6 +2275,29 @@ openssl (0.9.8g-11) unstable; urgency=low
 
  -- Christoph Martin <Christoph.Martin@Uni-Mainz.DE>  Thu, 17 Jul 2008 09:53:01 +0200
 
+openssl (0.9.8g-10.1ubuntu2) intrepid; urgency=low
+
+  * debian/rules:
+    - disable SSLv2 during compile
+  * debian/README.debian
+    - add note about disabled SSLv2 in Ubuntu
+
+ -- Ante Karamatic <ivoks@ubuntu.com>  Thu, 24 Jul 2008 12:47:09 +0200
+
+openssl (0.9.8g-10.1ubuntu1) intrepid; urgency=low
+
+  * Merge from debian unstable, remaining changes:
+    - use a different priority for libssl0.9.8/restart-services depending on whether
+      a desktop, or server dist-upgrade is being performed.
+    - display a system restart required notification bubble on libssl0.9.8 upgrade.
+    - ship documentation in new openssl-doc package.
+    - configure: add support for lpia.
+    - replace duplicate files in the doc directory with symlinks.
+    - link using -bsymbolic-functions.
+    - update maintainer as per spec.
+
+ -- Luke Yelavich <luke.yelavich@canonical.com>  Tue, 10 Jun 2008 11:50:07 +1000
+
 openssl (0.9.8g-10.1) unstable; urgency=high
  
   * Non-maintainer upload by the Security team.
@@ -763,6 +2310,20 @@ openssl (0.9.8g-10.1) unstable; urgency=high
     denial of service (CVE-2008-0891; Closes: #483379).
  
  -- Nico Golde <nion@debian.org>  Tue, 27 May 2008 11:13:44 +0200
+
+openssl (0.9.8g-10ubuntu1) intrepid; urgency=low
+
+  * Merge from debian unstable, remaining changes:
+    - Use a different priority for libssl0.9.8/restart-services depending on whether
+      a desktop, or server dist-upgrade is being performed.
+    - Display a system restart required notification bubble on libssl0.9.8 upgrade.
+    - Ship documentation in new openssl-doc package.
+    - Configure: Add support for lpia.
+    - Replace duplicate files in the doc directory with symlinks.
+    - Link using -Bsymbolic-functions.
+    - Update maintainer as per spec.
+
+ -- Luke Yelavich <luke.yelavich@canonical.com>  Mon, 12 May 2008 22:49:33 +1000
 
 openssl (0.9.8g-10) unstable; urgency=low
 
@@ -781,6 +2342,20 @@ openssl (0.9.8g-9) unstable; urgency=high
   * ssleay_rand_add() really needs to call MD_Update() for buf.
 
  -- Kurt Roeckx <kurt@roeckx.be>  Wed, 07 May 2008 20:32:12 +0200
+
+openssl (0.9.8g-8ubuntu1) intrepid; urgency=low
+
+  * Merge from debian unstable, remaining changes:
+    - Use a different priority for libssl0.9.8/restart-services depending on whether
+      a desktop, or server dist-upgrade is being performed.
+    - Display a system restart required notification bubble on libssl0.9.8 upgrade.
+    - Ship documentation in new openssl-doc package.
+    - Configure: Add support for lpia.
+    - Replace duplicate files in the doc directory with symlinks.
+    - Link using -Bsymbolic-functions.
+    - Update maintainer as per spec.
+
+ -- Luke Yelavich <luke.yelavich@canonical.com>  Mon, 12 May 2008 10:09:20 +1000
 
 openssl (0.9.8g-8) unstable; urgency=high
 
@@ -808,6 +2383,30 @@ openssl (0.9.8g-5) experimental; urgency=low
 
  -- Kurt Roeckx <kurt@roeckx.be>  Sat, 09 Feb 2008 13:32:49 +0100
 
+openssl (0.9.8g-4ubuntu3) hardy; urgency=low
+
+  * Use a different priority for libssl0.9.8/restart-services depending on whether
+    a desktop, or server dist-upgrade is being performed. (LP: #91814)
+  * Display a system restart required notification bubble on libssl0.9.8 upgrade.
+
+ -- Luke Yelavich <luke.yelavich@canonical.com>  Tue, 22 Apr 2008 10:50:53 +1000
+
+openssl (0.9.8g-4ubuntu2) hardy; urgency=low
+
+  * Ship documentation in new openssl-doc package, since it is very large and
+    not terribly useful for the casual desktop user.
+
+ -- Martin Pitt <martin.pitt@ubuntu.com>  Tue, 11 Mar 2008 22:52:28 +0100
+
+openssl (0.9.8g-4ubuntu1) hardy; urgency=low
+
+  * Merge from unstable; remaining changes:
+    - Configure: Add support for lpia.
+    - Replace duplicate files in the doc directory with symlinks.
+    - Link using -Bsymbolic-functions.
+
+ -- Matthias Klose <doko@ubuntu.com>  Tue, 29 Jan 2008 14:32:12 +0100
+
 openssl (0.9.8g-4) unstable; urgency=low
 
   * Fix aes ige test speed not to overwrite it's buffer and
@@ -821,6 +2420,14 @@ openssl (0.9.8g-4) unstable; urgency=low
   * Update Finnish debconf translation (Closes: #458261)
 
  -- Kurt Roeckx <kurt@roeckx.be>  Wed, 16 Jan 2008 21:49:43 +0100
+
+openssl (0.9.8g-3ubuntu1) hardy; urgency=low
+
+  * Merge with Debian; remaining changes:
+    - Configure: Add support for lpia.
+    - Replace duplicate files in the doc directory with symlinks.
+
+ -- Matthias Klose <doko@ubuntu.com>  Wed, 05 Dec 2007 00:13:39 +0100
 
 openssl (0.9.8g-3) unstable; urgency=low
 
@@ -908,6 +2515,41 @@ openssl (0.9.8e-6) unstable; urgency=high
   * Add fix for CVE-2007-3108 (Closes: #438142)
 
  -- Kurt Roeckx <kurt@roeckx.be>  Wed, 15 Aug 2007 19:49:54 +0200
+
+openssl (0.9.8e-5ubuntu3) gutsy; urgency=low
+
+  * Replace duplicate files in the doc directory with symlinks.
+
+ -- Matthias Klose <doko@ubuntu.com>  Thu, 04 Oct 2007 16:27:53 +0000
+
+openssl (0.9.8e-5ubuntu2) gutsy; urgency=low
+
+  [ Jamie Strandboge ]
+  * SECURITY UPDATE: off-by-one error in SSL_get_shared_ciphers() results in
+    buffer overflow
+  * ssl/ssl_lib.c: applied upstream patch from openssl CVS thanks to
+    Stephan Hermann
+  * References:
+    CVE-2007-5135
+    http://www.securityfocus.com/archive/1/archive/1/480855/100/0/threaded
+    Fixes LP: #146269
+  * Modify Maintainer value to match the DebianMaintainerField
+    specification.
+
+  [ Kees Cook ]
+  * SECURITY UPDATE: side-channel attacks via BN_from_montgomery function.
+  * crypto/bn/bn_mont.c: upstream patch from openssl CVS thanks to Debian.
+  * References
+    CVE-2007-3108
+
+ -- Kees Cook <kees@ubuntu.com>  Fri, 28 Sep 2007 13:02:19 -0700
+
+openssl (0.9.8e-5ubuntu1) gutsy; urgency=low
+
+  * Configure: Add support for lpia.
+  * Explicitely build using gcc-4.1 (PR other/31359).
+
+ -- Matthias Klose <doko@ubuntu.com>  Tue, 31 Jul 2007 12:47:38 +0000
 
 openssl (0.9.8e-5) unstable; urgency=low
 
