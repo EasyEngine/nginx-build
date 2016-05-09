@@ -10,7 +10,7 @@ debian_ldflags:=$(shell dpkg-buildflags --get LDFLAGS)
 DEBIAN_NGINX_PERL_LDFLAGS:= $(shell DEB_BUILD_MAINT_OPTIONS=hardening=+all,-pie dpkg-buildflags --get LDFLAGS)
 export DEBIAN_NGINX_PERL_LDFLAGS
 
-FLAVOURS := full light extras mainline
+FLAVOURS := full light extras custom
 
 MODULESDIR = $(CURDIR)/debian/modules
 BASEDIR = $(CURDIR)
@@ -31,7 +31,7 @@ ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
 endif
 
 # configure flags
-common_configure_flags := \
+ee_configure_flags := \
 			--with-cc-opt="$(debian_cflags)" \
 			--with-ld-opt="$(debian_ldflags)" \
 			--prefix=/usr/share/nginx \
@@ -54,7 +54,7 @@ common_configure_flags := \
 			--with-http_auth_request_module
 
 light_configure_flags := \
-			$(common_configure_flags) \
+			$(ee_configure_flags) \
 			--with-http_gzip_static_module \
 			--without-http_browser_module \
 			--without-http_geo_module \
@@ -70,7 +70,7 @@ light_configure_flags := \
 			--add-module=$(MODULESDIR)/nginx-echo
 
 full_configure_flags := \
-			$(common_configure_flags) \
+			$(ee_configure_flags) \
 			--with-http_addition_module \
 			--with-http_dav_module \
 			--with-http_geoip_module \
@@ -93,7 +93,7 @@ full_configure_flags := \
 			--add-module=$(MODULESDIR)/ngx_http_substitutions_filter_module
 
 extras_configure_flags := \
-			$(common_configure_flags) \
+			$(ee_configure_flags) \
 			--with-http_addition_module \
 			--with-http_dav_module \
 			--with-http_flv_module \
@@ -127,8 +127,8 @@ extras_configure_flags := \
 			--add-module=$(MODULESDIR)/nginx-upstream-fair \
 			--add-module=$(MODULESDIR)/ngx_http_substitutions_filter_module
 
-mainline_configure_flags := \
-			$(common_configure_flags) \
+custom_configure_flags := \
+			$(ee_configure_flags) \
 			--with-http_addition_module \
 			--with-http_dav_module \
 			--with-http_flv_module \
@@ -182,7 +182,7 @@ override_dh_systemd_enable:
 	dh_systemd_enable --name=nginx
 
 override_dh_installlogrotate:
-	dh_installlogrotate --package nginx-common --name=nginx
+	dh_installlogrotate --package nginx-ee --name=nginx
 
 build.arch.%:
 	$(MAKE) -C $(BUILDDIR_$*) build

@@ -31,11 +31,11 @@ Architecture: all
 Depends: nginx-full   (>= ${source:Version}) |
          nginx-light  (>= ${source:Version}) |
          nginx-extras (>= ${source:Version}) |
-         nginx-mainline (>= ${source:Version}) ,
+         nginx-custom (>= ${source:Version}) ,
          nginx-full   (<< ${source:Version}.1~) |
          nginx-light  (<< ${source:Version}.1~) |
          nginx-extras (<< ${source:Version}.1~) |
-         nginx-mainline  (<< ${source:Version}.1~) ,
+         nginx-custom  (<< ${source:Version}.1~) ,
          ${misc:Depends}
 Description: small, powerful, scalable web/proxy server
  Nginx ("engine X") is a high-performance web and reverse proxy server
@@ -63,12 +63,12 @@ Replaces: nginx (<< 0.8.54-4),
           nginx-extras (<< 0.8.54-4),
           nginx-full (<< 0.8.54-4),
           nginx-light (<< 0.8.54-4),
-          nginx-mainline (<< 0.8.54-4)
+          nginx-custom (<< 0.8.54-4)
 Breaks: nginx (<< 0.8.54-4),
         nginx-extras (<< 0.8.54-4),
         nginx-full (<< 0.8.54-4),
         nginx-light (<< 0.8.54-4),
-        nginx-mainline (<< 0.8.54-4)
+        nginx-custom (<< 0.8.54-4)
 Suggests: fcgiwrap, nginx-doc, ssl-cert
 Description: small, powerful, scalable web/proxy server - common files
  Nginx ("engine X") is a high-performance web and reverse proxy server
@@ -83,7 +83,7 @@ Architecture: any
 Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
 Breaks: nginx (<< 1.4.5-1)
 Provides: httpd, httpd-cgi, nginx
-Conflicts: nginx-extras, nginx-light, nginx-mainline
+Conflicts: nginx-extras, nginx-light, nginx-custom
 Suggests: nginx-doc (= ${source:Version})
 Description: nginx web/proxy server (standard version)
  Nginx ("engine X") is a high-performance web and reverse proxy server
@@ -113,7 +113,7 @@ Architecture: any
 Section: debug
 Priority: extra
 Depends: nginx-full (= ${binary:Version}), ${misc:Depends}
-Conflicts: nginx-extras-dbg, nginx-light-dbg, nginx-mainline-dbg
+Conflicts: nginx-extras-dbg, nginx-light-dbg, nginx-custom-dbg
 Description: nginx web/proxy server (standard version) - debugging symbols
  Nginx ("engine X") is a high-performance web and reverse proxy server
  created by Igor Sysoev. It can be used both as a standalone web server
@@ -128,7 +128,7 @@ Priority: extra
 Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
 Breaks: nginx (<< 1.4.5-1)
 Provides: httpd, httpd-cgi, nginx
-Conflicts: nginx-extras, nginx-full, nginx-mainline
+Conflicts: nginx-extras, nginx-full, nginx-custom
 Suggests: nginx-doc (= ${source:Version})
 Description: nginx web/proxy server (basic version)
  Nginx ("engine X") is a high-performance web and reverse proxy server
@@ -151,7 +151,7 @@ Architecture: any
 Section: debug
 Priority: extra
 Depends: nginx-light (= ${binary:Version}), ${misc:Depends}
-Conflicts: nginx-extras-dbg, nginx-full-dbg, nginx-mainline-dbg
+Conflicts: nginx-extras-dbg, nginx-full-dbg, nginx-custom-dbg
 Description: nginx web/proxy server (basic version) - debugging symbols
  Nginx ("engine X") is a high-performance web and reverse proxy server
  created by Igor Sysoev. It can be used both as a standalone web server
@@ -170,7 +170,7 @@ Depends: nginx-common (= ${source:Version}),
          ${shlibs:Depends}
 Breaks: nginx (<< 1.4.5-1)
 Provides: httpd, httpd-cgi, nginx
-Conflicts: nginx-full, nginx-light, nginx-mainline
+Conflicts: nginx-full, nginx-light, nginx-custom
 Suggests: nginx-doc (= ${source:Version})
 Description: nginx web/proxy server (extended version)
  Nginx ("engine X") is a high-performance web and reverse proxy server
@@ -201,7 +201,7 @@ Architecture: any
 Section: debug
 Priority: extra
 Depends: nginx-extras (= ${binary:Version}), ${misc:Depends}
-Conflicts: nginx-full-dbg, nginx-light-dbg, nginx-mainline-dbg
+Conflicts: nginx-full-dbg, nginx-light-dbg, nginx-custom-dbg
 Description: nginx web/proxy server (extended version) - debugging symbols
  Nginx ("engine X") is a high-performance web and reverse proxy server
  created by Igor Sysoev. It can be used both as a standalone web server
@@ -211,7 +211,7 @@ Description: nginx web/proxy server (extended version) - debugging symbols
  debugging issues that you may find. It should not be required for normal
  operation.
 
-Package: nginx-mainline
+Package: nginx-custom
 Architecture: any
 Priority: extra
 Depends: nginx-common (= ${source:Version}),
@@ -246,11 +246,11 @@ Description: nginx web/proxy server (extended version)
  Headers More, Embedded Lua, HTTP Push, HTTP Substitutions, Upload Progress,
  Upstream Fair Queue.
 
-Package: nginx-mainline-dbg
+Package: nginx-custom-dbg
 Architecture: any
 Section: debug
 Priority: extra
-Depends: nginx-mainline (= ${binary:Version}), ${misc:Depends}
+Depends: nginx-custom (= ${binary:Version}), ${misc:Depends}
 Conflicts: nginx-full-dbg, nginx-light-dbg, nginx-extras-dbg
 Description: nginx web/proxy server (extended version) - debugging symbols
  Nginx ("engine X") is a high-performance web and reverse proxy server

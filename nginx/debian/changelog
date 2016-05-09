@@ -4,6 +4,7 @@ nginx (1.10.0-1ppa) stable; urgency=medium
   * pagespeed module removed
   * Support for spdy module is superseded by http_v2
   * http_limit_zone_module is now a part of http_limit_conn_module
+  * Changes package name from nginx-mainline to nginx-custom and nginx-common to nginx-ee
 
  -- Sushant Salil <sushant.salil@rtcamp.com>  Mon, 9 May 2016 19:11:22 +0530
 

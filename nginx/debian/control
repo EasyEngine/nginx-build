@@ -56,7 +56,7 @@ Description: small, powerful, scalable web/proxy server - documentation
  .
  This package provides extra documentation to help unleash the power of Nginx.
 
-Package: nginx-common
+Package: nginx-ee
 Architecture: all
 Depends: lsb-base (>= 3.2-14), ${misc:Depends}
 Replaces: nginx (<< 0.8.54-4),
@@ -70,7 +70,7 @@ Breaks: nginx (<< 0.8.54-4),
         nginx-light (<< 0.8.54-4),
         nginx-custom (<< 0.8.54-4)
 Suggests: fcgiwrap, nginx-doc, ssl-cert
-Description: small, powerful, scalable web/proxy server - common files
+Description: small, powerful, scalable web/proxy server - ee files
  Nginx ("engine X") is a high-performance web and reverse proxy server
  created by Igor Sysoev. It can be used both as a standalone web server
  and as a proxy to reduce the load on back-end HTTP or mail servers.
@@ -80,7 +80,7 @@ Description: small, powerful, scalable web/proxy server - common files
 
 Package: nginx-full
 Architecture: any
-Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
+Depends: nginx-ee (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
 Breaks: nginx (<< 1.4.5-1)
 Provides: httpd, httpd-cgi, nginx
 Conflicts: nginx-extras, nginx-light, nginx-custom
@@ -125,7 +125,7 @@ Description: nginx web/proxy server (standard version) - debugging symbols
 Package: nginx-light
 Architecture: any
 Priority: extra
-Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
+Depends: nginx-ee (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
 Breaks: nginx (<< 1.4.5-1)
 Provides: httpd, httpd-cgi, nginx
 Conflicts: nginx-extras, nginx-full, nginx-custom
@@ -164,7 +164,7 @@ Description: nginx web/proxy server (basic version) - debugging symbols
 Package: nginx-extras
 Architecture: any
 Priority: extra
-Depends: nginx-common (= ${source:Version}),
+Depends: nginx-ee (= ${source:Version}),
          ${misc:Depends},
          ${perl:Depends},
          ${shlibs:Depends}
@@ -214,7 +214,7 @@ Description: nginx web/proxy server (extended version) - debugging symbols
 Package: nginx-custom
 Architecture: any
 Priority: extra
-Depends: nginx-common (= ${source:Version}),
+Depends: nginx-ee (= ${source:Version}),
          ${misc:Depends},
          ${perl:Depends},
          ${shlibs:Depends}
