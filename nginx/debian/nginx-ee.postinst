@@ -1,0 +1,53 @@
+#!/bin/sh
+set -e
+
+# Handle naxsi removal
+dpkg-maintscript-helper rm_conffile \
+	          /etc/nginx/naxsi.rules         1.6.2-2~ -- "$@"
+dpkg-maintscript-helper rm_conffile \
+	          /etc/nginx/naxsi_core.rules    1.6.2-2~ -- "$@"
+dpkg-maintscript-helper rm_conffile \
+	          /etc/nginx/naxsi-ui.conf.1.4.1 1.6.2-2~ -- "$@"
+dpkg-maintscript-helper rm_conffile \
+	          /etc/nginx/naxsi-ui.conf       1.6.2-2~ -- "$@"
+
+case "$1" in
+  configure)
+    logdir="/var/log/nginx"
+    # Ensure secure permissions (CVE-2013-0337)
+    # http://bugs.debian.org/701112
+    #
+    # nginx uses 0755 for log files making them world readable,
+    # we fix that by using 0750 for the log directory.
+    #
+    # Allow local admin to override:
+    # e.g. dpkg-statoverride --add root adm 0755 /var/log/nginx
+    if ! dpkg-statoverride --list "$logdir" >/dev/null; then
+      chown www-data:adm $logdir
+      chmod 0750 $logdir
+    fi
+    # If a symlink doesn't exist and can be created, then create it.
+    if [ -z $2 ] && [ ! -e /etc/nginx/sites-enabled/default ] &&
+       [ -d /etc/nginx/sites-enabled ] && [ -d /etc/nginx/sites-available ]; then
+      ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+    fi
+
+    # Create a default index page when not already present.
+    if [ ! -e /var/www/html/index.nginx-debian.html ]; then
+      cp /usr/share/nginx/html/index.html /var/www/html/index.nginx-debian.html
+    fi
+
+    ;;
+
+  abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+  *)
+    echo "postinst called with unknown argument \`$1'" >&2
+    exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
