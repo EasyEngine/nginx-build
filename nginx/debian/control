@@ -68,6 +68,8 @@ Breaks: nginx (<< 0.8.54-4),
         nginx-extras (<< 0.8.54-4),
         nginx-full (<< 0.8.54-4),
         nginx-light (<< 0.8.54-4),
+        nginx-common,
+        nginx-mainline,
         nginx-custom (<< 0.8.54-4)
 Suggests: fcgiwrap, nginx-doc, ssl-cert
 Description: small, powerful, scalable web/proxy server - ee files
