@@ -19,7 +19,7 @@ If you want to build nginx for Ubuntu 12.04 then you have to first build [init-s
 
 ```bash
 ^_^[Mitesh@Shah:~]$ vim ~/PPA/nginx/nginx-1.6.2/debian/changelog
-nginx (1.6.2-1ppa~trusty) stable; urgency=low
+nginx (1.6.2-1ppa~trusty) trusty; urgency=low
 
   * Remove nginx-naxsi package
   * Remove nginx-pagespeed package
@@ -40,23 +40,10 @@ nginx (1.6.2-1ppa~trusty) stable; urgency=low
 ^_^[Mitesh@Shah:~]$ debuild -S -k'387AFF02'
 ```
 
-##### Lets Upload:
-
-1. To Launchpad:
+##### Let Upload To LaunchPad:
 
 ```bash
 ^_^[Mitesh@Shah:~]$ dput ppa:rtcamp/nginx ~/PPA/nginx/nginx_1.6.2-1ppa~trusty_source.changes
-```
-
-2. To openSuse builder:
-a. Go to package page and click on add file
-b. Now upload following files:
-
-```
-nginx_1.6.2-1ppa.debian.tar.gz
-nginx_1.6.2-1ppa.dsc
-nginx_1.6.2-1ppa_source.build
-nginx_1.6.2-1ppa_source.changes
 ```
 
 ##### Check Nginx Modules

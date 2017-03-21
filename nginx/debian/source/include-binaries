@@ -1,2 +1,4 @@
 debian/modules/nginx-upload-progress/test/100
 debian/modules/ngx_pagespeed/psol.tar.gz
+debian/modules/naxsi/t/fuzz/mini-unknown-CT-post
+debian/modules/naxsi/t/fuzz/med-post-non-ascii

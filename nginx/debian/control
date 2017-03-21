@@ -1,8 +1,8 @@
 Source: nginx
 Section: httpd
 Priority: optional
-Maintainer: Mitesh Shah <Mr.Miteshah@gmail.com>
-Uploaders: Gaurav Ashtikar <gaurav.astikar@rtcamp.com>
+Maintainer: Bharat Parsiya <bnap00@gmail.com>, Mriyam Tamuli <mbtamuli@gmail.com>
+Uploaders: Mriyam Tamuli <mbtamuli@gmail.com>, Bharat Parsiya <bnap00@gmail.com>
 Build-Depends: autotools-dev,
                debhelper (>= 9),
                dh-systemd (>= 1.5),
@@ -249,3 +249,43 @@ Description: nginx web/proxy server (standard version) - debugging symbols
  This package provides debugging symbols for nginx-custom, to assist in debugging
  issues that you may find. It should not be required for normal operation.
 
+Package: nginx-ee
+Architecture: any
+Depends: nginx-common (= ${source:Version}), ${misc:Depends}, ${shlibs:Depends}
+Breaks: nginx (<< 1.4.5-1)
+Provides: httpd, httpd-cgi, nginx
+Conflicts: nginx-full, nginx-light, nginx-extras
+Suggests: nginx-doc (= ${source:Version})
+Description: nginx web/proxy server with custom setup
+ Nginx ("engine X") is a high-performance web and reverse proxy server
+ created by Igor Sysoev. It can be used both as a standalone web server
+ and as a proxy to reduce the load on back-end HTTP servers.
+ .
+ This package provides a version of nginx with the complete set of
+ standard modules.
+ .
+ STANDARD HTTP MODULES: Core, Access, Auth Basic, Auto Index, Browser,
+ Charset, Empty GIF, FastCGI, Geo, Gzip, Headers, Index, Limit Requests,
+ Limit Zone, Log, Map, Memcached, Proxy, Referer, Rewrite, SCGI,
+ Split Clients, SSI, Upstream, User ID, UWSGI.
+ .
+ OPTIONAL HTTP MODULES: Addition, Auth Request, Debug, GeoIP, Gzip
+ Precompression, HTTP Sub, Image Filter, IPv6, Real IP, Spdy, SSL, Stub Status,
+ Substitution, WebDAV, XSLT.
+ .
+ THIRD PARTY MODULES: Auth PAM, DAV Ext, Echo, HTTP Substitution Filter,
+ Upstream Fair Queue, Headers More, Cache Purge.
+
+Package: nginx-ee-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends: nginx-ee (= ${binary:Version}), ${misc:Depends}
+Conflicts: nginx-full-dbg, nginx-light-dbg, nginx-extras-dbg
+Description: nginx web/proxy server (standard version) - debugging symbols
+ Nginx ("engine X") is a high-performance web and reverse proxy server
+ created by Igor Sysoev. It can be used both as a standalone web server
+ and as a proxy to reduce the load on back-end HTTP server.
+ .
+ This package provides debugging symbols for nginx-custom, to assist in debugging
+ issues that you may find. It should not be required for normal operation.
