@@ -1,16 +1,15 @@
 Source: nginx
 Section: httpd
 Priority: optional
-Maintainer: Bharat Parsiya <bnap00@gmail.com>, Mriyam Tamuli <mbtamuli@gmail.com>
-Uploaders: Mriyam Tamuli <mbtamuli@gmail.com>, Bharat Parsiya <bnap00@gmail.com>
+Maintainer: Mriyam Tamuli <mbtamuli@gmail.com>
 Build-Depends: autotools-dev,
                debhelper (>= 9),
                dh-systemd (>= 1.5),
                dpkg-dev (>= 1.15.5),
                libexpat-dev,
-               libgd2-dev | libgd2-noxpm-dev,
+               libgd-dev,
                libgeoip-dev,
-               libluajit-5.1-dev [i386 amd64 kfreebsd-i386 armel armhf powerpc powerpcspe mips mipsel] | liblua5.1-0-dev,
+               liblua5.1-0-dev | libluajit-5.1-2,
                libmhash-dev,
                libpam0g-dev,
                libpcre3-dev,
@@ -19,7 +18,7 @@ Build-Depends: autotools-dev,
                libxslt1-dev,
                po-debconf,
                zlib1g-dev
-Standards-Version: 3.9.6.0
+Standards-Version: 3.9.7
 Homepage: http://nginx.net
 Vcs-Git: git://anonscm.debian.org/collab-maint/nginx.git
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/nginx.git;a=summary

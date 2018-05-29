@@ -1,6 +1,8 @@
 Description: Use linker flags from environment for perl (dpkg-buildflags).
  Necessary for hardening flags.
 Author: Christos Trochalakis <yatiohi@ideopolis.gr>
+Index: b/src/http/modules/perl/Makefile.PL
+===================================================================
 --- a/src/http/modules/perl/Makefile.PL
 +++ b/src/http/modules/perl/Makefile.PL
 @@ -3,6 +3,7 @@
@@ -20,4 +22,4 @@ Author: Christos Trochalakis <yatiohi@ideopolis.gr>
 +    LDDLFLAGS         => "$Config{lddlflags} $ENV{DEBIAN_NGINX_PERL_LDFLAGS}",
      OPTIMIZE          => '-O',
  
-     INC               => join(" ", map {
+     LDDLFLAGS         => "$ENV{NGX_PM_LDFLAGS}",

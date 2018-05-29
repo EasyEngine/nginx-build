@@ -99,7 +99,7 @@ git clone https://github.com/masterzen/nginx-upload-progress-module.git nginx-up
 || ppa_error "Unable to clone nginx-upload-progress repo, exit status = " $?
 
 ppa_lib_echo "10/18 nginx-upstream-fair"
-git clone https://github.com/gnosek/nginx-upstream-fair.git \
+git clone https://github.com/itoffshore/nginx-upstream-fair.git \
 || ppa_error "Unable to clone nginx-upstream-fair repo, exit status = " $?
 
 ppa_lib_echo "11/18 ngx-fancyindex"

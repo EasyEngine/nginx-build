@@ -1,3 +1,9 @@
+nginx (1.14.0-1ppa~stable) xenial; urgency=medium
+
+  * Use new stable nginx source.
+
+ -- Mriyam Tamuli <mbtamuli@gmail.com>  Thu, 24 May 2018 22:07:00 +0530
+
 nginx (1.10.3-5ppa~stable) stable; urgency=high
 
   * Use new stable nginx source.
