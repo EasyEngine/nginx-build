@@ -1,0 +1,72 @@
+init-system-helpers (1.7~1ppa~precise) precise; urgency=low
+
+  * No-change backport to precise
+
+ -- Mitesh Shah <Mr.Miteshah@gmail.com>  Mon, 3 Nov 2014 13:05:32 +0530
+
+init-system-helpers (1.7) unstable; urgency=low
+
+  * Drop dependency on libmodule-install-perl to make it easier to have this
+    package in Ubuntu (Thanks Jeremy Bicha) (Closes: #716929)
+
+ -- Michael Stapelberg <stapelberg@debian.org>  Tue, 16 Jul 2013 23:53:28 +0200
+
+init-system-helpers (1.6) unstable; urgency=low
+
+  * Fix syntax error in dh_systemd_start (Closes: #716946)
+
+ -- Michael Stapelberg <stapelberg@debian.org>  Mon, 15 Jul 2013 17:49:57 +0200
+
+init-system-helpers (1.5) unstable; urgency=low
+
+  * deb-systemd-helper: clean up /var/lib/systemd/deb-systemd-helper-enabled
+    and /etc/systemd to pass a piuparts run.
+  * deb-systemd-helper: add --quiet
+  * dh_systemd_enable: add --no-enable
+  * dh_systemd_start: add --no-start
+
+ -- Michael Stapelberg <stapelberg@debian.org>  Sun, 14 Jul 2013 21:53:26 +0200
+
+init-system-helpers (1.4) unstable; urgency=low
+
+  * deb-systemd-helper: ensure state directory exists before writing to it
+    (Thanks uau, bigon) (Closes: #714265)
+
+ -- Michael Stapelberg <stapelberg@debian.org>  Thu, 27 Jun 2013 18:28:36 +0200
+
+init-system-helpers (1.3) unstable; urgency=low
+
+  * deb-systemd-helpe): replicate /etc/systemd/system in state dir
+  * deb-systemd-helper: delete state file on remove if user didn’t disable
+    service
+  * deb-systemd-helper: always store .dsh-also state, not only when creating
+    links
+  * add deb-systemd-invoke, a wrapper which respects (basic) policy-rc.d
+
+ -- Michael Stapelberg <stapelberg@debian.org>  Wed, 19 Jun 2013 19:44:59 +0200
+
+init-system-helpers (1.2) unstable; urgency=low
+
+  * split dh_systemd into dh_systemd_start and dh_systemd_enable. This makes
+    each helper much easier and allows us to do the right thing — we need to
+    run parts of the code _before_ dh_installinit and parts of the code
+    _afterwards_.
+  * deb-systemd-helper: only remove state file on purge.
+  * deb-systemd-helper: store state about which units were enabled in addition
+    to the specified one. This allows us to drop Also= and Alias= units from
+    the call to deb-systemd-helper and behave more like systemctl.
+
+ -- Michael Stapelberg <stapelberg@debian.org>  Tue, 18 Jun 2013 23:38:45 +0200
+
+init-system-helpers (1.1) unstable; urgency=low
+
+  * deb-systemd-helper: also store enable state for already enabled units
+  * add dh-systemd package which contains the dh_systemd debhelper add-on
+
+ -- Michael Stapelberg <stapelberg@debian.org>  Tue, 11 Jun 2013 23:32:02 +0200
+
+init-system-helpers (1.0) unstable; urgency=low
+
+  * Initial release
+
+ -- Michael Stapelberg <stapelberg@debian.org>  Sun, 05 May 2013 11:25:48 +0200

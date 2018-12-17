@@ -99,7 +99,7 @@ git clone https://github.com/masterzen/nginx-upload-progress-module.git nginx-up
 || ppa_error "Unable to clone nginx-upload-progress repo, exit status = " $?
 
 ppa_lib_echo "10/18 nginx-upstream-fair"
-git clone https://github.com/itoffshore/nginx-upstream-fair.git \
+git clone https://github.com/gnosek/nginx-upstream-fair.git \
 || ppa_error "Unable to clone nginx-upstream-fair repo, exit status = " $?
 
 ppa_lib_echo "11/18 ngx-fancyindex"
@@ -119,7 +119,7 @@ git clone https://github.com/openresty/srcache-nginx-module.git \
 || ppa_error "Unable to clone srcache-nginx-module repo, exit status = " $?
 
 ppa_lib_echo "15/18 HttpRedisModule"
-git clone https://github.com/EasyEngine/ngx_http_redis.git HttpRedisModule \
+git clone https://github.com/yaoweibin/nginx_http_redis_module.git HttpRedisModule \
 || ppa_error "Unable to clone nginx_http_redis_module repo, exit status = " $?
 
 ppa_lib_echo "16/18 redis2-nginx-module"
